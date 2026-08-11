@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "957851631152",
+    "project_id": "xcode-fe06f",
+    "storage_bucket": "xcode-fe06f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957851631152:android:017ca555e97c5e43ac77f5",
+        "android_client_info": {
+          "package_name": "com.xcode.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIEZzg7EPVoQ494z_1deW455GKW4xUHLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

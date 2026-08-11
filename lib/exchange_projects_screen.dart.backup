@@ -1,0 +1,1306 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:rxdart/rxdart.dart';
+
+class ExchangeProjectsScreen extends StatefulWidget {
+  final String currentUserId;
+  const ExchangeProjectsScreen({Key? key, required this.currentUserId}) : super(key: key);
+
+  @override
+  State<ExchangeProjectsScreen> createState() => _ExchangeProjectsScreenState();
+}
+
+class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  DateTimeRange? _selectedDateRange;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Stream<List<Map<String, dynamic>>> _getRequestsStream() {
+    print('=== GET REQUESTS STREAM STARTED ===');
+    print('Current user ID: ${widget.currentUserId}');
+    
+    // Get ALL requests where current user is either sender or receiver with real-time updates
+    final fromStream = FirebaseFirestore.instance
+        .collection('exchanges')
+        .where('fromUserId', isEqualTo: widget.currentUserId)
+        .snapshots();
+        
+    final toStream = FirebaseFirestore.instance
+        .collection('exchanges')
+        .where('toUserId', isEqualTo: widget.currentUserId)
+        .snapshots();
+    
+    // Combine both streams for real-time updates
+    return Rx.combineLatest2(fromStream, toStream, (fromSnapshot, toSnapshot) {
+      print('=== REAL-TIME UPDATE RECEIVED ===');
+      
+      // Combine both sent and received requests
+      final fromRequests = fromSnapshot.docs.map((doc) {
+        final data = doc.data();
+        print('From request data: $data');
+        return {
+          'id': doc.id,
+          'data': {...data, 'isOutgoing': true},
+        };
+      }).toList();
+      
+      final toRequests = toSnapshot.docs.map((doc) {
+        final data = doc.data();
+        print('To request data: $data');
+        return {
+          'id': doc.id,
+          'data': {...data, 'isOutgoing': false},
+        };
+      }).toList();
+      
+      final allRequests = [...fromRequests, ...toRequests];
+      
+      // Sort by timestamp
+      if (allRequests.isNotEmpty) {
+        allRequests.sort((a, b) {
+          final aData = a['data'] as Map<String, dynamic>?;
+          final bData = b['data'] as Map<String, dynamic>?;
+          final aTime = aData?['timestamp'] as Timestamp?;
+          final bTime = bData?['timestamp'] as Timestamp?;
+          if (aTime == null || bTime == null) return 0;
+          return bTime?.compareTo(aTime) ?? 0;
+        });
+      }
+      
+      print('Total requests count: ${allRequests.length}');
+      return allRequests;
+    });
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day.toString().padLeft(2, '0')}/'
+           '${dateTime.month.toString().padLeft(2, '0')}/'
+           '${dateTime.year} '
+           '${dateTime.hour.toString().padLeft(2, '0')}:'
+           '${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Not set';
+    return '${date.day.toString().padLeft(2, '0')}/'
+           '${date.month.toString().padLeft(2, '0')}/'
+           '${date.year}';
+  }
+
+  String _getCountryFlag(String country) {
+    switch (country) {
+      case 'US': return '🇺🇸';
+      case 'PK': return '🇵🇰';
+      case 'IN': return '🇮🇳';
+      case 'GB': return '🇬🇧';
+      case 'CA': return '🇨🇦';
+      case 'AU': return '🇦🇺';
+      case 'DE': return '🇩🇪';
+      case 'FR': return '🇫🇷';
+      case 'JP': return '🇯🇵';
+      case 'KR': return '🇰🇷';
+      case 'CN': return '🇨🇳';
+      case 'BR': return '🇧🇷';
+      case 'RU': return '🇷🇺';
+      case 'SA': return '🇸🇦';
+      case 'AE': return '🇦🇪';
+      default: return '';
+    }
+  }
+
+  Future<void> _acceptRequest(String requestId) async {
+    try {
+      // Update the main exchange document
+      await FirebaseFirestore.instance
+          .collection('exchanges')
+          .doc(requestId)
+          .update({'status': 'accepted'});
+
+      // Get the exchange document to find both user IDs
+      final exchangeDoc = await FirebaseFirestore.instance
+          .collection('exchanges')
+          .doc(requestId)
+          .get();
+      final exchangeData = exchangeDoc.data();
+      final fromUserId = exchangeData?['fromUserId'];
+      final toUserId = exchangeData?['toUserId'];
+
+      // Update both users' request documents
+      if (fromUserId != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(fromUserId)
+            .collection('requests')
+            .doc(requestId)
+            .update({'status': 'accepted'});
+      }
+      if (toUserId != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(toUserId)
+            .collection('requests')
+            .doc(requestId)
+            .update({'status': 'accepted'});
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request accepted!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to accept request: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _rejectRequest(String requestId) async {
+    try {
+      // Update the main exchange document
+      await FirebaseFirestore.instance
+          .collection('exchanges')
+          .doc(requestId)
+          .update({'status': 'rejected'});
+
+      // Get the exchange document to find both user IDs
+      final exchangeDoc = await FirebaseFirestore.instance
+          .collection('exchanges')
+          .doc(requestId)
+          .get();
+      final exchangeData = exchangeDoc.data();
+      final fromUserId = exchangeData?['fromUserId'];
+      final toUserId = exchangeData?['toUserId'];
+
+      // Update both users' request documents
+      if (fromUserId != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(fromUserId)
+            .collection('requests')
+            .doc(requestId)
+            .update({'status': 'rejected'});
+      }
+      if (toUserId != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(toUserId)
+            .collection('requests')
+            .doc(requestId)
+            .update({'status': 'rejected'});
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Request rejected!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to reject request: ${e.toString()}')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF232323),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        title: const Text('Exchange Projects'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            tooltip: 'Filter by date',
+            onPressed: () async {
+              final picked = await showDateRangePicker(
+                context: context,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2100),
+                initialDateRange: _selectedDateRange,
+                builder: (context, child) => Theme(
+                  data: ThemeData.dark().copyWith(
+                    colorScheme: const ColorScheme.dark(
+                      primary: Colors.blueAccent,
+                      onPrimary: Colors.white,
+                      surface: Color(0xFF232323),
+                      onSurface: Colors.white,
+                    ),
+                    dialogBackgroundColor: const Color(0xFF232323),
+                  ),
+                  child: child!,
+                ),
+              );
+              if (picked != null) {
+                setState(() {
+                  _selectedDateRange = picked;
+                });
+              }
+            },
+          ),
+          if (_selectedDateRange != null)
+            IconButton(
+              icon: const Icon(Icons.clear, color: Colors.white),
+              tooltip: 'Clear date filter',
+              onPressed: () {
+                setState(() {
+                  _selectedDateRange = null;
+                });
+              },
+            ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.blueAccent,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
+            Tab(text: 'Pending'),
+            Tab(text: 'Accepted'),
+            Tab(text: 'Rejected'),
+            Tab(text: 'Completed'),
+          ],
+        ),
+      ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _getRequestsStream(),
+        builder: (context, snapshot) {
+          print('=== STREAM BUILDER CALLED ===');
+          print('Has data: ${snapshot.hasData}');
+          print('Has error: ${snapshot.hasError}');
+          
+          if (!snapshot.hasData) {
+            print('No data - showing loading');
+            return const Center(child: CircularProgressIndicator(color: Colors.white));
+          }
+          
+          final requests = snapshot.data!;
+          print('Total requests count: ${requests.length}');
+          
+          // Filter requests by status for each tab
+          List<Map<String, dynamic>> filteredRequests = requests;
+          if (_selectedDateRange != null) {
+            filteredRequests = requests.where((r) {
+              final data = r['data'] as Map<String, dynamic>;
+              DateTime? start;
+              DateTime? end;
+              try {
+                if (data['startDate'] != null && data['startDate'].toString().isNotEmpty) {
+                  start = DateTime.tryParse(data['startDate'].toString());
+                }
+                if (data['endDate'] != null && data['endDate'].toString().isNotEmpty) {
+                  end = DateTime.tryParse(data['endDate'].toString());
+                }
+              } catch (_) {}
+              if (start == null && end == null) return false;
+              final rangeStart = _selectedDateRange!.start;
+              final rangeEnd = _selectedDateRange!.end;
+              // If either start or end date of project falls within the selected range
+              bool inRange = false;
+              if (start != null && start.isAfter(rangeStart.subtract(const Duration(days: 1))) && start.isBefore(rangeEnd.add(const Duration(days: 1)))) {
+                inRange = true;
+              }
+              if (end != null && end.isAfter(rangeStart.subtract(const Duration(days: 1))) && end.isBefore(rangeEnd.add(const Duration(days: 1)))) {
+                inRange = true;
+              }
+              return inRange;
+            }).toList();
+          }
+          
+          final pendingRequests = filteredRequests.where((r) => (r['data']['status'] ?? 'pending') == 'pending').toList();
+          final acceptedRequests = filteredRequests.where((r) => (r['data']['status'] ?? '') == 'accepted').toList();
+          final rejectedRequests = filteredRequests.where((r) => (r['data']['status'] ?? '') == 'rejected').toList();
+          final completedRequests = filteredRequests.where((r) => (r['data']['status'] ?? '') == 'completed').toList();
+          
+          print('Pending requests: ${pendingRequests.length}');
+          print('Accepted requests: ${acceptedRequests.length}');
+          print('Rejected requests: ${rejectedRequests.length}');
+          print('Completed requests: ${completedRequests.length}');
+
+          List<Map<String, dynamic>> getTabRequests(int index) {
+            switch (index) {
+              case 0:
+                return pendingRequests;
+              case 1:
+                return acceptedRequests;
+              case 2:
+                return rejectedRequests;
+              case 3:
+                return completedRequests;
+              default:
+                return [];
+            }
+          }
+
+          return TabBarView(
+            controller: _tabController,
+            children: List.generate(4, (tabIndex) {
+              final tabRequests = getTabRequests(tabIndex);
+              if (tabRequests.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No exchange requests.',
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                );
+              }
+              return ListView.builder(
+                itemCount: tabRequests.length,
+                itemBuilder: (context, index) {                itemBuilder: (context, index) {
+                  final request = tabRequests[index];
+                  final data = request['data'] as Map<String, dynamic>;
+                  final requestId = request['id'];
+                  
+                  final status = data['status'] ?? 'pending';
+                  final title = data['projectTitle'] ?? data['title'] ?? '';
+                  final type = data['projectType'] ?? data['type'] ?? '';
+                  final description = data['projectDescription'] ?? data['description'] ?? '';
+                  final note = data['exchangeNote'] ?? data['note'] ?? '';
+                  final fromUserId = data['fromUserId'] ?? '';
+                  final toUserId = data['toUserId'] ?? '';
+                  final isOutgoing = data['isOutgoing'] ?? false;
+                  final projectLinkType = data['projectLinkType'] ?? '';
+                  final projectLink = data['projectLink'] ?? '';
+                  final startDate = data['startProjectDate'] is Timestamp ? 
+                              (data['startProjectDate'] as Timestamp).toDate() :
+                              data['startProjectDate'] as DateTime? ?? 
+                              (data['startDate'] is Timestamp ? 
+                                (data['startDate'] as Timestamp).toDate() :
+                                (data['startDate'] != null ? DateTime.tryParse(data['startDate'].toString()) : null));
+                  final endDate = data['endProjectDate'] is Timestamp ?
+                            (data['endProjectDate'] as Timestamp).toDate() :
+                            data['endProjectDate'] as DateTime? ??
+                            (data['endDate'] is Timestamp ?
+                              (data['endDate'] as Timestamp).toDate() :
+                              (data['endDate'] != null ? DateTime.tryParse(data['endDate'].toString()) : null));
+                  final timestamp = data['timestamp'] as Timestamp? ?? data['createdAt'] as Timestamp?;
+
+                  final senderProjectLink = data['senderProjectLink'] ?? '';
+                  final senderProjectLinkType = data['senderProjectLinkType'] ?? '';
+                  final receiverProjectLink = data['receiverProjectLink'] ?? '';
+                  final receiverProjectLinkType = data['receiverProjectLinkType'] ?? '';
+
+                  final senderReview = data['senderReview'];
+                  final receiverReview = data['receiverReview'];
+
+                  // Determine if current user is sender or receiver
+                  final isCurrentUserSender = widget.currentUserId == fromUserId;
+
+                  // Debug print for each request
+                  print('Request $index: id=$requestId, status=$status, isOutgoing=$isOutgoing, isCurrentUserSender=$isCurrentUserSender');
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFF3A3A3A),
+                          const Color(0xFF2C2C2C),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                        BoxShadow(
+                          color: isOutgoing 
+                            ? Colors.blue.withOpacity(0.1)
+                            : Colors.orange.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: isOutgoing 
+                          ? Colors.blue.withOpacity(0.3)
+                          : Colors.orange.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.white.withOpacity(0.05),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header with request type and status
+                            Row(
+                              children: [
+                                // Request type indicator with gradient
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: isOutgoing 
+                                        ? [Colors.blue.shade400, Colors.blue.shade600]
+                                        : [Colors.orange.shade400, Colors.orange.shade600],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: isOutgoing 
+                                          ? Colors.blue.withOpacity(0.3)
+                                          : Colors.orange.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        isOutgoing ? Icons.arrow_upward : Icons.arrow_downward,
+                                        size: 14,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        isOutgoing ? 'Outgoing' : 'Incoming',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                // Status badge with animation
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: _getStatusColor(status).withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      color: _getStatusColor(status).withOpacity(0.5),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: _getStatusColor(status),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        status[0].toUpperCase() + status.substring(1),
+                                        style: TextStyle(
+                                          color: _getStatusColor(status),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // User info
+                            FutureBuilder<DocumentSnapshot>(
+                              future: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(isOutgoing ? toUserId : fromUserId)
+                                  .get(),
+                              builder: (context, userSnapshot) {
+                                String userName = 'Loading...';
+                                String userImage = '';
+                                String userCountry = '';
+                                String userBio = '';
+                                String userSkills = '';
+                                String userExperience = '';
+                                String userEducation = '';
+                                String userCertifications = '';
+                                String userLanguages = '';
+                                String userTools = '';
+                                String userPortfolio = '';
+                                String userGitHub = '';
+                                String userLinkedIn = '';
+                                String userTwitter = '';
+                                String userFacebook = '';
+                                String userInstagram = '';
+                                String userYouTube = '';
+                                String userOtherSocialMedia = '';
+                                String userOtherInfo = '';
+
+                                if (userSnapshot.hasData && userSnapshot.data != null) {
+                                  final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
+                                  
+                                  // Enhanced user data fetching with more field checks
+                                  userName = userData?['name'] ?? 
+                                             userData?['fullName'] ?? 
+                                             userData?['userName'] ?? 
+                                             userData?['displayName'] ?? 
+                                             userData?['email']?.toString().split('@')[0] ?? 
+                                             userData?['uid']?.toString().substring(0, 8) ?? 
+                                             'Unknown User';
+                                             
+                                  userImage = userData?['avatarUrl'] ?? 
+                                             userData?['profileImage'] ?? 
+                                             userData?['profileImageUrl'] ?? 
+                                             userData?['photo'] ?? 
+                                             userData?['photoURL'] ?? 
+                                             userData?['imageUrl'] ?? '';
+                                             
+                                  userCountry = userData?['country'] ?? 
+                                                   userData?['Country'] ?? 
+                                                   userData?['location'] ?? 
+                                                   userData?['Location'] ?? '';
+                                           
+                                // Debug print to check user data
+                                print('User data for ${isOutgoing ? widget.currentUserId : fromUserId}: $userData');
+                                print('User name: $userName');
+                                print('User image: $userImage');
+                              } else if (userSnapshot.hasError) {
+                                userName = 'Error loading user';
+                                print('Error loading user: ${userSnapshot.error}');
+                              } else {
+                                userName = 'User not found';
+                                print('User not found: ${isOutgoing ? widget.currentUserId : fromUserId}');
+                              }
+                              
+                              // Beautiful modern user info card
+                              return Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.white.withOpacity(0.08),
+                                      Colors.white.withOpacity(0.02),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.1),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    // Enhanced avatar with glow effect
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: isOutgoing 
+                                              ? Colors.blue.withOpacity(0.3)
+                                              : Colors.orange.withOpacity(0.3),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 24,
+                                        backgroundColor: Colors.white24,
+                                        backgroundImage: userImage.isNotEmpty ? NetworkImage(userImage) : null,
+                                        child: userImage.isEmpty 
+                                          ? Icon(
+                                              Icons.person,
+                                              color: Colors.white70,
+                                              size: 28,
+                                            )
+                                          : null,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    // User info with better typography
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                isOutgoing ? Icons.arrow_forward : Icons.arrow_back,
+                                                size: 16,
+                                                color: isOutgoing ? Colors.blue.shade300 : Colors.orange.shade300,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: Text(
+                                                  userName,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
+                                                    letterSpacing: 0.2,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          // User ID with better styling
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.05),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              'ID: ${isOutgoing ? widget.currentUserId.substring(0, 8) : fromUserId.substring(0, 8)}...',
+                                              style: TextStyle(
+                                                color: Colors.white.withOpacity(0.6),
+                                                fontSize: 11,
+                                                fontFamily: 'monospace',
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              if (userCountry.isNotEmpty) ...[
+                                                Text(
+                                                  _getCountryFlag(userCountry),
+                                                  style: const TextStyle(fontSize: 18),
+                                                ),
+                                                const SizedBox(width: 8),
+                                              ],
+                                              if (timestamp != null)
+                                                Expanded(
+                                                  child: Text(
+                                                    _formatDateTime(timestamp.toDate()),
+                                                    style: TextStyle(
+                                                      color: Colors.white.withOpacity(0.5),
+                                                      fontSize: 11,
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),                          
+                          const SizedBox(height: 20),
+                          
+                          // Project link submission for accepted requests
+                          if (status == 'accepted')
+                            if ((isCurrentUserSender && senderProjectLink.isEmpty) || (!isCurrentUserSender && receiverProjectLink.isEmpty))
+                              _ProjectLinkSubmitWidget(
+                                requestId: requestId,
+                                currentUserId: widget.currentUserId,
+                                isSender: isCurrentUserSender,
+                              ),
+                          
+                          // Display sender's project link if available
+                          if (senderProjectLink.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.withOpacity(0.1),
+                                    Colors.blue.withOpacity(0.05),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.blue.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.link,
+                                        color: Colors.blue.shade300,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        isCurrentUserSender ? 'Your submitted project link:' : "Other user's submitted project link:",
+                                        style: TextStyle(
+                                          color: Colors.blue.shade300,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.05),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.1),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Type: $senderProjectLinkType',
+                                          style: TextStyle(
+                                            color: Colors.white.withOpacity(0.7),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            String urlString = senderProjectLink.trim().replaceAll(' ', '');
+                                            if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
+                                              urlString = 'https://$urlString';
+                                            }
+                                            final Uri url = Uri.parse(urlString);
+
+                                            print('Trying to launch: $urlString');
+                                            try {
+                                              final launched = await launchUrl(
+                                                url,
+                                                mode: LaunchMode.externalApplication,
+                                              );
+                                              if (!launched) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Could not launch link: $urlString')),
+                                                );
+                                              }
+                                            } catch (e) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text('Error launching link: $urlString')),
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            senderProjectLink,
+                                            style: const TextStyle(
+                                              color: Colors.blueAccent,
+                                              decoration: TextDecoration.underline,
+                                              fontSize: 14,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          // Display receiver's project link if available
+                          if (receiverProjectLink.isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                Text(
+                                  !isCurrentUserSender ? 'Your submitted project link:' : "Other user's submitted project link:",
+                                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Project Link Type: $receiverProjectLinkType',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                const SizedBox(height: 4),
+                                GestureDetector(
+                                  onTap: () async {
+                                    String urlString = receiverProjectLink.trim().replaceAll(' ', '');
+                                    if (!urlString.startsWith('http://') && !urlString.startsWith('https://')) {
+                                      urlString = 'https://$urlString';
+                                    }
+                                    final Uri url = Uri.parse(urlString);
+
+                                    print('Trying to launch: $urlString');
+                                    try {
+                                      final launched = await launchUrl(
+                                        url,
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                      if (!launched) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Could not launch link: $urlString')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error launching link: $urlString')),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    'Project Link: $receiverProjectLink',
+                                    style: const TextStyle(
+                                      color: Colors.blueAccent,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                          // After both project links are submitted, show review widget or reviews:
+                          if (senderProjectLink.isNotEmpty && receiverProjectLink.isNotEmpty) ...[
+                            // Show review submit widget if current user hasn't reviewed
+                            if ((isCurrentUserSender && (senderReview == null)) || (!isCurrentUserSender && (receiverReview == null)))
+                              _ReviewSubmitWidget(
+                                requestId: requestId,
+                                currentUserId: widget.currentUserId,
+                                isSender: isCurrentUserSender,
+                              ),
+                            // Show both reviews if available or pending
+                            if (senderProjectLink.isNotEmpty && receiverProjectLink.isNotEmpty) ...[
+                              // Sender review
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(isCurrentUserSender ? 'Your review:' : "Other user's review:", style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+                                        if (senderReview != null) ...[
+                                          const SizedBox(width: 8),
+                                        ],
+                                      ],
+                                    ),
+                                    if (senderReview == null)
+                                      Row(
+                                        children: [
+                                          ...List.generate(5, (index) => const Icon(Icons.star, color: Colors.grey, size: 24)),
+                                          const SizedBox(width: 8),
+                                          const Text('Pending review', style: TextStyle(color: Colors.white38)),
+                                        ],
+                                      )
+                                    else ...[
+                                      Row(
+                                        children: [
+                                          RatingBarIndicator(
+                                            rating: (senderReview['rating'] ?? 0).toDouble(),
+                                            itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+                                            itemCount: 5,
+                                            itemSize: 24.0,
+                                            direction: Axis.horizontal,
+                                          ),
+                                        ],
+                                      ),
+                                      if ((senderReview['comment'] ?? '').isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 4.0),
+                                          child: Text(senderReview['comment'], style: const TextStyle(color: Colors.white54)),
+                                        ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              // Receiver review
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(!isCurrentUserSender ? 'Your review:' : "Other user's review:", style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+                                        if (receiverReview != null) ...[
+                                          const SizedBox(width: 8),
+                                        ],
+                                      ],
+                                    ),
+                                    if (receiverReview == null)
+                                      Row(
+                                        children: [
+                                          ...List.generate(5, (index) => const Icon(Icons.star, color: Colors.grey, size: 24)),
+                                          const SizedBox(width: 8),
+                                          const Text('Pending review', style: TextStyle(color: Colors.white38)),
+                                        ],
+                                      )
+                                    else ...[
+                                      Row(
+                                        children: [
+                                          RatingBarIndicator(
+                                            rating: (receiverReview['rating'] ?? 0).toDouble(),
+                                            itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+                                            itemCount: 5,
+                                            itemSize: 24.0,
+                                            direction: Axis.horizontal,
+                                          ),
+                                        ],
+                                      ),
+                                      if ((receiverReview['comment'] ?? '').isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 4.0),
+                                          child: Text(receiverReview['comment'], style: const TextStyle(color: Colors.white54)),
+                                        ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ],                        ],
+                      ),
+                    ),
+                  ),
+                );
+              });
+        },
+      ),    );
+
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'accepted':
+        return Colors.greenAccent;
+      case 'rejected':
+        return Colors.redAccent;
+      case 'pending':
+        return Colors.orangeAccent;
+      default:
+        return Colors.white70;
+    }
+  }
+}
+
+class _ProjectLinkSubmitWidget extends StatefulWidget {
+  final String requestId;
+  final String currentUserId;
+  final bool isSender;
+  const _ProjectLinkSubmitWidget({Key? key, required this.requestId, required this.currentUserId, required this.isSender}) : super(key: key);
+
+  @override
+  State<_ProjectLinkSubmitWidget> createState() => _ProjectLinkSubmitWidgetState();
+}
+
+class _ProjectLinkSubmitWidgetState extends State<_ProjectLinkSubmitWidget> {
+  String _selectedLinkType = 'Google Drive';
+  final TextEditingController _linkController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        DropdownButtonFormField<String>(
+          value: _selectedLinkType,
+          dropdownColor: const Color(0xFF232323),
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: 'Project Link Type',
+            labelStyle: TextStyle(color: Colors.white70),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+          ),
+          items: ['Google Drive', 'Github']
+              .map((type) => DropdownMenuItem(
+                    value: type,
+                    child: Text(type),
+                  ))
+              .toList(),
+          onChanged: (val) {
+            if (val != null) {
+              setState(() {
+                _selectedLinkType = val;
+              });
+            }
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _linkController,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: _selectedLinkType == 'Google Drive' ? 'Google Drive Project Link' : 'Github Project Link',
+            hintText: _selectedLinkType == 'Google Drive' ? 'Please drop your Google Drive project link' : 'Please drop your Github project link',
+            hintStyle: const TextStyle(color: Colors.white38),
+            labelStyle: const TextStyle(color: Colors.white70),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (_isSubmitting)
+          const CircularProgressIndicator(color: Colors.blueAccent)
+        else
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () async {
+              String link = _linkController.text.trim();
+              link = link.replaceAll(' ', ''); // Remove all spaces
+              if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                link = 'https://$link';
+              }
+              if (link.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter your project link!')));
+                return;
+              }
+              setState(() => _isSubmitting = true);
+              try {
+                // Fetch the request document to get both user IDs
+                final requestDoc = await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.currentUserId)
+                    .collection('requests')
+                    .doc(widget.requestId)
+                    .get();
+                final requestData = requestDoc.data();
+                final fromUserId = requestData?['fromUserId'];
+                final toUserId = requestData?['toUserId'];
+
+                // Update main exchange document
+                await FirebaseFirestore.instance
+                    .collection('exchanges')
+                    .doc(widget.requestId)
+                    .update(widget.isSender
+                      ? {
+                          'senderProjectLinkType': _selectedLinkType,
+                          'senderProjectLink': link,
+                        }
+                      : {
+                          'receiverProjectLinkType': _selectedLinkType,
+                          'receiverProjectLink': link,
+                        });
+
+                // Update both users' request documents
+                if (fromUserId != null) {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(fromUserId)
+                      .collection('requests')
+                      .doc(widget.requestId)
+                      .update(widget.isSender
+                        ? {
+                            'senderProjectLinkType': _selectedLinkType,
+                            'senderProjectLink': link,
+                          }
+                        : {
+                            'receiverProjectLinkType': _selectedLinkType,
+                            'receiverProjectLink': link,
+                          });
+                }
+                if (toUserId != null) {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(toUserId)
+                      .collection('requests')
+                      .doc(widget.requestId)
+                      .update(widget.isSender
+                        ? {
+                            'senderProjectLinkType': _selectedLinkType,
+                            'senderProjectLink': link,
+                          }
+                        : {
+                            'receiverProjectLinkType': _selectedLinkType,
+                            'receiverProjectLink': link,
+                          });
+                }
+
+                setState(() => _isSubmitting = false);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Project link submitted!')));
+              } catch (e) {
+                setState(() => _isSubmitting = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to submit project link:  [${e.toString()}]')),
+                );
+              }
+            },
+            child: const Text('Submit Project Link'),
+          ),
+      ],
+    );
+  }
+}
+
+class _ReviewSubmitWidget extends StatefulWidget {
+  final String requestId;
+  final String currentUserId;
+  final bool isSender;
+  const _ReviewSubmitWidget({Key? key, required this.requestId, required this.currentUserId, required this.isSender}) : super(key: key);
+
+  @override
+  State<_ReviewSubmitWidget> createState() => _ReviewSubmitWidgetState();
+}
+
+class _ReviewSubmitWidgetState extends State<_ReviewSubmitWidget> {
+  double _rating = 5;
+  final TextEditingController _commentController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        const Text('Rate your exchange partner:', style: TextStyle(color: Colors.white70)),
+        RatingBar.builder(
+          initialRating: 5,
+          minRating: 1,
+          direction: Axis.horizontal,
+          allowHalfRating: false,
+          itemCount: 5,
+          itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+          itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+          onRatingUpdate: (rating) {
+            setState(() {
+              _rating = rating;
+            });
+          },
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: _commentController,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: 'Comment (optional)',
+            labelStyle: TextStyle(color: Colors.white70),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (_isSubmitting)
+          const CircularProgressIndicator(color: Colors.blueAccent)
+        else
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () async {
+              setState(() => _isSubmitting = true);
+              final reviewData = {
+                'rating': _rating,
+                'comment': _commentController.text.trim(),
+                'timestamp': DateTime.now().toIso8601String(),
+              };
+              try {
+                // Update main exchange document
+                await FirebaseFirestore.instance
+                    .collection('exchanges')
+                    .doc(widget.requestId)
+                    .update(widget.isSender
+                      ? {'senderReview': reviewData}
+                      : {'receiverReview': reviewData});
+                // Update both users' request documents
+                final requestDoc = await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.currentUserId)
+                    .collection('requests')
+                    .doc(widget.requestId)
+                    .get();
+                final requestData = requestDoc.data();
+                final fromUserId = requestData?['fromUserId'];
+                final toUserId = requestData?['toUserId'];
+                if (fromUserId != null) {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(fromUserId)
+                      .collection('requests')
+                      .doc(widget.requestId)
+                      .update(widget.isSender
+                        ? {'senderReview': reviewData}
+                        : {'receiverReview': reviewData});
+                }
+                if (toUserId != null) {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(toUserId)
+                      .collection('requests')
+                      .doc(widget.requestId)
+                      .update(widget.isSender
+                        ? {'senderReview': reviewData}
+                        : {'receiverReview': reviewData});
+                }
+
+                // --- Add this block: check if both reviews submitted, then mark as completed ---
+                final exchangeDoc = await FirebaseFirestore.instance
+                    .collection('exchanges')
+                    .doc(widget.requestId)
+                    .get();
+                final exchangeData = exchangeDoc.data();
+                final senderReview = exchangeData?['senderReview'];
+                final receiverReview = exchangeData?['receiverReview'];
+                if (senderReview != null && receiverReview != null) {
+                  // Both reviews submitted, mark as completed
+                  await FirebaseFirestore.instance
+                      .collection('exchanges')
+                      .doc(widget.requestId)
+                      .update({'status': 'completed'});
+                  if (fromUserId != null) {
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(fromUserId)
+                        .collection('requests')
+                        .doc(widget.requestId)
+                        .update({'status': 'completed'});
+                  }
+                  if (toUserId != null) {
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(toUserId)
+                        .collection('requests')
+                        .doc(widget.requestId)
+                        .update({'status': 'completed'});
+                  }
+                }
+                // --- End block ---
+
+                setState(() => _isSubmitting = false);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Review submitted!')));
+              } catch (e) {
+                setState(() => _isSubmitting = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to submit review:  [${e.toString()}')),
+                );
+              }
+            },
+            child: const Text('Submit Review'),
+          ),
+      ],
+    );
+  }
+} 

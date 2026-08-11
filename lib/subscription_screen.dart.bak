@@ -1,0 +1,294 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dashboard_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class SubscriptionScreen extends StatefulWidget {
+  final String userId;
+  const SubscriptionScreen({super.key, required this.userId});
+
+  @override
+  State<SubscriptionScreen> createState() => _SubscriptionScreenState();
+}
+
+class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  bool isLoading = false;
+  String _selectedPlan = 'monthly'; // Default selection
+
+  final Map<String, Map<String, dynamic>> _plans = {
+    'monthly': {'label': '\$4 Monthly', 'price': 4},
+    'yearly': {'label': '\$35 Yearly', 'price': 35},
+  };
+
+  Future<void> _handlePlanSelect() async {
+    setState(() => isLoading = true);
+    try {
+      if (_selectedPlan == 'free') {
+        // Get features for the free plan
+        final featuresList = _FeaturesTable().features
+            .where((f) => f['free'] == true)
+            .map((f) => f['name'] as String)
+            .toList();
+        await FirebaseFirestore.instance.collection('users').doc(widget.userId).set({
+          'plan': 'Free',
+          'features': featuresList,
+        }, SetOptions(merge: true));
+        // Save login state for splash screen auto-redirect
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userId', widget.userId);
+        setState(() => isLoading = false);
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen(userId: widget.userId)),
+        );
+      } else {
+        setState(() => isLoading = false);
+        Navigator.pushNamed(
+          context,
+          '/payment',
+          arguments: {
+            'userId': widget.userId,
+            'plan': _selectedPlan,
+            'price': _plans[_selectedPlan]!['price'],
+          },
+        );
+      }
+    } catch (e) {
+      print('Error in _handlePlanSelect: $e');
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving plan: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF232323), Color(0xFF181818)],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _FeaturesTable(),
+                  const SizedBox(height: 32),
+                  // Plan selection radio buttons
+                  Card(
+                    color: Colors.grey[900],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Choose your subscription:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                          ..._plans.entries.map((entry) => RadioListTile<String>(
+                                value: entry.key,
+                                groupValue: _selectedPlan,
+                                onChanged: isLoading ? null : (val) => setState(() => _selectedPlan = val!),
+                                title: Text(
+                                  entry.value['label'],
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                ),
+                                activeColor: Colors.amber,
+                                tileColor: Colors.transparent,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Buttons side by side
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            elevation: 0,
+                          ),
+                          onPressed: isLoading ? null : _handlePlanSelect,
+                          child: isLoading
+                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              : const Text(
+                                  'Continue with Pro',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.white10,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                          ),
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  setState(() => _selectedPlan = 'free');
+                                  _handlePlanSelect();
+                                },
+                          child: const Text(
+                            'Continue with Free',
+                            style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NextScreen extends StatelessWidget {
+  final String plan;
+  const NextScreen({super.key, required this.plan});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF232323),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+        title: const Text('Next Screen'),
+      ),
+      body: Center(
+        child: Text(
+          'You selected $plan Plan',
+          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
+
+class _FeaturesTable extends StatelessWidget {
+  final List<Map<String, dynamic>> features = const [
+    {'name': 'Project Exchanges', 'free': '5', 'pro': 'Unlimited'},
+    {'name': 'Skill Tags', 'free': true, 'pro': true},
+    {'name': 'Priority Chat Visibility', 'free': true, 'pro': true},
+    {'name': 'Advanced Exchange Form', 'free': true, 'pro': true},
+    {'name': 'Skill & Country Filters', 'free': true, 'pro': true},
+    {'name': 'Exchange Status Tracking', 'free': true, 'pro': true},
+    {'name': 'Dev Rooms Access (Communities)', 'free': true, 'pro': true},
+    {'name': 'Dedicated Support', 'free': true, 'pro': true},
+    {'name': 'Verified Badge', 'free': false, 'pro': true},
+    {'name': 'Featured Profile Listing', 'free': false, 'pro': true},
+    {'name': 'Profile View Analytics', 'free': false, 'pro': true},
+    {'name': 'Online Availability Status', 'free': false, 'pro': true},
+  ];
+
+  const _FeaturesTable({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white.withOpacity(0.06),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+        child: Column(
+          children: [
+            Row(
+              children: const [
+                Expanded(
+                  flex: 2,
+                  child: Text('Features', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+                Expanded(
+                  child: Text('Free Plan', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+                Expanded(
+                  child: Text('Pro Plan', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+              ],
+            ),
+            const Divider(color: Colors.white24, height: 18),
+            ...features.map((feature) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          feature['name'],
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: feature['name'] == 'Project Exchanges'
+                              ? Text(
+                                  feature['free'].toString(),
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                )
+                              : Icon(
+                                  feature['free'] == true ? Icons.check_circle : Icons.cancel,
+                                  color: feature['free'] == true ? Colors.greenAccent : Colors.redAccent,
+                                  size: 20,
+                                ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: feature['name'] == 'Project Exchanges'
+                              ? Text(
+                                  feature['pro'].toString(),
+                                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                                )
+                              : Icon(
+                                  feature['pro'] == true ? Icons.check_circle : Icons.cancel,
+                                  color: feature['pro'] == true ? Colors.greenAccent : Colors.redAccent,
+                                  size: 20,
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---
+// Sample Firestore user save code for sign up form:
+// await FirebaseFirestore.instance.collection('users').doc(userId).set({
+//   'email': email,
+//   'name': name,
+//   'plan': selectedPlan, // 'Free' ya 'Pro'
+// });
+// --- 
