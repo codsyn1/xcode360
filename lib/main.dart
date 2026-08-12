@@ -18,6 +18,7 @@ import 'users_profiles_screen.dart';
 import 'admin_password_utility.dart';
 import 'features/splash/presentation/bloc/splash_cubit.dart';
 import 'core/app/app_cubit.dart';
+import 'theme_cubit.dart';
 import 'core/navigation/navigation_cubit.dart';
 import 'web_dashboard_screen.dart';
 import 'services/notification_service.dart';
@@ -573,8 +574,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => SplashCubit()),
         BlocProvider(create: (_) => AppCubit()..loadSession()),
         BlocProvider(create: (_) => NavigationCubit()),
+        BlocProvider(create: (_) => ThemeCubit()),
       ],
-      child: MaterialApp(
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'xcode360',
       theme: ThemeData(
@@ -596,6 +600,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      themeMode: themeMode,
       home: kIsWeb ? WebHomePage() : SplashScreen(),
       routes: {
         '/admin_password': (context) => const AdminPasswordUtility(),
@@ -613,6 +619,9 @@ class MyApp extends StatelessWidget {
           }
         },
       },
-    ));
+    );
+        },
+      ),
+    );
   }
 }

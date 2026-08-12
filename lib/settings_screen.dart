@@ -6,6 +6,7 @@ import 'features/settings/presentation/bloc/settings_state.dart';
 import 'dart:io';
 import 'sign_up_screen.dart' show SkillChipSelector;
 import 'account_deletion_screen.dart';
+import 'theme_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -28,7 +29,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    final theme = ThemeData(
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+    final theme = isDarkMode
+        ? ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF1976D2),
         brightness: Brightness.dark,
@@ -69,7 +72,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         elevation: 0,
       ),
       useMaterial3: true,
-    );
+    )
+        : ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF1976D2),
+              brightness: Brightness.light,
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.black,
+              elevation: 0,
+            ),
+            useMaterial3: true,
+          );
 
     return Theme(
       data: theme,
@@ -125,8 +141,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.save, color: Colors.white),
-                      label: const Text('Save', style: TextStyle(color: Colors.white)),
+                          : const Icon(Icons.save, color: Color(0xFF1976D2)),
+                      label: const Text('Save', style: TextStyle(color: Color(0xFF1976D2))),
                     ),
                   ],
                 ),
@@ -139,6 +155,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+  _SectionCard(
+    title: 'Appearance',
+    child: BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, mode) {
+        final isDark = mode == ThemeMode.dark;
+        return SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          activeColor: const Color(0xFF1976D2),
+          title: Text(
+            isDark ? 'Dark Mode' : 'Light Mode',
+            style: const TextStyle(color: Colors.white),
+          ),
+          secondary: Icon(
+            isDark ? Icons.dark_mode : Icons.light_mode,
+            color: Colors.white,
+          ),
+          value: isDark,
+          onChanged: (_) => context.read<ThemeCubit>().toggle(),
+        );
+      },
+    ),
+  ),
   _SectionCard(
     title: 'Security PIN',
     child: Row(
