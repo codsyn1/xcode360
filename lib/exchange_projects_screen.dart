@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
@@ -216,16 +218,17 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         title: const Text('Exchange Projects'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            icon: Icon(Icons.calendar_today, color: isDarkMode ? Colors.white : Colors.black),
             tooltip: 'Filter by date',
             onPressed: () async {
               final picked = await showDateRangePicker(
@@ -255,7 +258,7 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
           ),
           if (_selectedDateRange != null)
             IconButton(
-              icon: const Icon(Icons.clear, color: Colors.white),
+              icon: Icon(Icons.clear, color: isDarkMode ? Colors.white : Colors.black),
               tooltip: 'Clear date filter',
               onPressed: () {
                 setState(() {
@@ -266,9 +269,9 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          indicatorColor: isDarkMode ? Colors.white : Colors.black,
+          labelColor: isDarkMode ? Colors.white : Colors.black,
+          unselectedLabelColor: isDarkMode ? Colors.white70 : Colors.black54,
           tabs: const [
             Tab(text: 'Pending'),
             Tab(text: 'Accepted'),
@@ -416,10 +419,10 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
             children: List.generate(4, (tabIndex) {
               final tabRequests = getTabRequests(tabIndex);
               if (tabRequests.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
                     'No exchange requests.',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                    style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontSize: 16),
                   ),
                 );
               }

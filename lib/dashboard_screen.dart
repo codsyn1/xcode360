@@ -18,6 +18,8 @@ import 'live_support_screen.dart'; // Added import for LiveSupportScreen
 import 'agency_screen.dart'; // Added import for AgencyScreen
 import 'agency_options_screen.dart'; // Added import for AgencyOptionsScreen
 import 'settings_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'features/profile_analytics/presentation/profile_analytics_screen.dart';
 import 'features/admin/payments/admin_payments_screen.dart';
 import 'features/admin/support/admin_support_screen.dart';
@@ -437,6 +439,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     // UserId check: agar userId null ya empty hai to onboarding pe redirect karo
     if (widget.userId == null || widget.userId.isEmpty) {
       Future.microtask(() {
@@ -618,7 +621,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final List<Widget> _pages = [
       Stack(
         children: [
-          Container(color: const Color(0xFF232323)),
+          Container(color: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7)),
           AnimatedBuilder(
             animation: _bgAnimationController,
             builder: (context, child) {
@@ -1451,11 +1454,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       ),
     ];
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: _selectedIndex == 4 ? null : AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         automaticallyImplyLeading: true, // Enable hamburger menu
         title: Text(_selectedIndex == 3 ? 'Community' : 'XCODE360'),
         actions: [
@@ -1471,7 +1474,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               return IconButton(
                 icon: Stack(
                   children: [
-                    Icon(Icons.notifications, color: Colors.white),
+                    Icon(Icons.notifications, color: isDarkMode ? Colors.white : Colors.black),
                     if (hasNotifications)
                       Positioned(
                         right: 0,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'chat_project_exchange_screen.dart'; // For private chat navigation
 import 'widgets/chat_ad_banner.dart';
@@ -190,17 +192,18 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
         final bubbleMarginV = isLarge ? 24.0 : isSmall ? 8.0 : 16.0;
         final inputPadding = isLarge ? 18.0 : isSmall ? 8.0 : 12.0;
         final emojiGridCount = isLarge ? 10 : isSmall ? 6 : 8;
+        final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
         return Scaffold(
-          backgroundColor: const Color(0xFF232323),
+          backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
           appBar: AppBar(
-            backgroundColor: const Color(0xFF232323),
+            backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: const Text('Fun Group Chat', style: TextStyle(color: Colors.white)),
+            iconTheme: IconThemeData(color: isDarkMode ? Colors.white : Colors.black),
+            title: Text('Fun Group Chat', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
             actions: [
               IconButton(
                 icon: const Icon(Icons.people),
-                color: Colors.white,
+                color: isDarkMode ? Colors.white : Colors.black,
                 tooltip: 'Show Active Users',
                 onPressed: () => _showActiveUsersSheet(context),
               ),

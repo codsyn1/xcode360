@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'group_chat_screen.dart';
 
 class DepartmentListScreen extends StatelessWidget {
@@ -53,12 +55,13 @@ class DepartmentListScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth > 700;
     final cardRadius = isWide ? 32.0 : 22.0;
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         title: const Text('Select Department'),
       ),
       body: Padding(

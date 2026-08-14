@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_screen.dart';
 import 'support_chat_screen.dart';
@@ -11,13 +13,14 @@ class LiveSupportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: isDarkMode ? Colors.white : Colors.black),
             onPressed: () async {
               final prefs = await SharedPreferences.getInstance();
               final userId = prefs.getString('userId') ?? '';
@@ -27,11 +30,11 @@ class LiveSupportScreen extends StatelessWidget {
               );
             },
           ),
-          title: const Text('Live Support', style: TextStyle(color: Colors.white)),
-          backgroundColor: Color(0xFF2C2C2C),
+          title: Text('Live Support', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+          backgroundColor: isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F7),
           elevation: 0,
         ),
-        backgroundColor: Colors.black12,
+        backgroundColor: isDarkMode ? Colors.black12 : const Color(0xFFF2F2F7),
         body: _SupportCards(
           onCardTap: (category) async {
             final prefs = await SharedPreferences.getInstance();

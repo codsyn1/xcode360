@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'features/subscription/presentation/bloc/subscription_cubit.dart';
 import 'features/subscription/presentation/bloc/subscription_state.dart';
 import 'features/subscription/presentation/payment/payment_screen.dart';
@@ -19,15 +20,16 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return BlocProvider(
       create: (_) => SubscriptionCubit()..init(widget.userId),
       child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF232323), Color(0xFF181818)],
+              colors: isDarkMode ? const [Color(0xFF232323), Color(0xFF181818)] : const [Color(0xFFF2F2F7), Color(0xFFE8E8E8)],
             ),
           ),
           child: SafeArea(
@@ -145,7 +147,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         // Pro details card (visible only if Pro)
                         if (isPro)
                           Card(
-                            color: Colors.white.withOpacity(0.06),
+                            color: const Color(0xFF1E1E1E),
                             elevation: 6,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             child: const Padding(
@@ -246,7 +248,7 @@ class _FeaturesTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white.withOpacity(0.06),
+      color: const Color(0xFF1E1E1E),
       elevation: 6,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(

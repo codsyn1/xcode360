@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'sign_up_screen.dart';
 import 'dart:math' as math;
 import 'login_screen.dart';
@@ -30,11 +32,12 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       body: Stack(
         children: [
-          Container(color: const Color(0xFF232323)),
+          Container(color: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7)),
           AnimatedBuilder(
             animation: _bgAnimationController,
             builder: (context, child) {
@@ -56,7 +59,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.verified_user_outlined, size: 90, color: Colors.white70),
+                        Icon(Icons.verified_user_outlined, size: 90, color: isDarkMode ? Colors.white70 : Colors.black54),
                         const SizedBox(height: 24),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -66,7 +69,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: isDarkMode ? Colors.white : Colors.black,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -79,7 +82,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white70,
+                              color: isDarkMode ? Colors.white70 : Colors.black54,
                             ),
                           ),
                         ),

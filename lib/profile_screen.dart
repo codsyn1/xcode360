@@ -11,6 +11,7 @@ import 'users_profiles_screen.dart';
 import 'community_screen.dart';
 import 'settings_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'features/profile/presentation/bloc/profile_cubit.dart';
 import 'features/profile/presentation/bloc/profile_state.dart';
 
@@ -319,10 +320,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userSnapshot.data!.id == _currentUserId;
           print(
               'DEBUG: widget.userId=${widget.userId}, firestoreId=${userSnapshot.data!.id}, isOwnProfile=$isOwnProfile');
+          final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
           return Scaffold(
-            backgroundColor: _pageBg,
+            backgroundColor: isDarkMode ? _pageBg : const Color(0xFFF2F2F7),
             appBar: AppBar(
-              backgroundColor: _pageBg,
+              backgroundColor: isDarkMode ? _pageBg : const Color(0xFFF2F2F7),
               elevation: 0,
               foregroundColor: Colors.white,
               automaticallyImplyLeading: false,
