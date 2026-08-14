@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
@@ -9,13 +11,14 @@ class ForgetPasswordScreen extends StatelessWidget {
     final TextEditingController emailController = TextEditingController();
     final _formKey = GlobalKey<FormState>();
 
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF232323),
+        backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('Forgot Password', style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: isDarkMode ? Colors.white : Colors.black),
+        title: Text('Forgot Password', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
       ),
       body: SafeArea(
         child: Center(
@@ -27,24 +30,24 @@ class ForgetPasswordScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock_reset, size: 64, color: Colors.white70),
+                  Icon(Icons.lock_reset, size: 64, color: isDarkMode ? Colors.white70 : Colors.black54),
                   const SizedBox(height: 32),
-                  const Text(
+                  Text(
                     'Reset Your Password',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: emailController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                    decoration: InputDecoration(
                       labelText: 'Enter your email address',
-                      labelStyle: TextStyle(color: Colors.white70),
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => value == null || value.isEmpty ? 'Enter your email' : null,

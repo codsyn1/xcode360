@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'profile_screen.dart';
 import 'dashboard_screen.dart';
@@ -48,6 +49,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => UsersUIConfigCubit()),
@@ -56,7 +58,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
         BlocProvider(create: (_) => UsersCubit(UsersRepository())..start(subcategory: widget.subcategory)),
       ],
       child: Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
         backgroundColor: const Color(0xFF23272A),
         elevation: 0,

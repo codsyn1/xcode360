@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'support_chat_screen.dart';
 
@@ -19,12 +21,13 @@ class SupportCategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live Support', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF2C2C2C),
+        title: Text('Live Support', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
+        backgroundColor: isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F7),
       ),
-      backgroundColor: Colors.black12,
+      backgroundColor: isDarkMode ? Colors.black12 : const Color(0xFFF2F2F7),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final screenWidth = constraints.maxWidth;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'sign_up_screen.dart';
 import 'login_signup_screen.dart';
 import 'dart:math' as math;
@@ -70,8 +72,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       body: SafeArea(
         child: Stack(
           children: [
@@ -174,6 +177,7 @@ class _OnboardingPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -189,7 +193,7 @@ class _OnboardingPageContent extends StatelessWidget {
               style: TextStyle(
                 fontSize: title == 'Break Time? Join the Fun Chats!' ? 22 : 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: isDarkMode ? Colors.white : Colors.black,
                 letterSpacing: 0.5,
               ),
               textAlign: TextAlign.center,
@@ -197,9 +201,9 @@ class _OnboardingPageContent extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
-                color: Colors.white70,
+                color: isDarkMode ? Colors.white70 : Colors.black54,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,

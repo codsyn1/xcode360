@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminPasswordUtility extends StatelessWidget {
@@ -6,30 +8,31 @@ class AdminPasswordUtility extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
         title: const Text('Admin Password Utility'),
-        backgroundColor: const Color(0xFF232323),
-        foregroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.admin_panel_settings,
               size: 64,
-              color: Colors.white70,
+              color: isDarkMode ? Colors.white70 : Colors.black54,
             ),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Update Admin Password',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
             ),
             const SizedBox(height: 16),

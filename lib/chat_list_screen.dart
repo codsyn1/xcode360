@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'chat_project_exchange_screen.dart';
@@ -137,23 +138,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return BlocProvider(
       create: (context) => _chatListBloc,
       child: BlocBuilder<ChatListBloc, ChatListState>(
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: const Color(0xFF232323),
+            backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
             appBar: AppBar(
-              backgroundColor: const Color(0xFF232323),
+              backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
               elevation: 0,
               title: Text(
                   state is ChatListLoaded && state.activeAgencyId != null
                       ? state.activeAgencyName ?? 'Agency Chat'
                       : 'Chats',
-                  style: const TextStyle(color: Colors.white)),
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87)),
               leading: state is ChatListLoaded && state.activeAgencyId != null
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(Icons.arrow_back, color: isDarkMode ? Colors.white : Colors.black87),
                       onPressed: _switchBackToChatList,
                     )
                   : null,
@@ -166,7 +168,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     padding: const EdgeInsets.all(16),
                     child: TextField(
                       controller: _searchController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87),
                       decoration: InputDecoration(
                         hintText: 'Search chats...',
                         hintStyle: const TextStyle(color: Colors.white54),
@@ -190,7 +192,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   ),
                 // Chat List or Agency Chat
                 Expanded(
-                  child: _buildBody(state),
+                  child: _buildBody(state, isDarkMode),
                 ),
               ],
             ),
@@ -201,10 +203,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Widget _buildBody(ChatListState state) {
+  Widget _buildBody(ChatListState state, bool isDarkMode) {
     if (state is ChatListLoading) {
-      return const Center(
-          child: CircularProgressIndicator(color: Colors.white));
+      return Center(
+          child: CircularProgressIndicator(color: isDarkMode ? Colors.white : Colors.black87));
     }
 
     if (state is ChatListError) {
@@ -216,7 +218,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             const SizedBox(height: 16),
             Text(
               'Error: ${state.message}',
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -245,8 +247,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
         future: _filterChatsWithUserData(state.chats),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.white));
+            return Center(
+                child: CircularProgressIndicator(color: isDarkMode ? Colors.white : Colors.black87));
           }
 
           final filteredChats = snapshot.data ?? state.chats;
@@ -256,12 +258,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.chat_bubble_outline,
-                      color: Colors.white54, size: 48),
+                  Icon(Icons.chat_bubble_outline,
+                      color: isDarkMode ? Colors.white54 : Colors.black54, size: 48),
                   const SizedBox(height: 16),
                   Text(
                     _searchQuery.isEmpty ? 'No chats yet' : 'No chats found',
-                    style: const TextStyle(color: Colors.white70),
+                    style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(

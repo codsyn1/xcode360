@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'users_profiles_screen.dart';
 import 'dart:ui';
 import 'dart:async'; // Added for Timer
@@ -351,12 +353,13 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth > 700;
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         title: Text(widget.categoryTitle.replaceAll('\n', ' ')),
       ),
       body: Column(
@@ -403,7 +406,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                           Container(
                             padding: EdgeInsets.all(isWide ? 18 : 10),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.10),
+                              color: const Color(0xFF2C2C2C),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -460,7 +463,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.white.withOpacity(0.08),
+                            color: const Color(0xFF2C2C2C),
                             blurRadius: 12,
                             offset: Offset(0, 6),
                           ),
@@ -475,7 +478,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.10),
+                              color: const Color(0xFF2C2C2C),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(

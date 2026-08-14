@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -76,22 +78,23 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth > 700;
 
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: isDarkMode ? const Color(0xFF1A1A1A) : const Color(0xFFF2F2F7),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: isDarkMode ? const Color(0xFF1A1A1A) : const Color(0xFFF2F2F7),
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Notifications',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: isDarkMode ? Colors.white : Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.done_all, color: Colors.white),
+            icon: Icon(Icons.done_all, color: isDarkMode ? Colors.white : Colors.black),
             onPressed: _markAllAsRead,
             tooltip: 'Mark all as read',
           ),
@@ -106,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.white));
+            return Center(child: CircularProgressIndicator(color: isDarkMode ? Colors.white : Colors.black));
           }
 
           if (snapshot.hasError) {
@@ -116,9 +119,9 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
                 children: [
                   const Icon(Icons.error_outline, color: Colors.red, size: 60),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Error loading notifications',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 18),
                   ),
                 ],
               ),

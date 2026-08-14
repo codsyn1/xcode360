@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'forget_password_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dashboard_screen.dart';
@@ -13,8 +15,9 @@ class LoginScreen extends StatelessWidget {
     final TextEditingController passwordController = TextEditingController();
     final _formKey = GlobalKey<FormState>();
 
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -25,35 +28,35 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.login, size: 64, color: Colors.white70),
+                  Icon(Icons.login, size: 64, color: isDarkMode ? Colors.white70 : Colors.black54),
                   const SizedBox(height: 32),
-                  const Text(
+                  Text(
                     'Login to XCode360',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 32),
                   TextFormField(
                     controller: usernameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                    decoration: InputDecoration(
                       labelText: 'Username',
-                      labelStyle: TextStyle(color: Colors.white70),
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: (value) => value == null || value.isEmpty ? 'Enter your username' : null,
                   ),
                   const SizedBox(height: 18),
                   TextFormField(
                     controller: passwordController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: TextStyle(color: Colors.white70),
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
+                      border: const OutlineInputBorder(),
                     ),
                     obscureText: true,
                     validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
@@ -69,7 +72,7 @@ class LoginScreen extends StatelessWidget {
                       },
                       child: const Text(
                         'Forgot password?',
-                        style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),

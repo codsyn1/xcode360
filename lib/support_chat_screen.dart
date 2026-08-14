@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_cubit.dart';
 import 'package:intl/intl.dart';
 import '../services/notification_service.dart';
 import 'dart:async';
@@ -100,14 +102,15 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
   @override
   Widget build(BuildContext context) {
     final docRef = FirebaseFirestore.instance.collection('supportTickets').doc(ticketId);
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category),
-        backgroundColor: const Color(0xFF2C2C2C), // light dark grey
-        foregroundColor: Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFF2F2F7),
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0,
       ),
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       body: Column(
         children: [
           Expanded(
