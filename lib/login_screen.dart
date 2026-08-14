@@ -70,7 +70,7 @@ class LoginScreen extends StatelessWidget {
                           MaterialPageRoute(builder: (_) => ForgetPasswordScreen()),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         'Forgot password?',
                         style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontWeight: FontWeight.w500),
                       ),
