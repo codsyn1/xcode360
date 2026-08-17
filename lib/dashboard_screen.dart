@@ -77,6 +77,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   late AnimationController _bgAnimationController;
   int _currentCardPage = 0;
   int _selectedIndex = 0;
+
+  final PageController _carouselPageController = PageController(viewportFraction: 0.92);
+  int _carouselCurrentPage = 0;
+  Timer? _carouselTimer;
   
 
 
@@ -178,6 +182,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       duration: const Duration(seconds: 12),
     )..repeat();
 
+    _carouselTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_carouselPageController.hasClients) {
+        final nextPage = (_carouselCurrentPage + 1) % 2;
+        _carouselPageController.animateToPage(
+          nextPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     // Check for pending notification navigation after a short delay
     Future.delayed(Duration(milliseconds: 500), () {
       _checkPendingNotification();
@@ -269,6 +284,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _sliderTimer?.cancel();
+    _carouselTimer?.cancel();
+    _carouselPageController.dispose();
     _sliderSub?.cancel();
     _popupSub?.cancel();
     _userSub?.cancel();
@@ -656,172 +673,347 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ),
                 ),
                 SizedBox(height: isWide ? 32 : 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Communities Card - Enhanced UI
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => CommunityScreen(userId: widget.userId, showAppBar: true),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: isWide ? 32 : 18, right: isWide ? 32 : 18, bottom: isWide ? 18 : 12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color(0xFF2D2D2D), // Light black
-                                Color(0xFF1A1A1A), // Darker black
+                // Communities & Users Carousel
+                SizedBox(
+                  height: isWide ? 270 : 210,
+                  child: PageView(
+                    controller: _carouselPageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _carouselCurrentPage = index;
+                      });
+                    },
+                    children: [
+                      // Users Card
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => UsersProfilesScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0xFF2D2D2D),
+                                  Color(0xFF1A1A1A),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(cardRadius),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.4),
+                                  blurRadius: isWide ? 20 : 15,
+                                  offset: Offset(0, isWide ? 12 : 8),
+                                ),
                               ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(cardRadius),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: isWide ? 20 : 15,
-                                offset: Offset(0, isWide ? 12 : 8),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              // Background pattern
-                              Positioned(
-                                right: -20,
-                                top: -20,
-                                child: Container(
-                                  width: isWide ? 120 : 80,
-                                  height: isWide ? 120 : 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
-                                    shape: BoxShape.circle,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: -20,
+                                  top: -20,
+                                  child: Container(
+                                    width: isWide ? 120 : 80,
+                                    height: isWide ? 120 : 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                right: -10,
-                                top: -10,
-                                child: Container(
-                                  width: isWide ? 80 : 50,
-                                  height: isWide ? 80 : 50,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.08),
-                                    shape: BoxShape.circle,
+                                Positioned(
+                                  right: -10,
+                                  top: -10,
+                                  child: Container(
+                                    width: isWide ? 80 : 50,
+                                    height: isWide ? 80 : 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.08),
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Content
-                              Padding(
-                                padding: EdgeInsets.all(isWide ? 20 : 16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Icon with enhanced styling
-                                    Container(
-                                      padding: EdgeInsets.all(isWide ? 16 : 12),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(isWide ? 20 : 16),
-                                        border: Border.all(
-                                          color: Colors.white.withOpacity(0.2),
-                                          width: 1,
+                                Padding(
+                                  padding: EdgeInsets.all(isWide ? 20 : 16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(isWide ? 16 : 12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(isWide ? 20 : 16),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(0.2),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.people,
+                                          color: Colors.white,
+                                          size: iconSize * 0.9,
                                         ),
                                       ),
-                                      child: Icon(
-                                        Icons.diversity_3,
-                                        color: Colors.white,
-                                        size: iconSize * 0.9,
+                                      SizedBox(height: isWide ? 16 : 12),
+                                      Text(
+                                        'Users',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: titleFont,
+                                          letterSpacing: 0.5,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: isWide ? 16 : 12),
-                                    // Title
-                                    Text(
-                                      'Communities',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: titleFont,
-                                        letterSpacing: 0.5,
+                                      SizedBox(height: isWide ? 6 : 4),
+                                      Text(
+                                        'Find and connect with users',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: subtitleFont,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: isWide ? 6 : 4),
-                                    // Subtitle
-                                    Text(
-                                      'Connect & collaborate',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: subtitleFont,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    SizedBox(height: isWide ? 8 : 6),
-                                    // Stats/Features
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: isWide ? 10 : 8,
-                                            vertical: isWide ? 4 : 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(isWide ? 12 : 10),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.people,
-                                                color: Colors.white,
-                                                size: isWide ? 14 : 12,
-                                              ),
-                                              SizedBox(width: isWide ? 6 : 4),
-                                              Text(
-                                                'Active',
-                                                style: TextStyle(
+                                      SizedBox(height: isWide ? 8 : 6),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: isWide ? 10 : 8,
+                                              vertical: isWide ? 4 : 3,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(isWide ? 12 : 10),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.people,
                                                   color: Colors.white,
-                                                  fontSize: isWide ? 12 : 10,
-                                                  fontWeight: FontWeight.w600,
+                                                  size: isWide ? 14 : 12,
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        // Arrow button
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.2),
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white.withOpacity(0.3),
-                                              width: 1,
+                                                SizedBox(width: isWide ? 6 : 4),
+                                                Text(
+                                                  'Active',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: isWide ? 12 : 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          padding: EdgeInsets.all(isWide ? 10 : 8),
-                                          child: Icon(
-                                            Icons.arrow_forward,
-                                            color: Colors.white,
-                                            size: arrowIcon * 0.8,
+                                          Spacer(),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white.withOpacity(0.3),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.all(isWide ? 10 : 8),
+                                            child: Icon(
+                                              Icons.arrow_forward,
+                                              color: Colors.white,
+                                              size: arrowIcon * 0.8,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      // Communities Card
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CommunityScreen(userId: widget.userId, showAppBar: true),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0xFF2D2D2D),
+                                  Color(0xFF1A1A1A),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(cardRadius),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.4),
+                                  blurRadius: isWide ? 20 : 15,
+                                  offset: Offset(0, isWide ? 12 : 8),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: -20,
+                                  top: -20,
+                                  child: Container(
+                                    width: isWide ? 120 : 80,
+                                    height: isWide ? 120 : 80,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: -10,
+                                  top: -10,
+                                  child: Container(
+                                    width: isWide ? 80 : 50,
+                                    height: isWide ? 80 : 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.08),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(isWide ? 20 : 16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(isWide ? 16 : 12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(isWide ? 20 : 16),
+                                          border: Border.all(
+                                            color: Colors.white.withOpacity(0.2),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.diversity_3,
+                                          color: Colors.white,
+                                          size: iconSize * 0.9,
+                                        ),
+                                      ),
+                                      SizedBox(height: isWide ? 16 : 12),
+                                      Text(
+                                        'Communities',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: titleFont,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                      SizedBox(height: isWide ? 6 : 4),
+                                      Text(
+                                        'Connect & collaborate',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: subtitleFont,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      SizedBox(height: isWide ? 8 : 6),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: isWide ? 10 : 8,
+                                              vertical: isWide ? 4 : 3,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(isWide ? 12 : 10),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.people,
+                                                  color: Colors.white,
+                                                  size: isWide ? 14 : 12,
+                                                ),
+                                                SizedBox(width: isWide ? 6 : 4),
+                                                Text(
+                                                  'Active',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: isWide ? 12 : 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withOpacity(0.2),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white.withOpacity(0.3),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.all(isWide ? 10 : 8),
+                                            child: Icon(
+                                              Icons.arrow_forward,
+                                              color: Colors.white,
+                                              size: arrowIcon * 0.8,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: isWide ? 12 : 8),
+                // Carousel Dot Indicators
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(2, (index) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: isWide ? 6 : 4),
+                      width: _carouselCurrentPage == index ? (isWide ? 24 : 16) : (isWide ? 10 : 7),
+                      height: isWide ? 10 : 7,
+                      decoration: BoxDecoration(
+                        color: _carouselCurrentPage == index
+                            ? (isDarkMode ? Colors.white : Colors.black87)
+                            : (isDarkMode ? Colors.white38 : Colors.black26),
+                        borderRadius: BorderRadius.circular(isWide ? 8 : 6),
+                      ),
+                    );
+                  }),
                 ),
                 SizedBox(height: isWide ? 20 : 16),
                 // Second Row - Profile Analytics and Exchange Projects
@@ -1652,17 +1844,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 onTap: () {
                   setState(() => _selectedIndex = 3);
                   Navigator.pop(context);
-                },
-              ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
-              if (!_isAdmin)
-              ListTile(
-                leading: Icon(Icons.people, color: Colors.white),
-                title: Text('Users', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => UsersProfilesScreen()),
-                  );
                 },
               ),
               if (_isAdmin) ...[
