@@ -164,17 +164,6 @@ class DashboardDrawer extends StatelessWidget {
                       onSelectIndex(3);
                     },
                   ),
-                if (!state.isAdmin) const Divider(color: Colors.white24, height: 1),
-                if (!state.isAdmin)
-                  ListTile(
-                    leading: const Icon(Icons.people, color: Colors.white),
-                    title: const Text('Users', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => UsersProfilesScreen()),
-                      );
-                    },
-                  ),
                 if (state.isAdmin) ...[
                   const Divider(color: Colors.white24, height: 1),
                   Padding(

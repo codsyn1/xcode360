@@ -14,6 +14,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 import 'features/profile/presentation/bloc/profile_cubit.dart';
 import 'features/profile/presentation/bloc/profile_state.dart';
+import 'features/profile_analytics/data/profile_analytics_repository.dart';
+import 'features/profile_analytics/presentation/profile_analytics_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId; // Firestore user document ID
@@ -482,6 +484,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (city.trim().isNotEmpty) city.trim(),
       if (country.trim().isNotEmpty) country.trim(),
     ].join(', ');
+    final levelInfo = ProfileAnalyticsRepository.computeLevelInfo(projectsExchanged);
+
+    Future<void> onTapLevelBadge() async {
+      if (isPro) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ProfileAnalyticsScreen(userId: widget.userId),
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF232323),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text(
+              'Pro Feature',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            content: const Text(
+              'Profile Analytics is available for Pro accounts only. Upgrade to Pro to access advanced analytics.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
     return Column(
       children: [
         Stack(
@@ -582,11 +622,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     bottom: -2,
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: isSmallScreen ? 6 : 8, 
-                        vertical: 3
+                        horizontal: isSmallScreen ? 6 : 8,
+                        vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: levelInfo.color.withOpacity(0.9),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
                           color: Colors.white,
@@ -594,10 +634,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       child: Text(
-                        _computeLevelLabel(projectsExchanged),
+                        levelInfo.levelLabel,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: avatarRadius * 0.25, // Increased from 0.15 to 0.25
+                          fontSize: avatarRadius * 0.25,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -633,6 +673,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ],
+                    ),
+                    SizedBox(height: isSmallScreen ? 4 : 6),
+                    GestureDetector(
+                      onTap: onTapLevelBadge,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen ? 8 : 10,
+                          vertical: isSmallScreen ? 4 : 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: levelInfo.color,
+                          borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              levelInfo.icon,
+                              color: Colors.white,
+                              size: isSmallScreen ? 12 : 14,
+                            ),
+                            SizedBox(width: isSmallScreen ? 4 : 6),
+                            Text(
+                              levelInfo.levelLabel,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: isSmallScreen ? 11 : 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: isSmallScreen ? 2 : 4),
+                            Icon(
+                              Icons.chevron_right,
+                              color: Colors.white.withOpacity(0.9),
+                              size: isSmallScreen ? 12 : 14,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(height: isSmallScreen ? 4 : 6),
                     Row(
@@ -786,12 +865,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return '$hour:$minute $period local time';
   }
 
-  String _computeLevelLabel(int projectsExchanged) {
-    if (projectsExchanged >= 1000) return 'X360 Top Rated';
-    if (projectsExchanged >= 500) return 'Level 3';
-    if (projectsExchanged >= 50) return 'Level 2';
-    return 'Level 1';
-  }
 
   Widget _buildProfileMainPanel({
     required BuildContext context,

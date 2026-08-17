@@ -1,4 +1,25 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+class ProfileLevelInfo {
+  final int level; // 1,2,3
+  final bool topRated; // >= 1000 completed
+  final String levelLabel; // "Level 1", "Level 2", "Level 3", or "X360 Top Rated"
+  final double levelProgress; // 0..1 progress within current level range
+  final String nextTargetLabel; // Human label for next milestone
+  final IconData icon;
+  final Color color;
+
+  const ProfileLevelInfo({
+    required this.level,
+    required this.topRated,
+    required this.levelLabel,
+    required this.levelProgress,
+    required this.nextTargetLabel,
+    required this.icon,
+    required this.color,
+  });
+}
 
 class ProfileAnalyticsData {
   final int totalChats;
@@ -40,6 +61,62 @@ class ProfileAnalyticsRepository {
   final FirebaseFirestore _db;
   ProfileAnalyticsRepository({FirebaseFirestore? firestore})
       : _db = firestore ?? FirebaseFirestore.instance;
+
+  static ProfileLevelInfo computeLevelInfo(int completedExchanges) {
+    final int completed = completedExchanges < 0 ? 0 : completedExchanges;
+    int level = 1;
+    bool topRated = false;
+    String levelLabel = 'Level 1';
+    IconData icon = Icons.emoji_events_outlined;
+    Color color = Colors.grey;
+
+    if (completed >= 1000) {
+      topRated = true;
+      level = 3;
+      levelLabel = 'X360 Top Rated';
+      icon = Icons.workspace_premium;
+      color = Colors.purpleAccent;
+    } else if (completed >= 500) {
+      level = 3;
+      levelLabel = 'Level 3';
+      icon = Icons.military_tech;
+      color = Colors.amber;
+    } else if (completed >= 50) {
+      level = 2;
+      levelLabel = 'Level 2';
+      icon = Icons.emoji_events;
+      color = Colors.blueAccent;
+    }
+
+    int base = 0;
+    int nextTarget = 50;
+    String nextTargetLabel = 'Level 2 at 50 completed';
+    if (levelLabel == 'Level 2') {
+      base = 50;
+      nextTarget = 500;
+      nextTargetLabel = 'Level 3 at 500 completed';
+    } else if (levelLabel == 'Level 3') {
+      base = 500;
+      nextTarget = 1000;
+      nextTargetLabel = 'X360 Top Rated at 1000 completed';
+    } else if (levelLabel == 'X360 Top Rated') {
+      base = 1000;
+      nextTarget = 1000;
+      nextTargetLabel = 'Top tier achieved';
+    }
+    final int denom = (nextTarget - base) <= 0 ? 1 : (nextTarget - base);
+    final double levelProgress = ((completed - base) / denom).clamp(0.0, 1.0);
+
+    return ProfileLevelInfo(
+      level: level,
+      topRated: topRated,
+      levelLabel: levelLabel,
+      levelProgress: levelProgress,
+      nextTargetLabel: nextTargetLabel,
+      icon: icon,
+      color: color,
+    );
+  }
 
   Future<ProfileAnalyticsData> load(String userId) async {
     // Fetch in parallel where possible
@@ -114,49 +191,16 @@ class ProfileAnalyticsRepository {
 
     // Compute a stable completed-exchanges count
     final int computedExchanged = requestsCompleted > projectsExchanged ? requestsCompleted : projectsExchanged;
-    // Level logic based on completed exchanges
-    final int completed = computedExchanged;
-    int level = 1;
-    bool topRated = false;
-    String levelLabel = 'Level 1';
-    if (completed >= 1000) {
-      topRated = true;
-      level = 3; // cap level at 3 but mark top rated
-      levelLabel = 'X360 Top Rated';
-    } else if (completed >= 500) {
-      level = 3;
-      levelLabel = 'Level 3';
-    } else if (completed >= 50) {
-      level = 2;
-      levelLabel = 'Level 2';
-    }
 
-    // Per-level progress computation
-    int base = 0;
-    int nextTarget = 50;
-    String nextTargetLabel = 'Level 2 at 50 completed';
-    if (levelLabel == 'Level 2') {
-      base = 50;
-      nextTarget = 500;
-      nextTargetLabel = 'Level 3 at 500 completed';
-    } else if (levelLabel == 'Level 3') {
-      base = 500;
-      nextTarget = 1000;
-      nextTargetLabel = 'X360 Top Rated at 1000 completed';
-    } else if (levelLabel == 'X360 Top Rated') {
-      base = 1000;
-      nextTarget = 1000;
-      nextTargetLabel = 'Top tier achieved';
-    }
-    final int denom = (nextTarget - base) <= 0 ? 1 : (nextTarget - base);
-    final double levelProgress = ((completed - base) / denom).clamp(0.0, 1.0);
+    // Use shared static level computation (single source of truth)
+    final levelInfo = computeLevelInfo(computedExchanged);
 
     // Persist the computed projectsExchanged to the user's document so it is available elsewhere
     try {
       await _db
           .collection('users')
           .doc(userId)
-          .set({'projectsExchanged': completed}, SetOptions(merge: true));
+          .set({'projectsExchanged': computedExchanged}, SetOptions(merge: true));
     } catch (_) {
       // Ignore persistence failure; analytics can still be shown
     }
@@ -171,12 +215,12 @@ class ProfileAnalyticsRepository {
       requestsSent: requestsSent,
       projectsExchanged: computedExchanged,
       profileVisits: profileVisits,
-      level: level,
-      topRated: topRated,
-      levelLabel: levelLabel,
+      level: levelInfo.level,
+      topRated: levelInfo.topRated,
+      levelLabel: levelInfo.levelLabel,
       profileImageUrl: profileImageUrl,
-      levelProgress: levelProgress,
-      nextTargetLabel: nextTargetLabel,
+      levelProgress: levelInfo.levelProgress,
+      nextTargetLabel: levelInfo.nextTargetLabel,
     );
   }
 }
