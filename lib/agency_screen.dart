@@ -11,7 +11,7 @@ import 'agency_bottom_navigation.dart';
 
 class AgencyScreen extends StatefulWidget {
   final String userId;
-  const AgencyScreen({Key? key, required this.userId}) : super(key: key);
+  const AgencyScreen({super.key, required this.userId});
 
   @override
   State<AgencyScreen> createState() => _AgencyScreenState();
@@ -20,7 +20,7 @@ class AgencyScreen extends StatefulWidget {
 class _AgencyScreenState extends State<AgencyScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  List<Map<String, dynamic>> _agencies = [];
+  final List<Map<String, dynamic>> _agencies = [];
   String? userPlan;
   bool isLoading = true;
   late AnimationController _animationController;
@@ -570,7 +570,7 @@ class _AgencyScreenState extends State<AgencyScreen> with SingleTickerProviderSt
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Agency Cover Photo as Background with Logo Overlay
-            Container(
+            SizedBox(
               height: isWide ? 180 : 120,
               child: Stack(
                 children: [
@@ -762,9 +762,9 @@ class _AgencyScreenState extends State<AgencyScreen> with SingleTickerProviderSt
                         if (agencyRating > 0.0) ...[
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.star,
-                                color: const Color(0xFFFFD700),
+                                color: Color(0xFFFFD700),
                                 size: 14,
                               ),
                               const SizedBox(width: 4),

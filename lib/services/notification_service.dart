@@ -317,7 +317,7 @@ class NotificationService {
         }
         
         print('⏳ Waiting for FCM token... (attempt ${retryCount + 1}/5)');
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         retryCount++;
       }
       
@@ -341,7 +341,7 @@ class NotificationService {
         
         for (final doc in usersWithSameToken.docs) {
           final existingUserId = doc.id;
-          final existingUserData = doc.data() as Map<String, dynamic>;
+          final existingUserData = doc.data();
           final existingTokenUserId = existingUserData['tokenUserId'];
           final existingFcmToken = existingUserData['fcmToken'];
           
@@ -506,7 +506,7 @@ class NotificationService {
       
       int unreadCount = 0;
       for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         if (data['isRead'] == false) {
           unreadCount++;
         }

@@ -7,10 +7,10 @@ class AgencyUpgradeProScreen extends StatefulWidget {
   final String agencyId;
 
   const AgencyUpgradeProScreen({
-    Key? key,
+    super.key,
     required this.userId,
     required this.agencyId,
-  }) : super(key: key);
+  });
 
   @override
   State<AgencyUpgradeProScreen> createState() => _AgencyUpgradeProScreenState();
@@ -339,8 +339,8 @@ class _AgencyUpgradeProScreenState extends State<AgencyUpgradeProScreen> with Si
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            const Text(
+                            SizedBox(width: 12),
+                            Text(
                               'Processing...',
                               style: TextStyle(
                                 color: Colors.black,

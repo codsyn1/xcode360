@@ -27,9 +27,9 @@ class ChatFirebaseService {
           final messageData = messagesSnap.docs.first.data() as Map<String, dynamic>?;
           if (messageData?['timestamp'] != null) {
             if (messageData!['timestamp'] is Timestamp) {
-              latestMessageTime = (messageData!['timestamp'] as Timestamp).millisecondsSinceEpoch;
-            } else if (messageData!['timestamp'] is int) {
-              latestMessageTime = messageData!['timestamp'] as int;
+              latestMessageTime = (messageData['timestamp'] as Timestamp).millisecondsSinceEpoch;
+            } else if (messageData['timestamp'] is int) {
+              latestMessageTime = messageData['timestamp'] as int;
             }
           }
         }

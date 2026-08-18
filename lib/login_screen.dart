@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,7 +67,7 @@ class LoginScreen extends StatelessWidget {
                     child: TextButton(
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => ForgetPasswordScreen()),
+                          MaterialPageRoute(builder: (_) => const ForgetPasswordScreen()),
                         );
                       },
                       child: Text(
@@ -90,7 +90,7 @@ class LoginScreen extends StatelessWidget {
                         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           // Firestore login logic
                           final username = usernameController.text.trim();
                           final password = passwordController.text.trim();

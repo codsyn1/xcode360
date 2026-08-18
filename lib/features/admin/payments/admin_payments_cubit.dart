@@ -55,8 +55,9 @@ class AdminPaymentsCubit extends Cubit<AdminPaymentsState> {
         final plan = (data['plan'] ?? 'Free').toString();
         DateTime? activeUntil;
         final ts = data['proActiveUntil'];
-        if (ts is Timestamp) activeUntil = ts.toDate();
-        else if (ts is DateTime) activeUntil = ts;
+        if (ts is Timestamp) {
+          activeUntil = ts.toDate();
+        } else if (ts is DateTime) activeUntil = ts;
         return AdminUserItem(
           id: d.id,
           name: (data['fullName'] ?? data['name'] ?? '').toString(),

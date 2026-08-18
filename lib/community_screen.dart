@@ -9,7 +9,7 @@ class CommunityScreen extends StatelessWidget {
   final String userId;
   final bool showAppBar; // Add this line
 
-  const CommunityScreen({Key? key, required this.userId, this.showAppBar = false}) : super(key: key);
+  const CommunityScreen({super.key, required this.userId, this.showAppBar = false});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class CommunityScreen extends StatelessWidget {
                     );
                   },
                 ),
-                SizedBox(width: 32),
+                const SizedBox(width: 32),
                 _CommunityCard(
                   title: 'Fun',
                   icon: Icons.emoji_emotions,
@@ -77,8 +77,8 @@ class _CommunityCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +109,7 @@ class _CommunityCard extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,

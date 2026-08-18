@@ -6,7 +6,7 @@ import 'create_agency_profile_screen.dart';
 
 class AgencyOptionsScreen extends StatefulWidget {
   final String userId;
-  const AgencyOptionsScreen({Key? key, required this.userId}) : super(key: key);
+  const AgencyOptionsScreen({super.key, required this.userId});
 
   @override
   State<AgencyOptionsScreen> createState() => _AgencyOptionsScreenState();
@@ -96,10 +96,10 @@ class _AgencyOptionsScreenState extends State<AgencyOptionsScreen> with SingleTi
                       width: double.infinity,
                       padding: EdgeInsets.all(isWide ? 32 : 24),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [const Color(0xFF0A0A0A), const Color(0xFF060606)],
+                          colors: [Color(0xFF0A0A0A), Color(0xFF060606)],
                         ),
                         borderRadius: BorderRadius.circular(isWide ? 24 : 20),
                         boxShadow: [

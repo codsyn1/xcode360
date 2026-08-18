@@ -55,7 +55,7 @@ class _NewIdeaScreenState extends State<NewIdeaScreen> with SingleTickerProvider
                     children: [
                       _ExchangeIllustration(),
                       const SizedBox(height: 32),
-                      _IntroCard(),
+                      const _IntroCard(),
                       const SizedBox(height: 48),
                       SizedBox(
                         width: double.infinity,
@@ -97,10 +97,10 @@ class _IntroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Column(
-        children: const [
+        children: [
           Text(
             "Introducing the First-Ever Free Project Exchange",
             textAlign: TextAlign.center,
@@ -137,7 +137,7 @@ class _ExchangeIllustration extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       padding: const EdgeInsets.all(32),
-      child: Icon(
+      child: const Icon(
         Icons.swap_horiz,
         size: 100,
         color: Colors.white,
@@ -203,7 +203,7 @@ class _ParallaxLinesBackground extends StatelessWidget {
 
 class _ParallaxLinesPainter extends CustomPainter {
   final double progress;
-  static final int points = 24;
+  static const int points = 24;
   static final List<_MovingPoint> basePoints = List.generate(
     points,
     (i) => _MovingPoint(

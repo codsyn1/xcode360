@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WebHomePage extends StatefulWidget {
-  const WebHomePage({Key? key}) : super(key: key);
+  const WebHomePage({super.key});
 
   @override
   State<WebHomePage> createState() => _WebHomePageState();
@@ -223,12 +223,12 @@ class _WebHomePageState extends State<WebHomePage> {
       color: Colors.grey.shade50,
       child: Column(
         children: [
-          Text(
+          const Text(
             'Why Choose Xcode360?',
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF23272A),
+              color: Color(0xFF23272A),
             ),
             textAlign: TextAlign.center,
           ),
@@ -321,12 +321,12 @@ class _WebHomePageState extends State<WebHomePage> {
       padding: const EdgeInsets.all(80),
       child: Column(
         children: [
-          Text(
+          const Text(
             'How It Works',
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF23272A),
+              color: Color(0xFF23272A),
             ),
             textAlign: TextAlign.center,
           ),
@@ -353,8 +353,8 @@ class _WebHomePageState extends State<WebHomePage> {
           Container(
             width: 60,
             height: 60,
-            decoration: BoxDecoration(
-              color: const Color(0xFF23272A),
+            decoration: const BoxDecoration(
+              color: Color(0xFF23272A),
               shape: BoxShape.circle,
             ),
             child: Center(
@@ -398,7 +398,7 @@ class _WebHomePageState extends State<WebHomePage> {
       color: const Color(0xFF23272A),
       child: Column(
         children: [
-          Text(
+          const Text(
             'Join Our Growing Community',
             style: TextStyle(
               fontSize: 36,
@@ -458,12 +458,12 @@ class _WebHomePageState extends State<WebHomePage> {
       padding: const EdgeInsets.all(80),
       child: Column(
         children: [
-          Text(
+          const Text(
             'Ready to Get Started?',
             style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF23272A),
+              color: Color(0xFF23272A),
             ),
             textAlign: TextAlign.center,
           ),
@@ -564,7 +564,7 @@ class _WebHomePageState extends State<WebHomePage> {
     await prefs.setBool('seen_onboarding', true);
     if (mounted) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => LoginSignupScreen()),
+        MaterialPageRoute(builder: (_) => const LoginSignupScreen()),
       );
     }
   }
@@ -574,7 +574,7 @@ class _WebHomePageState extends State<WebHomePage> {
     await prefs.setBool('seen_onboarding', true);
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => WebDashboardScreen()),
+        MaterialPageRoute(builder: (_) => const WebDashboardScreen()),
       );
     }
   }

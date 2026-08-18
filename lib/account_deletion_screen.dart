@@ -13,7 +13,7 @@ class AccountDeletionScreen extends StatefulWidget {
 
 class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
   bool _isConfirmed = false;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   final TextEditingController _confirmationController = TextEditingController();
 
   @override
@@ -187,9 +187,9 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
             const SizedBox(height: 20),
 
             // What happens section
-            _SectionCard(
+            const _SectionCard(
               title: 'What happens after deletion:',
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _DeletionItem(
@@ -214,9 +214,9 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
             const SizedBox(height: 20),
 
             // Data retention info (Play Store compliance)
-            _SectionCard(
+            const _SectionCard(
               title: 'Data Retention Policy:',
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -233,19 +233,19 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
             const SizedBox(height: 20),
 
             // Alternative options
-            _SectionCard(
+            const _SectionCard(
               title: 'Alternative Options:',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'If you\'re having issues with your account, consider:',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white70,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   _AlternativeOption(
                     icon: Icons.settings,
                     title: 'Update your settings',

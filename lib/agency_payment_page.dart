@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AgencyPaymentPage extends StatefulWidget {
   final String userId;
-  const AgencyPaymentPage({Key? key, required this.userId}) : super(key: key);
+  const AgencyPaymentPage({super.key, required this.userId});
 
   @override
   State<AgencyPaymentPage> createState() => _AgencyPaymentPageState();
@@ -33,7 +33,7 @@ class _AgencyPaymentPageState extends State<AgencyPaymentPage> {
   }
 
   void _openWhatsApp() async {
-    final phoneNumber = '+923215971854'; // Business WhatsApp number
+    const phoneNumber = '+923215971854'; // Business WhatsApp number
     final message = 'Hello, I have sent the payment for Agency Pro Plan. Please activate my account. User ID: ${widget.userId}';
     final url = 'https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}';
     
@@ -109,7 +109,7 @@ class _AgencyPaymentPageState extends State<AgencyPaymentPage> {
                     entry.key,
                     entry.value,
                     isWide,
-                  )).toList(),
+                  )),
                 ],
               ),
             ),
@@ -165,10 +165,10 @@ class _AgencyPaymentPageState extends State<AgencyPaymentPage> {
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Payment Instructions',
                     style: TextStyle(
                       color: Color(0xFFFFD700), // Yellow color
@@ -176,8 +176,8 @@ class _AgencyPaymentPageState extends State<AgencyPaymentPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'After sending payment, please share the payment screenshot on WhatsApp so our team can activate your Pro account. Thank you.',
                     style: TextStyle(
                       color: Colors.white70,
@@ -306,7 +306,7 @@ class _AgencyPaymentPageState extends State<AgencyPaymentPage> {
                 });
               },
               activeColor: const Color(0xFFFFD700),
-              fillColor: MaterialStateProperty.resolveWith<Color>(
+              fillColor: WidgetStateProperty.resolveWith<Color>(
                 (states) => const Color(0xFFFFD700),
               ),
             ),

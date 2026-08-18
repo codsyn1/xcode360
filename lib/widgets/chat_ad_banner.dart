@@ -4,7 +4,7 @@ import '../services/admob_service.dart';
 import 'professional_ad_placeholder.dart';
 
 class ChatAdBanner extends StatefulWidget {
-  const ChatAdBanner({Key? key}) : super(key: key);
+  const ChatAdBanner({super.key});
 
   @override
   State<ChatAdBanner> createState() => _ChatAdBannerState();

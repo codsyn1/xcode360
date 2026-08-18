@@ -34,8 +34,9 @@ class AdminSupportCubit extends Cubit<AdminSupportState> {
         } catch (_) {}
         final ts = data['lastTimestamp'];
         DateTime dt;
-        if (ts is Timestamp) dt = ts.toDate();
-        else if (ts is DateTime) dt = ts;
+        if (ts is Timestamp) {
+          dt = ts.toDate();
+        } else if (ts is DateTime) dt = ts;
         else dt = DateTime.fromMillisecondsSinceEpoch(0);
         return SupportTicketItem(
           id: d.id,

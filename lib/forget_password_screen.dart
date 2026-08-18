@@ -9,7 +9,7 @@ class ForgetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
@@ -25,7 +25,7 @@ class ForgetPasswordScreen extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +66,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
+                        if (formKey.currentState!.validate()) {
                           try {
                             await FirebaseAuth.instance.sendPasswordResetEmail(
                               email: emailController.text.trim(),

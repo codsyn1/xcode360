@@ -243,7 +243,7 @@ class _FeaturesTable extends StatelessWidget {
     {'name': 'Online Availability Status', 'free': false, 'pro': true},
   ];
 
-  const _FeaturesTable({super.key});
+  const _FeaturesTable();
 
   @override
   Widget build(BuildContext context) {
@@ -255,8 +255,8 @@ class _FeaturesTable extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         child: Column(
           children: [
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   flex: 2,
                   child: Text('Features', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),

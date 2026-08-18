@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'chat_project_exchange_screen.dart';
 
 class ChatNotificationTestScreen extends StatelessWidget {
-  const ChatNotificationTestScreen({Key? key}) : super(key: key);
+  const ChatNotificationTestScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +134,7 @@ class ChatNotificationTestScreen extends StatelessWidget {
                       ),
                       Text(
                         'ID: $userId',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 12,
                         ),

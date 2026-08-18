@@ -5,7 +5,7 @@ import 'agency_chat_screen.dart';
 
 class AgencyChatListScreen extends StatefulWidget {
   final String currentUserId;
-  const AgencyChatListScreen({required this.currentUserId, Key? key}) : super(key: key);
+  const AgencyChatListScreen({required this.currentUserId, super.key});
 
   @override
   State<AgencyChatListScreen> createState() => _AgencyChatListScreenState();
@@ -58,7 +58,7 @@ class _AgencyChatListScreenState extends State<AgencyChatListScreen> {
       final agencyChats = <Map<String, dynamic>>[];
       
       for (final chatDoc in userAgencyChatsSnapshot.docs) {
-        final chatData = chatDoc.data() as Map<String, dynamic>;
+        final chatData = chatDoc.data();
         final agencyId = chatData['agencyId'] as String?;
         
         if (agencyId != null) {
@@ -69,7 +69,7 @@ class _AgencyChatListScreenState extends State<AgencyChatListScreen> {
                 .get();
             
             if (agencyDoc.exists) {
-              final agencyData = agencyDoc.data() as Map<String, dynamic>?;
+              final agencyData = agencyDoc.data();
               final agencyName = agencyData?['name'] ?? 'Unknown Agency';
               
               if (_searchQuery.isEmpty || agencyName.toLowerCase().contains(_searchQuery.toLowerCase())) {
@@ -193,7 +193,7 @@ class _AgencyChatListScreenState extends State<AgencyChatListScreen> {
                               leading: Container(
                                 width: 50,
                                 height: 50,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white24,
                                 ),

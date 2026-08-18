@@ -54,7 +54,7 @@ class _UsersHorizontalList extends StatelessWidget {
             padding: padding,
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
-              final data = users[index] as Map<String, dynamic>;
+              final data = users[index];
               return _UserCardMini(data: data, onTap: () {
                 final id = (data['id'] ?? '').toString();
                 Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileScreen(userId: id)));
@@ -155,7 +155,7 @@ class _UserCardMini extends StatelessWidget {
                           // Level pill
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(18), boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))]),
+                            decoration: BoxDecoration(color: Colors.blueAccent, borderRadius: BorderRadius.circular(18), boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))]),
                             child: Text(levelLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
                           ),
                           const SizedBox(height: 10),

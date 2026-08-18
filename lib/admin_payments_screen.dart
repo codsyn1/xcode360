@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class AdminPaymentsScreen extends StatefulWidget {
-  const AdminPaymentsScreen({Key? key}) : super(key: key);
+  const AdminPaymentsScreen({super.key});
 
   @override
   State<AdminPaymentsScreen> createState() => _AdminPaymentsScreenState();
@@ -371,7 +371,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                 const SizedBox(height: 8),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,

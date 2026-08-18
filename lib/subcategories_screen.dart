@@ -13,12 +13,12 @@ class SubcategoriesScreen extends StatefulWidget {
   final String categoryTitle;
   final String categoryImage;
   final String userId;
-  SubcategoriesScreen({
-    Key? key, 
+  const SubcategoriesScreen({
+    super.key, 
     required this.categoryTitle, 
     required this.categoryImage,
     required this.userId,
-  }) : super(key: key);
+  });
 
   @override
   State<SubcategoriesScreen> createState() => _SubcategoriesScreenState();
@@ -27,7 +27,7 @@ class SubcategoriesScreen extends StatefulWidget {
 class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
   int? _tappedIndex;
   int _selectedSliderIndex = 0;
-  int _currentImageIndex = 0;
+  final int _currentImageIndex = 0;
   int _selectedIndex = 0;
   final _verticalScrollController = ScrollController();
   final _sliderController = ScrollController();
@@ -312,7 +312,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
   void _onSliderTap(int index) {
     setState(() => _selectedSliderIndex = index);
     // Scroll vertical timeline to the selected subcategory
-    final itemExtent = 120.0; // Approximate height of each timeline item
+    const itemExtent = 120.0; // Approximate height of each timeline item
     _verticalScrollController.animateTo(
       index * itemExtent,
       duration: const Duration(milliseconds: 400),
@@ -405,8 +405,8 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                         children: [
                           Container(
                             padding: EdgeInsets.all(isWide ? 18 : 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2C2C2C),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF2C2C2C),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -461,9 +461,9 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
-                            color: const Color(0xFF2C2C2C),
+                            color: Color(0xFF2C2C2C),
                             blurRadius: 12,
                             offset: Offset(0, 6),
                           ),
@@ -477,8 +477,8 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2C2C2C),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF2C2C2C),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(

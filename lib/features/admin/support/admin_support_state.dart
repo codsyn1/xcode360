@@ -109,8 +109,9 @@ class SupportMessage extends Equatable {
     final data = doc.data() ?? {};
     final ts = data['timestamp'];
     DateTime dt;
-    if (ts is Timestamp) dt = ts.toDate();
-    else if (ts is DateTime) dt = ts;
+    if (ts is Timestamp) {
+      dt = ts.toDate();
+    } else if (ts is DateTime) dt = ts;
     else dt = DateTime.fromMillisecondsSinceEpoch(0);
     return SupportMessage(
       id: doc.id,

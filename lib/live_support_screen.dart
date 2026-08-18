@@ -9,7 +9,7 @@ void main() => runApp(const LiveSupportScreen());
 
 class LiveSupportScreen extends StatelessWidget {
   final bool showOnlyCards;
-  const LiveSupportScreen({Key? key, this.showOnlyCards = false}) : super(key: key);
+  const LiveSupportScreen({super.key, this.showOnlyCards = false});
 
   @override
   Widget build(BuildContext context) {

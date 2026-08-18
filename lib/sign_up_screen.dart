@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
 }
@@ -30,13 +32,13 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
   final TextEditingController _customSkillController = TextEditingController();
   String? _selectedCountry;
   String? _experienceLevel;
-  String _userType = 'Seller';
-  bool _agreedToTerms = false;
+  final String _userType = 'Seller';
+  final bool _agreedToTerms = false;
   bool _isLoading = false;
   String? _profileImagePath;
   String? _coverImagePath;
   List<String> _selectedSkills = [];
-  List<String> _customSkills = [];
+  final List<String> _customSkills = [];
   bool _showSummaryError = false;
   bool _submitted = false;
 
@@ -245,7 +247,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
       if (mounted) { context.read<SignupCubit>().setProfilePath(picked.path); }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No image selected!')),
+        const SnackBar(content: Text('No image selected!')),
       );
     }
   }
@@ -260,7 +262,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
       if (mounted) { context.read<SignupCubit>().setCoverPath(picked.path); }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No image selected!')),
+        const SnackBar(content: Text('No image selected!')),
       );
     }
   }
@@ -344,7 +346,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
           listener: (context, state) async {
             if (state.loading != _isLoading && mounted) { setState(() => _isLoading = state.loading); }
             if (!state.loading && state.error != null) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up failed: ' + state.error!)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up failed: ${state.error!}')));
             }
             if (!state.loading && state.userId != null && state.error == null) {
               final prefs = await SharedPreferences.getInstance();
@@ -459,9 +461,9 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                           : null,
                                     ),
                                     child: _coverImagePath == null
-                                        ? Column(
+                                        ? const Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
-                                            children: const [
+                                            children: [
                                               Icon(Icons.photo, color: Colors.white54, size: 36),
                                               SizedBox(height: 8),
                                               Text('Tap to select cover photo', style: TextStyle(color: Colors.white54)),
@@ -592,7 +594,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 // If 'Other' chosen, show custom skills input
                                 if (_selectedSkills.contains('Other')) ...[
                                   const SizedBox(height: 10),
-                                  Text('Add custom skills', style: const TextStyle(color: Colors.white70)),
+                                  const Text('Add custom skills', style: TextStyle(color: Colors.white70)),
                                   const SizedBox(height: 6),
                                   Row(
                                     children: [
@@ -664,7 +666,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 const SizedBox(height: 12),
                                 // Select Category
                                 DropdownButtonFormField<String>(
-                                  value: _selectedCategory,
+                                  initialValue: _selectedCategory,
                                   dropdownColor: const Color(0xFF232323),
                                   items: _categories.keys
                                       .map((cat) => DropdownMenuItem(
@@ -687,7 +689,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 // Select Subcategory
                                 if (_selectedCategory != null)
                                   DropdownButtonFormField<String>(
-                                    value: _selectedSubcategory,
+                                    initialValue: _selectedSubcategory,
                                     dropdownColor: const Color(0xFF232323),
                                     items: (_categories[_selectedCategory] ?? [])
                                         .map((sub) => DropdownMenuItem(
@@ -744,7 +746,7 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                 const SizedBox(height: 12),
                                 // Experience Level (dropdown)
                                 DropdownButtonFormField<String>(
-                                  value: _experienceLevel,
+                                  initialValue: _experienceLevel,
                                   dropdownColor: const Color(0xFF232323),
                                   items: _experienceLevels
                                       .map((level) => DropdownMenuItem(

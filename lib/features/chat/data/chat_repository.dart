@@ -94,7 +94,7 @@ class ChatRepository {
       if (!senderDoc.exists) {
         print('❌ ERROR: Sender user document does not exist: $currentUserId');
       }
-      final senderData = senderDoc.data() as Map<String, dynamic>?;
+      final senderData = senderDoc.data();
       final senderName = senderData?['name'] ?? 
                           senderData?['userName'] ?? 
                           senderData?['fullName'] ?? 
@@ -105,7 +105,7 @@ class ChatRepository {
       if (!receiverDoc.exists) {
         print('❌ ERROR: Receiver user document does not exist: $profileUserId');
       }
-      final receiverData = receiverDoc.data() as Map<String, dynamic>?;
+      final receiverData = receiverDoc.data();
       final receiverName = receiverData?['name'] ?? 
                            receiverData?['userName'] ?? 
                            receiverData?['fullName'] ?? 

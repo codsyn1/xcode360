@@ -8,7 +8,7 @@ import 'services/notification_service.dart';
 
 class FunGroupChatScreen extends StatefulWidget {
   final String userId;
-  const FunGroupChatScreen({Key? key, required this.userId}) : super(key: key);
+  const FunGroupChatScreen({super.key, required this.userId});
 
   @override
   State<FunGroupChatScreen> createState() => _FunGroupChatScreenState();
@@ -80,7 +80,7 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
             ? CircleAvatar(radius: 18, backgroundImage: NetworkImage(info['profileImageUrl']!))
             : const CircleAvatar(radius: 18, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
         title: Text(
-          (info['name'] ?? 'User') + ' (Private Chat)',
+          '${info['name'] ?? 'User'} (Private Chat)',
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         subtitle: info['jobTitle'] != null && info['jobTitle']!.isNotEmpty
@@ -134,7 +134,7 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
           .collection('users')
           .doc(widget.userId)
           .get();
-      final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+      final currentUserData = currentUserDoc.data();
       final currentUserName = currentUserData?['fullName'] ?? 
                               currentUserData?['name'] ?? 
                               currentUserData?['userName'] ?? 
@@ -149,7 +149,7 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
         try {
           // Get receiver's name for notification
           final receiverDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-          final receiverData = receiverDoc.data() as Map<String, dynamic>?;
+          final receiverData = receiverDoc.data();
           final receiverName = receiverData?['fullName'] ?? 
                                receiverData?['name'] ?? 
                                receiverData?['userName'] ?? 
@@ -260,8 +260,8 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
                                         children: [
                                           profileImageUrl.isNotEmpty
                                               ? CircleAvatar(radius: avatarRadius, backgroundImage: NetworkImage(profileImageUrl))
-                                              : CircleAvatar(radius: avatarRadius, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
-                                          SizedBox(width: 8),
+                                              : CircleAvatar(radius: avatarRadius, backgroundColor: Colors.white24, child: const Icon(Icons.person, color: Colors.white)),
+                                          const SizedBox(width: 8),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +284,7 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
                                       ),
                                       SizedBox(height: rowGap),
                                       Text(msg['text'] ?? '', style: TextStyle(color: Colors.white, fontSize: textFont)),
-                                      SizedBox(height: 4),
+                                      const SizedBox(height: 4),
                                       Align(
                                         alignment: Alignment.bottomRight,
                                         child: Text(
@@ -308,10 +308,10 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
                 // AdMob ad banner above input area
                 const ChatAdBanner(),
                 Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF1A1A1A),
                     border: Border(
-                      top: BorderSide(color: const Color(0xFF333333), width: 1),
+                      top: BorderSide(color: Color(0xFF333333), width: 1),
                     ),
                   ),
                   padding: EdgeInsets.only(
@@ -390,7 +390,7 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
                         ),
                         child: IconButton(
                           icon: _isSending
-                              ? SizedBox(width: isSmall ? 18 : 24, height: isSmall ? 18 : 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              ? SizedBox(width: isSmall ? 18 : 24, height: isSmall ? 18 : 24, child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                               : Icon(Icons.send, color: Colors.white, size: isSmall ? 20 : 24),
                           onPressed: _isSending ? null : _sendMessage,
                         ),
@@ -401,10 +401,10 @@ class _FunGroupChatScreenState extends State<FunGroupChatScreen> {
                 if (_showEmojiPicker)
                   Container(
                     height: isLarge ? 320 : isSmall ? 180 : 250,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1A1A1A),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1A1A1A),
                       border: Border(
-                        top: BorderSide(color: const Color(0xFF333333), width: 1),
+                        top: BorderSide(color: Color(0xFF333333), width: 1),
                       ),
                     ),
                     padding: EdgeInsets.all(inputPadding),

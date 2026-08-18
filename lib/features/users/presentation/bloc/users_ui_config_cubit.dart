@@ -34,7 +34,7 @@ class UsersUIConfigCubit extends Cubit<UsersUIConfigState> {
   void setScreenWidth(double w) {
     // Reverted behavior: use vertical list layout for mobile/tablet
     // and the previous, simpler width buckets.
-    final bool horizontal = false; // always vertical list
+    const bool horizontal = false; // always vertical list
 
     // Previous buckets
     double cardW;

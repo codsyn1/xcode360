@@ -9,7 +9,7 @@ class PaymentDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bankInfo = const {
+    const bankInfo = {
       'Bank Name': 'NBP : National Bank of Pakistan',
       'Account Name': 'Hostings Ware SMC Private Limited',
       'Account Number': '03154249365340',
@@ -116,12 +116,12 @@ class PaymentDetailsScreen extends StatelessWidget {
                   Card(
                     color: Colors.white.withOpacity(0.06),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('After sending payment, please share the payment screenshot on WhatsApp so our team can activate your Pro account. Thank you.',
+                          Text('After sending payment, please share the payment screenshot on WhatsApp so our team can activate your Pro account. Thank you.',
                               style: TextStyle(color: Colors.white70)),
                         ],
                       ),

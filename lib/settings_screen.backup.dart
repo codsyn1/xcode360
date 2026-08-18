@@ -192,9 +192,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                   : null),
                                         ),
                                         child: (state.localCoverImagePath == null && state.coverImageUrl.isEmpty)
-                                            ? Column(
+                                            ? const Column(
                                                 mainAxisAlignment: MainAxisAlignment.center,
-                                                children: const [
+                                                children: [
                                                   Icon(Icons.photo, color: Colors.white54, size: 36),
                                                   SizedBox(height: 8),
                                                   Text('Tap to select cover photo', style: TextStyle(color: Colors.white54)),
@@ -343,7 +343,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     const SizedBox(height: 12),
                                     // Category
                                     DropdownButtonFormField<String>(
-                                      value: safeCategory,
+                                      initialValue: safeCategory,
                                       items: state.categories.keys
                                           .map((cat) => DropdownMenuItem(
                                                 value: cat,
@@ -358,7 +358,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     // Subcategory (dependent)
                                     if (safeCategory != null)
                                       DropdownButtonFormField<String>(
-                                        value: safeSubcategory,
+                                        initialValue: safeSubcategory,
                                         items: subs
                                             .map((sub) => DropdownMenuItem(
                                                   value: sub,
@@ -438,7 +438,7 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final Widget child;
   final WidgetBuilder? footerBuilder;
-  const _SectionCard({required this.title, required this.child, this.footerBuilder});
+  const _SectionCard({required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {

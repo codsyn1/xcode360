@@ -28,7 +28,7 @@ Future<void> main() async {
   // Get FCM token
   String? token = await messaging.getToken();
   
-  print("\n" + "="*60);
+  print("\n${"="*60}");
   print("FCM TOKEN:");
   print(token ?? "No token received");
   print("="*60);

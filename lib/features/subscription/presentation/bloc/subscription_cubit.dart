@@ -39,8 +39,9 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
         final ts = data['proActiveUntil'];
         final autoRenew = (data['proAutoRenew'] ?? true) == true;
         DateTime? activeUntil;
-        if (ts is Timestamp) activeUntil = ts.toDate();
-        else if (ts is DateTime) activeUntil = ts;
+        if (ts is Timestamp) {
+          activeUntil = ts.toDate();
+        } else if (ts is DateTime) activeUntil = ts;
         if (activeUntil == null) {
           // If missing, set to one month from now
           final newUntil = _addOneCalendarMonth(DateTime.now());

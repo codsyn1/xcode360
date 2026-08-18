@@ -6,6 +6,8 @@ import 'login_signup_screen.dart';
 import 'dart:math' as math;
 
 class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
+
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
@@ -16,27 +18,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   late AnimationController _dotsAnimationController;
 
   final List<_OnboardPageData> _pages = [
-    _OnboardPageData(
+    const _OnboardPageData(
       title: 'Welcome to XCode360',
       subtitle: 'A free platform to exchange projects and collaborate with developers, designers, and SEO experts.',
       icon: Icons.hub_outlined, // network/connection
     ),
-    _OnboardPageData(
+    const _OnboardPageData(
       title: 'Chat with Community',
       subtitle: 'Connect, discuss, and grow with fellow project exchangers in real time.',
       icon: Icons.forum_outlined, // chat/community
     ),
-    _OnboardPageData(
+    const _OnboardPageData(
       title: 'Break Time? Join the Fun Chats!',
       subtitle: 'Relax and chat with developers, designers, and creators in our fun communities.',
       icon: Icons.celebration_outlined, // fun/chat
     ),
-    _OnboardPageData(
+    const _OnboardPageData(
       title: 'Start Free. Go Pro Anytime.',
       subtitle: 'Enjoy free project exchange or upgrade to Pro featured listings, and priority support.',
       icon: Icons.workspace_premium_outlined, // plan
     ),
-    _OnboardPageData(
+    const _OnboardPageData(
       title: 'Start Exchanging Projects',
       subtitle: 'Find partners, exchange projects, and grow together — for free!',
       icon: Icons.handshake_outlined, // handshake/exchange
@@ -45,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   void _goToLoginSignup() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => LoginSignupScreen()),
+      MaterialPageRoute(builder: (_) => const LoginSignupScreen()),
     );
   }
 
@@ -185,7 +187,7 @@ class _OnboardingPageContent extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              child: Icon(icon, size: 100, color: Color(0xFF1976D2)),
+              child: Icon(icon, size: 100, color: const Color(0xFF1976D2)),
             ),
             const SizedBox(height: 40),
             Text(
@@ -280,7 +282,7 @@ class _ParallaxLinesBackground extends StatelessWidget {
 
 class _ParallaxLinesPainter extends CustomPainter {
   final double progress;
-  static final int points = 24;
+  static const int points = 24;
   static final List<_MovingPoint> basePoints = List.generate(
     points,
     (i) => _MovingPoint(

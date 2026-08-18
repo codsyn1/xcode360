@@ -64,7 +64,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
           .collection('users')
           .doc(widget.userId)
           .get();
-      final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+      final currentUserData = currentUserDoc.data();
       final currentUserName = currentUserData?['name'] ?? 
                               currentUserData?['userName'] ?? 
                               currentUserData?['fullName'] ?? 

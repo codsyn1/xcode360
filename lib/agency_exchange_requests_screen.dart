@@ -7,10 +7,10 @@ class AgencyExchangeRequestsScreen extends StatefulWidget {
   final String agencyName;
 
   const AgencyExchangeRequestsScreen({
-    Key? key,
+    super.key,
     required this.agencyId,
     required this.agencyName,
-  }) : super(key: key);
+  });
 
   @override
   State<AgencyExchangeRequestsScreen> createState() => _AgencyExchangeRequestsScreenState();
@@ -72,9 +72,9 @@ class _AgencyExchangeRequestsScreenState extends State<AgencyExchangeRequestsScr
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1A1A),
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Exchange Requests',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -93,13 +93,13 @@ class _AgencyExchangeRequestsScreenState extends State<AgencyExchangeRequestsScr
           }
 
           if (snapshot.hasError) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
-                  const SizedBox(height: 16),
-                  const Text(
+                  Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  SizedBox(height: 16),
+                  Text(
                     'Error loading requests',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
@@ -111,18 +111,18 @@ class _AgencyExchangeRequestsScreenState extends State<AgencyExchangeRequestsScr
           final requests = snapshot.data?.docs ?? [];
 
           if (requests.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.swap_horiz_outlined, color: Colors.white54, size: 60),
-                  const SizedBox(height: 16),
-                  const Text(
+                  Icon(Icons.swap_horiz_outlined, color: Colors.white54, size: 60),
+                  SizedBox(height: 16),
+                  Text(
                     'No exchange requests yet',
                     style: TextStyle(color: Colors.white54, fontSize: 18),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Requests will appear here when users send them',
                     style: TextStyle(color: Colors.white38, fontSize: 14),
                   ),

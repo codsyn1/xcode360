@@ -175,10 +175,10 @@ class _AvatarWithBadge extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 12),
-        Expanded(
+        const Expanded(
           child: Text(
             'Your Profile Analytics',
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(width: 8),
@@ -345,7 +345,7 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
 
                   const SizedBox(height: 16),
                   // Requests breakdown
-                  Text('Exchange Requests', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('Exchange Requests', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Row(
                     children: [

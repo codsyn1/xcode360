@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AgencyProAdminScreen extends StatefulWidget {
-  const AgencyProAdminScreen({Key? key}) : super(key: key);
+  const AgencyProAdminScreen({super.key});
 
   @override
   State<AgencyProAdminScreen> createState() => _AgencyProAdminScreenState();
@@ -412,7 +412,7 @@ class _AgencyProAdminScreenState extends State<AgencyProAdminScreen> {
                                       CircleAvatar(
                                         radius: 20,
                                         backgroundColor: isPro ? Colors.green : Colors.grey,
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.person,
                                           color: Colors.white,
                                           size: 20,

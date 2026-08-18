@@ -9,7 +9,7 @@ import 'agency_options_screen.dart';
 
 class AgencyProPlanScreen extends StatefulWidget {
   final String userId;
-  const AgencyProPlanScreen({Key? key, required this.userId}) : super(key: key);
+  const AgencyProPlanScreen({super.key, required this.userId});
 
   @override
   State<AgencyProPlanScreen> createState() => _AgencyProPlanScreenState();
@@ -131,10 +131,10 @@ class _AgencyProPlanScreenState extends State<AgencyProPlanScreen> with SingleTi
                       width: double.infinity,
                       padding: EdgeInsets.all(isWide ? 32 : 24),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [const Color(0xFF0A0A0A), const Color(0xFF060606)],
+                          colors: [Color(0xFF0A0A0A), Color(0xFF060606)],
                         ),
                         borderRadius: BorderRadius.circular(isWide ? 24 : 20),
                         boxShadow: [

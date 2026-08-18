@@ -13,8 +13,7 @@ import 'chat_list/services/chat_firebase_service.dart';
 
 class ChatListScreen extends StatefulWidget {
   final String currentUserId;
-  const ChatListScreen({required this.currentUserId, Key? key})
-      : super(key: key);
+  const ChatListScreen({required this.currentUserId, super.key});
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -30,7 +29,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     super.initState();
     _chatListBloc = ChatListBloc();
     _chatListBloc.setUserId(widget.currentUserId);
-    _chatListBloc.add(LoadChatsEvent());
+    _chatListBloc.add(const LoadChatsEvent());
   }
 
   @override
@@ -57,7 +56,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             .doc(otherUserId)
             .get();
 
-        final userData = userDoc.data() as Map<String, dynamic>?;
+        final userData = userDoc.data();
         final userName = userData?['fullName'] ??
             userData?['name'] ??
             userData?['userName'] ??
@@ -96,7 +95,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   );
 
   void _onRetryPressed() {
-    _chatListBloc.add(LoadChatsEvent());
+    _chatListBloc.add(const LoadChatsEvent());
   }
 
   void _switchToAgencyChat(
@@ -109,7 +108,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   void _switchBackToChatList() {
-    _chatListBloc.add(SwitchToAgencyChatEvent(
+    _chatListBloc.add(const SwitchToAgencyChatEvent(
       agencyId: null,
       agencyName: null,
       agencyLogo: null,
@@ -117,7 +116,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 
   Future<void> _onRefreshPressed() async {
-    _chatListBloc.add(RefreshChatsEvent());
+    _chatListBloc.add(const RefreshChatsEvent());
   }
 
   String _formatTimestamp(int milliseconds) {

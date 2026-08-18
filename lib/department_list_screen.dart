@@ -5,7 +5,7 @@ import 'group_chat_screen.dart';
 
 class DepartmentListScreen extends StatelessWidget {
   final String userId;
-  const DepartmentListScreen({Key? key, required this.userId}) : super(key: key);
+  const DepartmentListScreen({super.key, required this.userId});
 
   static final List<Map<String, dynamic>> departments = [
     {

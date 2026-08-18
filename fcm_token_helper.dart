@@ -32,7 +32,7 @@ void main() async {
   // Get and print FCM token
   String? token = await messaging.getToken();
   
-  print("\n" + "="*50);
+  print("\n${"="*50}");
   print("FCM TOKEN FOR ANDROID:");
   print(token);
   print("="*50);

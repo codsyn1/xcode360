@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/notification_service.dart';
 
 class NotificationTestScreen extends StatefulWidget {
-  const NotificationTestScreen({Key? key}) : super(key: key);
+  const NotificationTestScreen({super.key});
 
   @override
   State<NotificationTestScreen> createState() => _NotificationTestScreenState();
@@ -53,7 +53,7 @@ class _NotificationTestScreenState extends State<NotificationTestScreen> {
           .doc(user.uid)
           .get();
 
-      final userData = userDoc.data() as Map<String, dynamic>?;
+      final userData = userDoc.data();
       final userName = userData?['name'] ?? userData?['userName'] ?? 'Test User';
 
       // Send test notification
@@ -205,10 +205,10 @@ class _NotificationTestScreenState extends State<NotificationTestScreen> {
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'How to test:',
                     style: TextStyle(
                       color: Colors.white,
@@ -216,8 +216,8 @@ class _NotificationTestScreenState extends State<NotificationTestScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     '1. Enter the receiver\'s User ID\n'
                     '2. Enter a project title\n'
                     '3. Click "Send Test Notification"\n'
