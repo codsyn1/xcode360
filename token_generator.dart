@@ -22,7 +22,7 @@ void main() async {
   print("🔑 Getting FCM Token...");
   String? token = await messaging.getToken();
   
-  print("\n" + "="*60);
+  print("\n${"="*60}");
   print("🎯 FCM TOKEN:");
   print(token ?? "❌ TOKEN NULL");
   print("="*60);

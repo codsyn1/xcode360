@@ -82,7 +82,7 @@ class AdMobService {
       print('✅ AdMob initialized successfully');
       print('📱 Mode: ${_isTestMode ? "Test Ads" : "Production Ads"}');
       print('🆔 Publisher ID: pub-8909088774883808');
-      print('📊 Banner Ad Unit ID: ${bannerAdUnitId}');
+      print('📊 Banner Ad Unit ID: $bannerAdUnitId');
       
       // Set test device IDs for development (optional)
       // final requestConfiguration = RequestConfiguration(
@@ -114,7 +114,7 @@ class AdMobService {
     _bannerAds[adKey] = BannerAd(
       adUnitId: unitId,
       size: adSize ?? AdSize.banner,
-      request: AdRequest(
+      request: const AdRequest(
         // Add extra parameters to improve ad fill
         keywords: ['technology', 'business', 'education', 'apps', 'mobile', 'social', 'networking'],
         contentUrl: 'https://play.google.com/store',
@@ -172,7 +172,7 @@ class AdMobService {
     final isLoaded = _isBannerAdLoaded[adKey] ?? false;
     
     if (isLoaded && ad != null) {
-      return Container(
+      return SizedBox(
         width: ad.size.width.toDouble(),
         height: ad.size.height.toDouble(),
         child: AdWidget(ad: ad),

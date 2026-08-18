@@ -21,6 +21,7 @@ import 'settings_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 import 'features/profile_analytics/presentation/profile_analytics_screen.dart';
+import 'features/profile_analytics/data/profile_analytics_repository.dart';
 import 'features/admin/payments/admin_payments_screen.dart';
 import 'features/admin/support/admin_support_screen.dart';
 import 'features/admin/slider/slider_admin_screen.dart';
@@ -38,7 +39,7 @@ import 'features/admin/slider/slider_admin_state.dart';
 class DashboardScreen extends StatefulWidget {
   final String userId;
   final int selectedIndex;
-  const DashboardScreen({Key? key, required this.userId, this.selectedIndex = 0}) : super(key: key);
+  const DashboardScreen({super.key, required this.userId, this.selectedIndex = 0});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -102,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       if (meta.isFromCache && !_receivedServerUserDoc) {
         return; // ignore cached emission before first server data
       }
-      final data = doc.data() as Map<String, dynamic>? ?? {};
+      final data = doc.data() ?? {};
       String nameVal = (data['fullName'] ?? data['name'] ?? 'User').toString();
       String planVal = (data['plan'] ?? 'Free').toString();
       String? imageVal = data['profileImageUrl'];
@@ -163,7 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     _bindSliderStream();
     _bindPopupStream();
 
-    _sliderTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _sliderTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_pageController.hasClients && _sliderImages.isNotEmpty) {
         _currentPage++;
         if (_currentPage >= _sliderImages.length) {
@@ -171,7 +172,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         }
         _pageController.animateToPage(
           _currentPage,
-          duration: Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
         );
       }
@@ -182,19 +183,19 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       duration: const Duration(seconds: 12),
     )..repeat();
 
-    _carouselTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_carouselPageController.hasClients) {
-        final nextPage = (_carouselCurrentPage + 1) % 2;
+        final nextPage = (_carouselCurrentPage + 1) % 3;
         _carouselPageController.animateToPage(
           nextPage,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
       }
     });
 
     // Check for pending notification navigation after a short delay
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       _checkPendingNotification();
     });
     
@@ -325,7 +326,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       if (meta.isFromCache && !_receivedServerPopupDoc) {
         return; // wait for first server snapshot
       }
-      final data = doc.data() as Map<String, dynamic>?;
+      final data = doc.data();
       final active = data != null && (data['active'] ?? false) == true;
       final url = data != null ? (data['imageUrl'] ?? '').toString() : '';
       if (!_popupShown && active && url.isNotEmpty && mounted) {
@@ -435,7 +436,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       });
       final raw2 = doc.data();
       final String covPrint = (raw2 is Map<String, dynamic>) ? (raw2['coverImageUrl'] ?? 'NULL').toString() : 'NULL';
-      print('Fetched coverImageUrl: ' + covPrint);
+      print('Fetched coverImageUrl: $covPrint');
     } catch (e) {
       setState(() {
         userName = 'User';
@@ -458,7 +459,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     // UserId check: agar userId null ya empty hai to onboarding pe redirect karo
-    if (widget.userId == null || widget.userId.isEmpty) {
+    if (widget.userId.isEmpty) {
       Future.microtask(() {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => OnboardingScreen()),
@@ -470,7 +471,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       );
     }
 
-    String _getLabelForIndex(int index) {
+    String getLabelForIndex(int index) {
     switch (index) {
       case 0:
         return 'Home';
@@ -487,7 +488,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     }
   }
 
-    Widget _buildNavItem(IconData icon, int index) {
+    Widget buildNavItem(IconData icon, int index) {
       final isSelected = _selectedIndex == index;
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -500,7 +501,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           ),
           const SizedBox(height: 2),
           Text(
-            _getLabelForIndex(index),
+            getLabelForIndex(index),
             style: TextStyle(
               fontSize: 12,
               color: isSelected ? Colors.white : Colors.white54,
@@ -519,7 +520,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       );
     }
 
-    Widget _buildChatNavItem() {
+    Widget buildChatNavItem() {
       return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -528,7 +529,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return _buildNavItem(Icons.chat_bubble_outline, 2);
+            return buildNavItem(Icons.chat_bubble_outline, 2);
           }
           final chatDocs = snapshot.data!.docs;
           return FutureBuilder<bool>(
@@ -554,7 +555,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           child: Container(
                             width: 10,
                             height: 10,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.red,
                               shape: BoxShape.circle,
                             ),
@@ -587,7 +588,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       );
     }
 
-    Widget _buildProfileNavItem() {
+    Widget buildProfileNavItem() {
       final isSelected = _selectedIndex == 4;
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -602,7 +603,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               : CircleAvatar(
                   radius: 12,
                   backgroundColor: isSelected ? Colors.white : Colors.white24,
-                  child: Icon(Icons.person, color: Colors.white24, size: 16),
+                  child: const Icon(Icons.person, color: Colors.white24, size: 16),
                 ),
           const SizedBox(height: 2),
           Text(
@@ -635,7 +636,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final subtitleFont = isWide ? 18.0 : 13.0;
     final priceFont = isWide ? 20.0 : 15.0;
     final arrowIcon = isWide ? 28.0 : 20.0;
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       Stack(
         children: [
           Container(color: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7)),
@@ -684,6 +685,226 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       });
                     },
                     children: [
+                      // Level Card
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        child: FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
+                          builder: (context, snapshot) {
+                            final data = snapshot.data?.data() as Map<String, dynamic>?;
+                            final plan = (data?['plan'] ?? '').toString().trim();
+                            final isProAccount = plan.toLowerCase() == 'pro';
+                            final int projectsExchanged = (data?['projectsExchanged'] ?? 0) is int
+                                ? (data?['projectsExchanged'] ?? 0) as int
+                                : int.tryParse((data?['projectsExchanged'] ?? '0').toString()) ?? 0;
+                            final levelInfo = ProfileAnalyticsRepository.computeLevelInfo(projectsExchanged);
+                            final IconData levelIconData = levelInfo.icon;
+                            final String levelTitle = levelInfo.levelLabel;
+                            final String levelSubtitle = levelInfo.progressSubtitle;
+                            final Color accentColor = levelInfo.levelLabel == 'Level 1'
+                                ? const Color(0xFF555E6F)
+                                : levelInfo.color;
+
+                            Future<void> onTapLevel() async {
+                              if (snapshot.connectionState != ConnectionState.done) return;
+                              try {
+                                if (isProAccount) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ProfileAnalyticsScreen(userId: widget.userId),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('Pro Feature'),
+                                      content: const Text('Profile Analytics is available for Pro accounts only. Upgrade to Pro to access advanced analytics.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(ctx).pop(),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (_) => SubscriptionScreen(userId: widget.userId),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('Upgrade to Pro'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              } catch (_) {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Error'),
+                                    content: const Text('Unable to verify account status. Please try again.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(ctx).pop(),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            }
+
+                            return GestureDetector(
+                              onTap: onTapLevel,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF2D2D2D),
+                                      Color(0xFF1A1A1A),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(cardRadius),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.4),
+                                      blurRadius: isWide ? 20 : 15,
+                                      offset: Offset(0, isWide ? 12 : 8),
+                                    ),
+                                  ],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      right: -20,
+                                      top: -20,
+                                      child: Container(
+                                        width: isWide ? 120 : 80,
+                                        height: isWide ? 120 : 80,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: -10,
+                                      top: -10,
+                                      child: Container(
+                                        width: isWide ? 80 : 50,
+                                        height: isWide ? 80 : 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.08),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(isWide ? 20 : 16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(isWide ? 16 : 12),
+                                            decoration: BoxDecoration(
+                                              color: accentColor.withOpacity(0.85),
+                                              borderRadius: BorderRadius.circular(isWide ? 20 : 16),
+                                              border: Border.all(
+                                                color: Colors.white.withOpacity(0.2),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              levelIconData,
+                                              color: Colors.white,
+                                              size: iconSize * 0.9,
+                                            ),
+                                          ),
+                                          SizedBox(height: isWide ? 16 : 12),
+                                          Text(
+                                            levelTitle,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: titleFont,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                          SizedBox(height: isWide ? 6 : 4),
+                                          Text(
+                                            levelSubtitle,
+                                            style: TextStyle(
+                                              color: Colors.white.withOpacity(0.9),
+                                              fontSize: subtitleFont,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          SizedBox(height: isWide ? 8 : 6),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: isWide ? 10 : 8,
+                                                  vertical: isWide ? 4 : 3,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.2),
+                                                  borderRadius: BorderRadius.circular(isWide ? 12 : 10),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.trending_up,
+                                                      color: Colors.white,
+                                                      size: isWide ? 14 : 12,
+                                                    ),
+                                                    SizedBox(width: isWide ? 6 : 4),
+                                                    Text(
+                                                      'Progress',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: isWide ? 12 : 10,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.2),
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.white.withOpacity(0.3),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                padding: EdgeInsets.all(isWide ? 10 : 8),
+                                                child: Icon(
+                                                  Icons.arrow_forward,
+                                                  color: Colors.white,
+                                                  size: arrowIcon * 0.8,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                       // Users Card
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
@@ -691,13 +912,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (_) => UsersProfilesScreen(),
+                                builder: (_) => const UsersProfilesScreen(),
                               ),
                             );
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                              gradient: const LinearGradient(
                                 colors: [
                                   Color(0xFF2D2D2D),
                                   Color(0xFF1A1A1A),
@@ -812,7 +1033,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               ],
                                             ),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           Container(
                                             decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(0.2),
@@ -852,7 +1073,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                              gradient: const LinearGradient(
                                 colors: [
                                   Color(0xFF2D2D2D),
                                   Color(0xFF1A1A1A),
@@ -967,7 +1188,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               ],
                                             ),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           Container(
                                             decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(0.2),
@@ -997,11 +1218,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-                SizedBox(height: isWide ? 12 : 8),
+                SizedBox(height: isWide ? 16 : 12),
                 // Carousel Dot Indicators
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(2, (index) {
+                  children: List.generate(3, (index) {
                     return Container(
                       margin: EdgeInsets.symmetric(horizontal: isWide ? 6 : 4),
                       width: _carouselCurrentPage == index ? (isWide ? 24 : 16) : (isWide ? 10 : 7),
@@ -1015,10 +1236,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     );
                   }),
                 ),
-                SizedBox(height: isWide ? 20 : 16),
+                SizedBox(height: isWide ? 44 : 32),
                 // Second Row - Profile Analytics and Exchange Projects
                 Container(
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxWidth: 600, // Maximum width for better layout
                   ),
                   child: Row(
@@ -1045,12 +1266,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: Text('Pro Feature'),
-                                    content: Text('Profile Analytics is available for Pro accounts only. Upgrade to Pro to access advanced analytics.'),
+                                    title: const Text('Pro Feature'),
+                                    content: const Text('Profile Analytics is available for Pro accounts only. Upgrade to Pro to access advanced analytics.'),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.of(context).pop(),
-                                        child: Text('Cancel'),
+                                        child: const Text('Cancel'),
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
@@ -1061,7 +1282,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                             ),
                                           );
                                         },
-                                        child: Text('Upgrade to Pro'),
+                                        child: const Text('Upgrade to Pro'),
                                       ),
                                     ],
                                   ),
@@ -1072,12 +1293,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Text('Error'),
-                                  content: Text('Unable to verify account status. Please try again.'),
+                                  title: const Text('Error'),
+                                  content: const Text('Unable to verify account status. Please try again.'),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Navigator.of(context).pop(),
-                                      child: Text('OK'),
+                                      child: const Text('OK'),
                                     ),
                                   ],
                                 ),
@@ -1131,10 +1352,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                   final isProAccount = plan.toLowerCase() == 'pro';
                                   
                                   // Dim colors for free accounts, full colors for pro accounts
-                                  final cardColor = isProAccount ? Color(0xFF1E1E1E) : Color(0xFF1A1A1A);
+                                  final cardColor = isProAccount ? const Color(0xFF1E1E1E) : const Color(0xFF1A1A1A);
                                   final iconGradientColors = isProAccount 
-                                    ? [Color(0xFF2D2D2D), Color(0xFF1A1A1A)]
-                                    : [Color(0xFF1A1A1A), Color(0xFF0D0D0D)];
+                                    ? [const Color(0xFF2D2D2D), const Color(0xFF1A1A1A)]
+                                    : [const Color(0xFF1A1A1A), const Color(0xFF0D0D0D)];
                                   final titleColor = isProAccount ? Colors.white : Colors.white.withOpacity(0.5);
                                   final subtitleColor = isProAccount 
                                     ? Colors.white.withOpacity(0.7) 
@@ -1147,7 +1368,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     : Colors.white.withOpacity(0.4);
                                   
                                   return Container(
-                                    margin: EdgeInsets.only(right: 6, left: 8, bottom: 12),
+                                    margin: const EdgeInsets.only(right: 6, left: 8, bottom: 12),
                                     height: cardHeight,
                                     decoration: BoxDecoration(
                                       color: cardColor,
@@ -1156,7 +1377,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                         BoxShadow(
                                           color: Colors.black.withOpacity(isProAccount ? 0.3 : 0.15),
                                           blurRadius: isProAccount ? 12 : 8,
-                                          offset: Offset(0, 6),
+                                          offset: const Offset(0, 6),
                                         ),
                                       ],
                                       border: Border.all(
@@ -1189,22 +1410,22 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                   size: iconSize,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               if (!isProAccount)
                                                 Container(
                                                   padding: EdgeInsets.symmetric(horizontal: cardPadding * 0.6, vertical: cardPadding * 0.3),
                                                   decoration: BoxDecoration(
-                                                    color: Color(0xFF6366F3).withOpacity(0.2),
+                                                    color: const Color(0xFF6366F3).withOpacity(0.2),
                                                     borderRadius: BorderRadius.circular(borderRadius * 1.2),
                                                     border: Border.all(
-                                                      color: Color(0xFF6366F3).withOpacity(0.3),
+                                                      color: const Color(0xFF6366F3).withOpacity(0.3),
                                                       width: 1,
                                                     ),
                                                   ),
                                                   child: Text(
                                                     'PRO',
                                                     style: TextStyle(
-                                                      color: Color(0xFF6366F3),
+                                                      color: const Color(0xFF6366F3),
                                                       fontSize: badgeFontSize,
                                                       fontWeight: FontWeight.bold,
                                                     ),
@@ -1235,7 +1456,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           // Arrow button
                                           Container(
                                             width: arrowSize * 2.5,
@@ -1312,16 +1533,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               }
                               
                               return Container(
-                                margin: EdgeInsets.only(left: 6, right: 8, bottom: 12),
+                                margin: const EdgeInsets.only(left: 6, right: 8, bottom: 12),
                                 height: cardHeight,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF1E1E1E),
+                                  color: const Color(0xFF1E1E1E),
                                   borderRadius: BorderRadius.circular(borderRadius),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.3),
                                       blurRadius: 12,
-                                      offset: Offset(0, 6),
+                                      offset: const Offset(0, 6),
                                     ),
                                   ],
                                   border: Border.all(
@@ -1341,7 +1562,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                             width: iconSize * 2,
                                             height: iconSize * 2,
                                             decoration: BoxDecoration(
-                                              gradient: LinearGradient(
+                                              gradient: const LinearGradient(
                                                 colors: [Color(0xFF2D2D2D), Color(0xFF1A1A1A)],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
@@ -1354,7 +1575,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               size: iconSize,
                                             ),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                         ],
                                       ),
                                       SizedBox(height: cardPadding),
@@ -1380,7 +1601,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      Spacer(),
+                                      const Spacer(),
                                       // Arrow button
                                       Container(
                                         width: arrowSize * 2.5,
@@ -1406,7 +1627,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-                SizedBox(height: isWide ? 32 : 24),
+                SizedBox(height: isWide ? 44 : 32),
                 Column(
                   children: [
                     SizedBox(
@@ -1579,7 +1800,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                       runSpacing: 8,
                                                       children: cats.take(isWide ? 10 : 6).map((c) {
                                                         return Container(
-                                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                                           decoration: BoxDecoration(
                                                             color: Colors.white.withOpacity(0.18),
                                                             borderRadius: BorderRadius.circular(12),
@@ -1674,7 +1895,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         child: Container(
                           width: 8,
                           height: 8,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
@@ -1696,16 +1917,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       ),
       drawer: Drawer(
         child: Container(
-          color: Color(0xFF232323), // light black
+          color: const Color(0xFF232323), // light black
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.transparent,
                 ),
                 child: isLoading
-                    ? Center(child: CircularProgressIndicator(color: Colors.white))
+                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
                     : Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -1716,18 +1937,18 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                 ? NetworkImage(userImageUrl!)
                                 : null,
                             child: (userImageUrl == null || userImageUrl!.isEmpty)
-                                ? Icon(Icons.person, size: 32, color: Colors.white)
+                                ? const Icon(Icons.person, size: 32, color: Colors.white)
                                 : null,
                           ),
-                          SizedBox(width: 14),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${userName ?? 'User'}',
-                                  style: TextStyle(
+                                  userName ?? 'User',
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                   ),
@@ -1737,17 +1958,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     padding: const EdgeInsets.only(top: 2.0),
                                     child: Text(
                                       userJobTitle!,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white70,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ),
-                                SizedBox(height: 8),
+                                const SizedBox(height: 8),
                                 Text(
                                   userPlan == 'Pro' ? 'Pro Member' : 'Free Member',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
@@ -1761,8 +1982,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               ),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.home, color: Colors.white),
-                title: Text('Home', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.home, color: Colors.white),
+                title: const Text('Home', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   setState(() => _selectedIndex = 0);
                   Navigator.pop(context);
@@ -1777,10 +1998,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 child: Opacity(
                   opacity: (userPlan?.toLowerCase() == 'pro') ? 1.0 : 0.55,
                   child: ListTile(
-                    leading: Icon(Icons.analytics, color: Colors.white),
+                    leading: const Icon(Icons.analytics, color: Colors.white),
                     title: Row(
                       children: [
-                        Text('Profile Analytics', style: TextStyle(color: Colors.white)),
+                        const Text('Profile Analytics', style: TextStyle(color: Colors.white)),
                         if ((userPlan?.toLowerCase() ?? 'free') != 'pro') ...[
                           const SizedBox(width: 6),
                           const Icon(Icons.lock, color: Colors.white54, size: 16),
@@ -1807,8 +2028,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.settings, color: Colors.white),
-                title: Text('Settings', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.settings, color: Colors.white),
+                title: const Text('Settings', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.of(context).push(
@@ -1819,8 +2040,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.person, color: Colors.white),
-                title: Text('Profile', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.person, color: Colors.white),
+                title: const Text('Profile', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   setState(() => _selectedIndex = 4);
                   Navigator.pop(context);
@@ -1829,8 +2050,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.card_membership, color: Colors.white),
-                title: Text('Subscription', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.card_membership, color: Colors.white),
+                title: const Text('Subscription', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   setState(() => _selectedIndex = 1);
                   Navigator.pop(context);
@@ -1839,8 +2060,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.groups, color: Colors.white),
-                title: Text('Communities', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.groups, color: Colors.white),
+                title: const Text('Communities', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   setState(() => _selectedIndex = 3);
                   Navigator.pop(context);
@@ -1893,8 +2114,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.swap_horiz, color: Colors.white),
-                title: Text('Exchange Projects', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.swap_horiz, color: Colors.white),
+                title: const Text('Exchange Projects', style: TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => ExchangeProjectsScreen(currentUserId: widget.userId)),
@@ -1904,21 +2125,21 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: Icon(Icons.support_agent, color: Colors.white),
-                title: Text('Live Support', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.support_agent, color: Colors.white),
+                title: const Text('Live Support', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(context);
                   final prefs = await SharedPreferences.getInstance();
                   final userId = prefs.getString('userId') ?? '';
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => LiveSupportScreen(showOnlyCards: true)),
+                    MaterialPageRoute(builder: (_) => const LiveSupportScreen(showOnlyCards: true)),
                   );
                 },
               ),
               const Divider(color: Colors.white24, height: 1),
               ListTile(
-                leading: Icon(Icons.logout, color: Colors.white),
-                title: Text('Logout', style: TextStyle(color: Colors.white)),
+                leading: const Icon(Icons.logout, color: Colors.white),
+                title: const Text('Logout', style: TextStyle(color: Colors.white)),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isLoggedIn', false);
@@ -1933,7 +2154,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           ),
         ),
       ),
-      body: _pages[_selectedIndex],
+      body: pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF232323),
@@ -1968,23 +2189,23 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 showUnselectedLabels: true,
                 items: [
                   BottomNavigationBarItem(
-                    icon: _buildNavItem(Icons.home, 0),
+                    icon: buildNavItem(Icons.home, 0),
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: _buildNavItem(Icons.card_membership, 1),
+                    icon: buildNavItem(Icons.card_membership, 1),
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: _buildChatNavItem(),
+                    icon: buildChatNavItem(),
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: _buildNavItem(Icons.groups, 3),
+                    icon: buildNavItem(Icons.groups, 3),
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: _buildProfileNavItem(),
+                    icon: buildProfileNavItem(),
                     label: '',
                   ),
                 ],
@@ -2005,7 +2226,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       if (messagesSnap.docs.isNotEmpty) {
         // Check client-side for unread messages
         for (final messageDoc in messagesSnap.docs) {
-          final messageData = messageDoc.data() as Map<String, dynamic>;
+          final messageData = messageDoc.data();
           if (messageData['senderId'] != currentUserId && messageData['isRead'] == false) {
             return true;
           }
@@ -2072,7 +2293,7 @@ class _ParallaxLinesBackground extends StatelessWidget {
 
 class _ParallaxLinesPainter extends CustomPainter {
   final double progress;
-  static final int points = 24;
+  static const int points = 24;
   static final List<_MovingPoint> basePoints = List.generate(
     points,
     (i) => _MovingPoint(

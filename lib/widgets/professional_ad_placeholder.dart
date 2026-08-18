@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProfessionalAdPlaceholder extends StatefulWidget {
-  const ProfessionalAdPlaceholder({Key? key}) : super(key: key);
+  const ProfessionalAdPlaceholder({super.key});
 
   @override
   State<ProfessionalAdPlaceholder> createState() => _ProfessionalAdPlaceholderState();
@@ -80,10 +80,10 @@ class _ProfessionalAdPlaceholderState extends State<ProfessionalAdPlaceholder>
                 maxHeight: adHeight,
               ),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [
-                    const Color(0xFF1A1A1A),
-                    const Color(0xFF2D2D2D),
+                    Color(0xFF1A1A1A),
+                    Color(0xFF2D2D2D),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -150,7 +150,7 @@ class _ProfessionalAdPlaceholderState extends State<ProfessionalAdPlaceholder>
                                 textAlign: TextAlign.center,
                               ),
                               if (!isSmall) ...[
-                                SizedBox(height: 1),
+                                const SizedBox(height: 1),
                                 Text(
                                   'Premium Position',
                                   style: TextStyle(
@@ -168,7 +168,7 @@ class _ProfessionalAdPlaceholderState extends State<ProfessionalAdPlaceholder>
                         
                         // Only show dots on larger screens
                         if (screenWidth > 500 && !isSmall) ...[
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
@@ -216,8 +216,8 @@ class _PatternPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Draw subtle pattern
-    final dotSize = 2.0;
-    final spacing = 20.0;
+    const dotSize = 2.0;
+    const spacing = 20.0;
     
     for (double x = 0; x < size.width; x += spacing) {
       for (double y = 0; y < size.height; y += spacing) {

@@ -26,7 +26,7 @@ class SliderAdminCubit extends Cubit<SliderAdminState> {
         .where((snap) => !snap.metadata.isFromCache)
         .map((snap) => snap.docs.map((d) {
               final raw = d.data();
-              final data = raw is Map<String, dynamic> ? raw : <String, dynamic>{};
+              final data = raw;
               final url = (data['url'] ?? '').toString();
               final orderRaw = data['order'];
               final int order = orderRaw is int

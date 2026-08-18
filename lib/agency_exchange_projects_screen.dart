@@ -12,12 +12,12 @@ class AgencyExchangeProjectsScreen extends StatefulWidget {
   final String? receiverAvatar;
 
   const AgencyExchangeProjectsScreen({
-    Key? key,
+    super.key,
     required this.currentUserId,
     required this.receiverId,
     required this.receiverName,
     this.receiverAvatar,
-  }) : super(key: key);
+  });
 
   @override
   State<AgencyExchangeProjectsScreen> createState() => _AgencyExchangeProjectsScreenState();
@@ -73,8 +73,7 @@ class _AgencyExchangeProjectsScreenState extends State<AgencyExchangeProjectsScr
               onPrimary: Colors.white,
               surface: Color(0xFF1A1A1A),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF2C2C2C),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF2C2C2C)),
           ),
           child: child!,
         );
@@ -389,8 +388,8 @@ class _AgencyExchangeProjectsScreenState extends State<AgencyExchangeProjectsScr
                             Container(
                               width: isWide ? 60 : (isSmallScreen ? 40 : 50),
                               height: isWide ? 60 : (isSmallScreen ? 40 : 50),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFD700),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFD700),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -621,9 +620,9 @@ class _AgencyExchangeProjectsScreenState extends State<AgencyExchangeProjectsScr
                                 SizedBox(
                                   width: isSmallScreen ? 16 : 20,
                                   height: isSmallScreen ? 16 : 20,
-                                  child: CircularProgressIndicator(
+                                  child: const CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                   ),
                                 ),
                                 SizedBox(width: isSmallScreen ? 8 : 12),
@@ -787,7 +786,7 @@ class _AgencyExchangeProjectsScreenState extends State<AgencyExchangeProjectsScr
                   Expanded(
                     child: Text(
                       date != null
-                          ? DateFormat('MMM dd, yyyy').format(date!)
+                          ? DateFormat('MMM dd, yyyy').format(date)
                           : 'Select date',
                       style: TextStyle(
                         color: date != null ? Colors.white : Colors.white54,

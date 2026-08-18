@@ -8,13 +8,13 @@ class WebLayout extends StatelessWidget {
   final bool showSidebar;
 
   const WebLayout({
-    Key? key,
+    super.key,
     required this.sidebar,
     required this.mainContent,
     this.topBar,
     this.sidebarWidth = 280,
     this.showSidebar = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class WebCard extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
 
   const WebCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.margin,
@@ -80,7 +80,7 @@ class WebCard extends StatelessWidget {
     this.backgroundColor,
     this.borderRadius,
     this.boxShadow,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -114,14 +114,14 @@ class ResponsiveGrid extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const ResponsiveGrid({
-    Key? key,
+    super.key,
     required this.children,
     this.crossAxisCount = 2,
     this.childAspectRatio = 1.0,
     this.crossAxisSpacing = 16,
     this.mainAxisSpacing = 16,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +162,7 @@ class WebButton extends StatelessWidget {
   final IconData? icon;
 
   const WebButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.backgroundColor,
@@ -172,7 +172,7 @@ class WebButton extends StatelessWidget {
     this.height,
     this.borderRadius,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

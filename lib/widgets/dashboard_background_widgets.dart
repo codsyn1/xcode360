@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 class DottedBackground extends StatelessWidget {
   final double offset;
-  const DottedBackground({Key? key, required this.offset}) : super(key: key);
+  const DottedBackground({super.key, required this.offset});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class DottedPainter extends CustomPainter {
 
 class ParallaxLinesBackground extends StatelessWidget {
   final double progress;
-  const ParallaxLinesBackground({Key? key, required this.progress}) : super(key: key);
+  const ParallaxLinesBackground({super.key, required this.progress});
 
   @override
   Widget build(BuildContext context) {

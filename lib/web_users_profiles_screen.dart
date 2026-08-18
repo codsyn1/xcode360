@@ -15,7 +15,7 @@ import '../features/users/data/users_repository.dart';
 
 class WebUsersProfilesScreen extends StatefulWidget {
   final String? subcategory;
-  const WebUsersProfilesScreen({Key? key, this.subcategory}) : super(key: key);
+  const WebUsersProfilesScreen({super.key, this.subcategory});
 
   @override
   State<WebUsersProfilesScreen> createState() => _WebUsersProfilesScreenState();
@@ -103,7 +103,7 @@ class _WebUsersProfilesScreenState extends State<WebUsersProfilesScreen> {
                   .toList();
               
               return DropdownButtonFormField<String>(
-                value: _selectedCountry,
+                initialValue: _selectedCountry,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -139,7 +139,7 @@ class _WebUsersProfilesScreenState extends State<WebUsersProfilesScreen> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<int>(
-            value: _selectedRating,
+            initialValue: _selectedRating,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -147,7 +147,7 @@ class _WebUsersProfilesScreenState extends State<WebUsersProfilesScreen> {
               filled: true,
               fillColor: Colors.grey.shade100,
             ),
-            items: [
+            items: const [
               DropdownMenuItem(value: null, child: Text('All Ratings')),
               DropdownMenuItem(value: 5, child: Text('5 Stars')),
               DropdownMenuItem(value: 4, child: Text('4+ Stars')),
@@ -398,10 +398,10 @@ class _WebUsersProfilesScreenState extends State<WebUsersProfilesScreen> {
               ),
               child: Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Users',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF23272A),

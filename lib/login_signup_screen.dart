@@ -107,12 +107,12 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                           ),
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => LoginScreen()),
+                              MaterialPageRoute(builder: (_) => const LoginScreen()),
                             );
                           },
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Icon(Icons.login, size: 20, color: Colors.black87),
                               SizedBox(width: 8),
                               Text('LOGIN', style: TextStyle(color: Colors.black87)),
@@ -137,9 +137,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                               MaterialPageRoute(builder: (_) => SignUpScreen()),
                             );
                           },
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Icon(Icons.person_add_alt_1, size: 20, color: Colors.black87),
                               SizedBox(width: 8),
                               Text('SIGNUP', style: TextStyle(color: Colors.black87)),
@@ -216,7 +216,7 @@ class _ParallaxLinesBackground extends StatelessWidget {
 
 class _ParallaxLinesPainter extends CustomPainter {
   final double progress;
-  static final int points = 24;
+  static const int points = 24;
   static final List<_MovingPoint> basePoints = List.generate(
     points,
     (i) => _MovingPoint(

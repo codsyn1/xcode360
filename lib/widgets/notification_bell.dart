@@ -5,7 +5,7 @@ import '../services/notification_service.dart';
 import 'notification_screen.dart';
 
 class NotificationBell extends StatefulWidget {
-  const NotificationBell({Key? key}) : super(key: key);
+  const NotificationBell({super.key});
 
   @override
   State<NotificationBell> createState() => _NotificationBellState();

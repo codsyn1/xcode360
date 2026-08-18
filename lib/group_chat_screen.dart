@@ -9,7 +9,7 @@ import 'widgets/chat_ad_banner.dart';
 class GroupChatScreen extends StatefulWidget {
   final String userId;
   final String? department;
-  const GroupChatScreen({Key? key, required this.userId, this.department}) : super(key: key);
+  const GroupChatScreen({super.key, required this.userId, this.department});
 
   @override
   State<GroupChatScreen> createState() => _GroupChatScreenState();
@@ -25,7 +25,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   bool _showEmojiPicker = false;
   final Map<String, Map<String, String>> _userInfoCache = {};
   Set<String> _activeUserIds = {};
-  Map<String, Map<String, String>> _activeUserInfo = {};
+  final Map<String, Map<String, String>> _activeUserInfo = {};
 
   @override
   void initState() {
@@ -99,7 +99,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           .collection('users')
           .doc(widget.userId)
           .get();
-      final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+      final currentUserData = currentUserDoc.data();
       final currentUserName = currentUserData?['fullName'] ?? 
                               currentUserData?['name'] ?? 
                               currentUserData?['userName'] ?? 
@@ -137,7 +137,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             ? CircleAvatar(radius: 18, backgroundImage: NetworkImage(info['profileImageUrl']!))
             : const CircleAvatar(radius: 18, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
         title: Text(
-          (info['name'] ?? 'User') + ' (Private Chat)',
+          '${info['name'] ?? 'User'} (Private Chat)',
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         subtitle: info['jobTitle'] != null && info['jobTitle']!.isNotEmpty
@@ -354,10 +354,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
             // AdMob ad banner above input area
             const ChatAdBanner(),
             Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A1A1A),
                 border: Border(
-                  top: BorderSide(color: const Color(0xFF333333), width: 1),
+                  top: BorderSide(color: Color(0xFF333333), width: 1),
                 ),
               ),
               padding: EdgeInsets.only(
@@ -372,10 +372,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                   if (_showEmojiPicker)
                     Container(
                       height: isLarge ? 320 : isSmall ? 180 : 250,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1A1A1A),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF1A1A1A),
                         border: Border(
-                          top: BorderSide(color: const Color(0xFF333333), width: 1),
+                          top: BorderSide(color: Color(0xFF333333), width: 1),
                         ),
                       ),
                       padding: EdgeInsets.all(inputPadding),
@@ -466,7 +466,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                         ),
                         child: IconButton(
                           icon: _isSending
-                              ? SizedBox(width: isSmall ? 18 : 24, height: isSmall ? 18 : 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              ? SizedBox(width: isSmall ? 18 : 24, height: isSmall ? 18 : 24, child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                               : Icon(Icons.send, color: Colors.white, size: isSmall ? 20 : 24),
                           onPressed: _isSending ? null : _sendMessage,
                         ),

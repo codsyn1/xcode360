@@ -162,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         final isDark = mode == ThemeMode.dark;
         return SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          activeColor: const Color(0xFF1976D2),
+          activeThumbColor: const Color(0xFF1976D2),
           title: Text(
             isDark ? 'Dark Mode' : 'Light Mode',
             style: const TextStyle(color: Colors.white),
@@ -208,9 +208,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           Container(
                                             width: 88,
                                             height: 88,
-                                            decoration: BoxDecoration(
+                                            decoration: const BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: const Color(0xFF3A3A3A),
+                                              color: Color(0xFF3A3A3A),
                                             ),
                                             child: ClipOval(
                                               child: state.localProfileImagePath != null
@@ -275,9 +275,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                   : null),
                                         ),
                                         child: (state.localCoverImagePath == null && state.coverImageUrl.isEmpty)
-                                            ? Column(
+                                            ? const Column(
                                                 mainAxisAlignment: MainAxisAlignment.center,
-                                                children: const [
+                                                children: [
                                                   Icon(Icons.photo, color: Colors.white54, size: 36),
                                                   SizedBox(height: 8),
                                                   Text('Tap to select cover photo', style: TextStyle(color: Colors.white54)),
@@ -426,7 +426,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     const SizedBox(height: 12),
                                     // Category
                                     DropdownButtonFormField<String>(
-                                      value: safeCategory,
+                                      initialValue: safeCategory,
                                       items: state.categories.keys
                                           .map((cat) => DropdownMenuItem(
                                                 value: cat,
@@ -441,7 +441,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     // Subcategory (dependent)
                                     if (safeCategory != null)
                                       DropdownButtonFormField<String>(
-                                        value: safeSubcategory,
+                                        initialValue: safeSubcategory,
                                         items: subs
                                             .map((sub) => DropdownMenuItem(
                                                   value: sub,

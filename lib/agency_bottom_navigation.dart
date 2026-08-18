@@ -15,11 +15,11 @@ class AgencyBottomNavigation extends StatelessWidget {
   final int currentIndex;
 
   const AgencyBottomNavigation({
-    Key? key,
+    super.key,
     required this.userId,
     required this.agencyId,
     required this.currentIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -191,10 +191,10 @@ class AgencyChatHistoryScreen extends StatefulWidget {
   final String agencyId;
 
   const AgencyChatHistoryScreen({
-    Key? key,
+    super.key,
     required this.userId,
     required this.agencyId,
-  }) : super(key: key);
+  });
 
   @override
   State<AgencyChatHistoryScreen> createState() => _AgencyChatHistoryScreenState();
@@ -228,7 +228,7 @@ class _AgencyChatHistoryScreenState extends State<AgencyChatHistoryScreen> {
           }
 
           if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -237,13 +237,13 @@ class _AgencyChatHistoryScreenState extends State<AgencyChatHistoryScreen> {
                     color: Colors.white54,
                     size: 64,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'No chat history yet',
                     style: TextStyle(color: Colors.white54, fontSize: 18),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Start a conversation to see chat history here',
                     style: TextStyle(color: Colors.white38, fontSize: 14),
                     textAlign: TextAlign.center,
@@ -417,7 +417,7 @@ class _AgencyChatHistoryScreenState extends State<AgencyChatHistoryScreen> {
                               );
                             },
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   );

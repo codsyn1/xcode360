@@ -4,7 +4,7 @@ import '../services/admob_service.dart';
 import 'professional_ad_placeholder.dart';
 
 class DashboardAdBanner extends StatefulWidget {
-  const DashboardAdBanner({Key? key}) : super(key: key);
+  const DashboardAdBanner({super.key});
 
   @override
   State<DashboardAdBanner> createState() => _DashboardAdBannerState();

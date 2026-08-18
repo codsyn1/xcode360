@@ -21,7 +21,7 @@ import 'features/profile_analytics/data/profile_analytics_repository.dart';
 
 class UsersProfilesScreen extends StatefulWidget {
   final String? subcategory;
-  const UsersProfilesScreen({Key? key, this.subcategory}) : super(key: key);
+  const UsersProfilesScreen({super.key, this.subcategory});
 
   @override
   State<UsersProfilesScreen> createState() => _UsersProfilesScreenState();
@@ -288,7 +288,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                       itemCount: filteredDocs.length,
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
-                        final data = filteredDocs[index] as Map<String, dynamic>;
+                        final data = filteredDocs[index];
                         final userId = (data['id'] ?? '').toString();
                         final name = (data['fullName'] ?? data['name'] ?? 'User').toString();
                         final imageUrl = (data['profileImageUrl'] ?? '').toString();
@@ -305,8 +305,8 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                             builder: (context, constraints) {
                               final itemWidth = constraints.maxWidth;
                               final uiCardLocal = context.read<UsersCardUICubit>().state;
-                              final double coverHeight = (itemWidth * uiCardLocal.horizontalCoverHeightFactor).clamp(56.0, 140.0) as double;
-                              final double avatarSize = (itemWidth * uiCardLocal.horizontalAvatarSizeFactor).clamp(54.0, 110.0) as double;
+                              final double coverHeight = (itemWidth * uiCardLocal.horizontalCoverHeightFactor).clamp(56.0, 140.0);
+                              final double avatarSize = (itemWidth * uiCardLocal.horizontalAvatarSizeFactor).clamp(54.0, 110.0);
                               final String normalizedCoverUrl = (coverImageUrl.trim().toLowerCase() == 'null') ? '' : coverImageUrl.trim();
                               final String normalizedAvatarUrl = (imageUrl.trim().toLowerCase() == 'null') ? '' : imageUrl.trim();
                               return Card(
@@ -345,9 +345,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                           color: Colors.white.withOpacity(0.9),
                                                           borderRadius: BorderRadius.circular(20),
                                                         ),
-                                                        child: Row(
+                                                        child: const Row(
                                                           mainAxisSize: MainAxisSize.min,
-                                                          children: const [
+                                                          children: [
                                                             Icon(Icons.circle, size: 8, color: Colors.green),
                                                             SizedBox(width: 6),
                                                             Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -367,9 +367,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                               color: Colors.white.withOpacity(0.9),
                                                               borderRadius: BorderRadius.circular(20),
                                                             ),
-                                                            child: Row(
+                                                            child: const Row(
                                                               mainAxisSize: MainAxisSize.min,
-                                                              children: const [
+                                                              children: [
                                                                 Icon(Icons.circle, size: 8, color: Colors.green),
                                                                 SizedBox(width: 6),
                                                                 Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -387,9 +387,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                             color: Colors.white.withOpacity(0.9),
                                                             borderRadius: BorderRadius.circular(20),
                                                           ),
-                                                          child: Row(
+                                                          child: const Row(
                                                             mainAxisSize: MainAxisSize.min,
-                                                            children: const [
+                                                            children: [
                                                               Icon(Icons.circle, size: 8, color: Colors.green),
                                                               SizedBox(width: 6),
                                                               Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -419,9 +419,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                 ),
                                               ],
                                             ),
-                                            child: Row(
+                                            child: const Row(
                                               mainAxisSize: MainAxisSize.min,
-                                              children: const [
+                                              children: [
                                                 Icon(Icons.circle, size: 8, color: Colors.white),
                                                 SizedBox(width: 6),
                                                 Text('Online', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
@@ -541,7 +541,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                 children: [
                                                   if (country.isNotEmpty) ...[
                                                     Text(
-                                                      countryCodeToEmojiStatic(country) + ' ',
+                                                      '${countryCodeToEmojiStatic(country)} ',
                                                       style: const TextStyle(fontSize: 15),
                                                     ),
                                                     Flexible(
@@ -663,7 +663,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                   itemCount: filteredDocs.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final data = filteredDocs[index] as Map<String, dynamic>;
+                    final data = filteredDocs[index];
                     final userId = (data['id'] ?? '').toString();
                     final name = (data['fullName'] ?? data['name'] ?? 'User').toString();
                     final imageUrl = (data['profileImageUrl'] ?? '').toString();
@@ -679,11 +679,11 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                       builder: (context, constraints) {
                         final itemWidth = constraints.maxWidth;
                         final uiCardLocal = context.read<UsersCardUICubit>().state;
-                        final double coverHeight = (itemWidth * uiCardLocal.verticalCoverHeightFactor).clamp(56.0, 140.0) as double;
-                        final double avatarSize = (itemWidth * uiCardLocal.verticalAvatarSizeFactor).clamp(54.0, 110.0) as double;
+                        final double coverHeight = (itemWidth * uiCardLocal.verticalCoverHeightFactor).clamp(56.0, 140.0);
+                        final double avatarSize = (itemWidth * uiCardLocal.verticalAvatarSizeFactor).clamp(54.0, 110.0);
                         final String normalizedCoverUrl = (coverImageUrl.trim().toLowerCase() == 'null') ? '' : coverImageUrl.trim();
                         final String normalizedAvatarUrl = (imageUrl.trim().toLowerCase() == 'null') ? '' : imageUrl.trim();
-                        final double itemHeight = ((itemWidth * 0.9)).clamp(uiCardLocal.verticalMinHeight, uiCardLocal.verticalMaxHeight) as double;
+                        final double itemHeight = ((itemWidth * 0.9)).clamp(uiCardLocal.verticalMinHeight, uiCardLocal.verticalMaxHeight);
                         // Calculate minimum required height to prevent overflow
                         final double minRequiredHeight = coverHeight + (avatarSize * 0.6) + 200; // Increased to 200 for content area
                         final double finalHeight = itemHeight > minRequiredHeight ? itemHeight : minRequiredHeight;
@@ -725,9 +725,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                       color: Colors.white.withOpacity(0.9),
                                                       borderRadius: BorderRadius.circular(20),
                                                     ),
-                                                    child: Row(
+                                                    child: const Row(
                                                       mainAxisSize: MainAxisSize.min,
-                                                      children: const [
+                                                      children: [
                                                         Icon(Icons.circle, size: 8, color: Colors.green),
                                                         SizedBox(width: 6),
                                                         Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -747,9 +747,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                           color: Colors.white.withOpacity(0.9),
                                                           borderRadius: BorderRadius.circular(20),
                                                         ),
-                                                        child: Row(
+                                                        child: const Row(
                                                           mainAxisSize: MainAxisSize.min,
-                                                          children: const [
+                                                          children: [
                                                             Icon(Icons.circle, size: 8, color: Colors.green),
                                                             SizedBox(width: 6),
                                                             Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -767,9 +767,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                         color: Colors.white.withOpacity(0.9),
                                                         borderRadius: BorderRadius.circular(20),
                                                       ),
-                                                      child: Row(
+                                                      child: const Row(
                                                         mainAxisSize: MainAxisSize.min,
-                                                        children: const [
+                                                        children: [
                                                           Icon(Icons.circle, size: 8, color: Colors.green),
                                                           SizedBox(width: 6),
                                                           Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -878,9 +878,9 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                             ),
                                           ],
                                         ),
-                                        child: Row(
+                                        child: const Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          children: const [
+                                          children: [
                                             Icon(Icons.circle, size: 7, color: Colors.white),
                                             SizedBox(width: 4),
                                             Text('Online', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),

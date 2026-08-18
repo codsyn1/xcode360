@@ -19,7 +19,7 @@ import 'features/profile_analytics/presentation/profile_analytics_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userId; // Firestore user document ID
-  const ProfileScreen({Key? key, required this.userId}) : super(key: key);
+  const ProfileScreen({super.key, required this.userId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -36,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _currentUserId;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
       _completedExchangesSubscription;
-  bool _isUpdatingStatus = false;
+  final bool _isUpdatingStatus = false;
 
   @override
   void initState() {
@@ -46,16 +46,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Force immediate server refresh
     _refreshUserDocumentFromServer();
     // Multiple refreshes to ensure latest data
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       _refreshUserDocumentFromServer();
     });
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       _refreshUserDocumentFromServer();
     });
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       _refreshUserDocumentFromServer();
     });
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       _refreshUserDocumentFromServer();
     });
   }
@@ -79,10 +79,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _loadCurrentUserId();
       // Force server refresh when switching profiles
       _refreshUserDocumentFromServer();
-      Future.delayed(Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         _refreshUserDocumentFromServer();
       });
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         _refreshUserDocumentFromServer();
       });
     }
@@ -297,17 +297,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
           final String name =
               (userData['fullName'] ?? userData['name'] ?? 'User').toString();
-          final String _imageUrlRaw =
+          final String imageUrlRaw =
               (userData['profileImageUrl'] ?? '').toString();
-          final String _coverImageUrlRaw =
+          final String coverImageUrlRaw =
               (userData['coverImageUrl'] ?? '').toString();
-          final String imageUrl = _imageUrlRaw.trim().toLowerCase() == 'null'
+          final String imageUrl = imageUrlRaw.trim().toLowerCase() == 'null'
               ? ''
-              : _imageUrlRaw.trim();
+              : imageUrlRaw.trim();
           final String coverImageUrl =
-              _coverImageUrlRaw.trim().toLowerCase() == 'null'
+              coverImageUrlRaw.trim().toLowerCase() == 'null'
                   ? ''
-                  : _coverImageUrlRaw.trim();
+                  : coverImageUrlRaw.trim();
           final String bio = (userData['bio'] ?? '').toString();
           final String website = (userData['website'] ?? '').toString();
           final List<String> skills = userData['skills'] is List
@@ -317,6 +317,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final String city = (userData['city'] ?? '').toString();
           final String plan = (userData['plan'] ?? '').toString();
           final bool isOnline = (userData['onlineStatus'] ?? false) == true;
+          final int storedProjectsExchanged = (userData['projectsExchanged'] ?? 0) is int
+              ? (userData['projectsExchanged'] ?? 0) as int
+              : int.tryParse((userData['projectsExchanged'] ?? '0').toString()) ?? 0;
           final isOwnProfile = _currentUserId != null &&
               _currentUserId!.isNotEmpty &&
               userSnapshot.data!.id == _currentUserId;
@@ -328,10 +331,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               backgroundColor: isDarkMode ? _pageBg : const Color(0xFFF2F2F7),
               elevation: 0,
-              foregroundColor: Colors.white,
+              foregroundColor: isDarkMode ? Colors.white : Colors.black,
               automaticallyImplyLeading: false,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: isDarkMode ? Colors.white : Colors.black),
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   final userId = prefs.getString('userId') ?? '';
@@ -345,14 +348,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: Text(
                 'Profile',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w700,
                   fontSize: isSmallScreen ? 18 : 20,
                 ),
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.logout, size: isSmallScreen ? 20 : 24),
+                  icon: Icon(Icons.logout, color: isDarkMode ? Colors.white : Colors.black, size: isSmallScreen ? 20 : 24),
                   tooltip: 'Sign Out',
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
@@ -385,6 +388,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       isOnline: isOnline,
                       isOwnProfile: isOwnProfile,
                       isPro: plan.toLowerCase() == 'pro',
+                      projectsExchangedCount: storedProjectsExchanged > projectsExchanged
+                          ? storedProjectsExchanged
+                          : projectsExchanged,
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(
@@ -474,6 +480,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required bool isOnline,
     required bool isOwnProfile,
     required bool isPro,
+    required int projectsExchangedCount,
   }) {
     final coverHeight = isWide ? 220.0 : (isSmallScreen ? 120.0 : 170.0);
     final avatarRadius = isWide ? 52.0 : (isSmallScreen ? 32.0 : 44.0);
@@ -484,7 +491,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (city.trim().isNotEmpty) city.trim(),
       if (country.trim().isNotEmpty) country.trim(),
     ].join(', ');
-    final levelInfo = ProfileAnalyticsRepository.computeLevelInfo(projectsExchanged);
+    final rawLevelInfo = ProfileAnalyticsRepository.computeLevelInfo(projectsExchangedCount);
+    // Make sure every level has a high-contrast, clearly-visible chip color
+    final Color badgeBgColor = rawLevelInfo.levelLabel == 'Level 1'
+        ? const Color(0xFF555E6F)
+        : rawLevelInfo.levelLabel == 'Level 2'
+            ? Colors.blueAccent
+            : rawLevelInfo.levelLabel == 'Level 3'
+                ? Colors.amber
+                : Colors.purpleAccent;
+    final levelInfo = ProfileLevelInfo(
+      level: rawLevelInfo.level,
+      topRated: rawLevelInfo.topRated,
+      levelLabel: rawLevelInfo.levelLabel,
+      levelProgress: rawLevelInfo.levelProgress,
+      nextTargetLabel: rawLevelInfo.nextTargetLabel,
+      icon: rawLevelInfo.icon,
+      color: badgeBgColor,
+      completedCount: rawLevelInfo.completedCount,
+      baseCount: rawLevelInfo.baseCount,
+      nextTargetCount: rawLevelInfo.nextTargetCount,
+    );
 
     Future<void> onTapLevelBadge() async {
       if (isPro) {
@@ -574,9 +601,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     width: avatarRadius * 2,
                     height: avatarRadius * 2,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF242424),
+                      color: Color(0xFF242424),
                     ),
                     child: ClipOval(
                       child: imageUrl.isNotEmpty
@@ -626,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: levelInfo.color.withOpacity(0.9),
+                        color: levelInfo.color,
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
                           color: Colors.white,
@@ -668,7 +695,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: isSmallScreen ? 4 : 6),
                           Icon(
                             Icons.verified,
-                            color: Color(0xFF14A800),
+                            color: const Color(0xFF14A800),
                             size: isSmallScreen ? 16 : 20,
                           ),
                         ],
@@ -792,18 +819,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       backgroundColor: const Color(0xFF232323),
                                       title: Text(
                                         isOnline ? 'Go Offline' : 'Go Online',
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                       ),
                                       content: Text(
                                         isOnline 
                                             ? 'Are you sure you want to go offline? Other users will see you as unavailable.'
                                             : 'Are you sure you want to go online? Other users will see you as available.',
-                                        style: TextStyle(color: Colors.white70),
+                                        style: const TextStyle(color: Colors.white70),
                                       ),
                                       actions: [
                                         TextButton(
                                           onPressed: () => Navigator.of(ctx).pop(),
-                                          child: Text(
+                                          child: const Text(
                                             'Cancel',
                                             style: TextStyle(color: Colors.white70),
                                           ),
@@ -827,7 +854,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   );
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(4),
+                                  padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       color: isOnline ? Colors.green.withOpacity(0.5) : Colors.grey.withOpacity(0.5),
@@ -910,7 +937,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                   ),
-                  SizedBox(width: 4), // Small gap between buttons
+                  const SizedBox(width: 4), // Small gap between buttons
                   // Hire Me button (only for Pro users)
                   if (plan.toLowerCase() == 'pro') ...[
                     Expanded(
@@ -1256,7 +1283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class AppDrawer extends StatelessWidget {
   final String userId;
-  const AppDrawer({Key? key, required this.userId}) : super(key: key);
+  const AppDrawer({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {

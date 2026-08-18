@@ -12,6 +12,8 @@ import 'new_idea_screen.dart';
 import 'chat_project_exchange_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -61,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               print("🔥 === SPLASH SCREEN: NAVIGATING TO CHAT FROM NOTIFICATION ===");
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => kIsWeb 
-                    ? WebDashboardScreen()
+                    ? const WebDashboardScreen()
                     : ChatProjectExchangeScreen(
                         currentUserId: currentUserId,
                         profileUserId: fromUserId,
@@ -75,14 +77,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => kIsWeb 
-                ? WebDashboardScreen()
+                ? const WebDashboardScreen()
                 : DashboardScreen(userId: state.userId)),
           );
         } else if (state is SplashGuest) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => kIsWeb 
-                ? WebHomePage()
-                : NewIdeaScreen()),
+                ? const WebHomePage()
+                : const NewIdeaScreen()),
           );
         }
       },
@@ -116,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 class StableParallaxLinesPainter extends CustomPainter {
   final double progress;
   final Color lineColor;
-  static final int points = 24;
+  static const int points = 24;
   static final List<_MovingPoint> basePoints = List.generate(
     points,
     (i) => _MovingPoint(

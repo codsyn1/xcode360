@@ -14,12 +14,12 @@ class AgencyChatScreen extends StatefulWidget {
   final String? agencyLogo;
 
   const AgencyChatScreen({
-    Key? key,
+    super.key,
     required this.currentUserId,
     required this.agencyId,
     required this.agencyName,
     this.agencyLogo,
-  }) : super(key: key);
+  });
 
   @override
   State<AgencyChatScreen> createState() => _AgencyChatScreenState();
@@ -31,7 +31,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
   List<Map<String, dynamic>> _messages = [];
   bool isLoading = false;
   String? _userProfileImage;
-  Map<String, String?> _userProfileImages = {}; // Cache for user profile images
+  final Map<String, String?> _userProfileImages = {}; // Cache for user profile images
   StreamSubscription? _userMessagesSubscription;
   StreamSubscription? _agencyMessagesSubscription;
   Timer? _debounceTimer;
@@ -215,7 +215,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
           
           // Debug: Print each message
           for (final doc in userMessagesSnapshot.docs) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             print('📨 Message: "${data['text']}" from ${data['senderName']} (${data['senderId']})');
           }
           
@@ -262,7 +262,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
       final senderId = message['senderId'] as String? ?? '';
       final receiverId = message['receiverId'] as String? ?? '';
       // Create a more specific unique key including receiverId to prevent collisions
-      final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}';
+      final uniqueKey = '${timestamp}_${text}_${senderId}_$receiverId';
       currentMessagesMap[uniqueKey] = message;
     }
     
@@ -276,9 +276,9 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
         final receiverId = data['receiverId'] as String? ?? '';
         // Use document ID as part of unique key for better uniqueness
         final docId = doc.id;
-        final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}_${docId}';
+        final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}_$docId';
         currentMessagesMap[uniqueKey] = data;
-        print('✅ Added user message: "${text}" from ${data['senderName']} ($senderId) to $receiverId (docId: $docId)');
+        print('✅ Added user message: "$text" from ${data['senderName']} ($senderId) to $receiverId (docId: $docId)');
       }
     }
     
@@ -292,9 +292,9 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
         final receiverId = data['receiverId'] as String? ?? '';
         // Use document ID as part of unique key for better uniqueness
         final docId = doc.id;
-        final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}_${docId}';
+        final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}_$docId';
         currentMessagesMap[uniqueKey] = data;
-        print('✅ Added agency message: "${text}" from ${data['senderName']} ($senderId) to $receiverId (docId: $docId)');
+        print('✅ Added agency message: "$text" from ${data['senderName']} ($senderId) to $receiverId (docId: $docId)');
       }
     }
     
@@ -341,7 +341,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
       final uniqueKey = '${timestamp}_${text}_${senderId}_${receiverId}_${doc.id}';
       messageMap[uniqueKey] = data;
       
-      print('Added message: ${text} from ${data['senderName']} (senderId: $senderId, receiverId: $receiverId, docId: ${doc.id})');
+      print('Added message: $text from ${data['senderName']} (senderId: $senderId, receiverId: $receiverId, docId: ${doc.id})');
     }
     
     setState(() {
@@ -532,7 +532,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
             .collection('users')
             .doc(widget.currentUserId)
             .get();
-        final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+        final currentUserData = currentUserDoc.data();
         final currentUserName = currentUserData?['name'] ?? 
                                 currentUserData?['userName'] ?? 
                                 currentUserData?['fullName'] ?? 
@@ -707,22 +707,22 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        actions: [],
+        actions: const [],
       ),
       body: Column(
         children: [
           // Messages Area
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A1A1A),
               ),
               child: _messages.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.chat_bubble_outline,
                             color: Colors.white54,
                             size: 60,
@@ -811,7 +811,7 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
                                         padding: const EdgeInsets.only(bottom: 4),
                                         child: Text(
                                           message['senderName'] ?? 'Agency',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white60,
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
@@ -887,11 +887,11 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
               top: 16,
               bottom: 16 + MediaQuery.of(context).viewInsets.bottom,
             ),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A1A1A),
               border: Border(
                 top: BorderSide(
-                  color: const Color(0xFF2C2C2C),
+                  color: Color(0xFF2C2C2C),
                   width: 1,
                 ),
               ),
@@ -923,8 +923,8 @@ class _AgencyChatScreenState extends State<AgencyChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2C2C2C),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF2C2C2C),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(

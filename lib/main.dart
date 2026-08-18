@@ -536,7 +536,7 @@ Future<void> _initializeServices() async {
           
           // Force a navigation check after a short delay
           print("⏰ Scheduling navigation check in 1 second...");
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             print("⏰ Navigation check triggered");
             // The dashboard screen will handle the actual navigation
           });
@@ -602,7 +602,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
-      home: kIsWeb ? WebHomePage() : SplashScreen(),
+      home: kIsWeb ? const WebHomePage() : SplashScreen(),
       routes: {
         '/admin_password': (context) => const AdminPasswordUtility(),
         '/payment': (context) {

@@ -165,10 +165,10 @@ class _Sidebar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
+        const Padding(
+          padding: EdgeInsets.all(12),
           child: Row(
-            children: const [
+            children: [
               Icon(Icons.category, color: Colors.white70),
               SizedBox(width: 8),
               Text('Categories', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),

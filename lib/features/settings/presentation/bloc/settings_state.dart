@@ -53,7 +53,7 @@ class SettingsState extends Equatable {
   final List<String> skillsOptions;
   final List<String> skills;
 
-  SettingsState({
+  const SettingsState({
     this.loading = true,
     this.saving = false,
     this.message,

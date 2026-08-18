@@ -166,10 +166,10 @@ class DashboardDrawer extends StatelessWidget {
                   ),
                 if (state.isAdmin) ...[
                   const Divider(color: Colors.white24, height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
                     child: Row(
-                      children: const [
+                      children: [
                         Icon(Icons.shield, color: Colors.white70, size: 18),
                         SizedBox(width: 8),
                         Text(

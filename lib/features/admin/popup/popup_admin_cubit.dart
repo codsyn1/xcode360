@@ -20,7 +20,7 @@ class PopupAdminCubit extends Cubit<PopupAdminState> {
 
   Stream<PopupAdminState> listenConfig() {
     return _db.doc('appConfig/popup').snapshots().map((d) {
-      final data = d.data() as Map<String, dynamic>?;
+      final data = d.data();
       final url = data != null ? (data['imageUrl'] ?? '') as String : null;
       final active = data != null ? (data['active'] ?? false) as bool : false;
       return PopupAdminState(loading: false, imageUrl: url, active: active);
@@ -30,7 +30,7 @@ class PopupAdminCubit extends Cubit<PopupAdminState> {
   Future<void> refreshOnce() async {
     try {
       final d = await _db.doc('appConfig/popup').get();
-      final data = d.data() as Map<String, dynamic>?;
+      final data = d.data();
       emit(PopupAdminState(
         loading: false,
         imageUrl: data != null ? (data['imageUrl'] ?? '') as String : null,

@@ -21,7 +21,7 @@ import 'package:intl/intl.dart';
 class WebDashboardScreen extends StatefulWidget {
   final String? userId;
   final int selectedIndex;
-  const WebDashboardScreen({Key? key, this.userId, this.selectedIndex = 0}) : super(key: key);
+  const WebDashboardScreen({super.key, this.userId, this.selectedIndex = 0});
 
   @override
   State<WebDashboardScreen> createState() => _WebDashboardScreenState();
@@ -48,7 +48,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
 
   Future<void> _loadUserData() async {
     final doc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
-    final data = doc.data() as Map<String, dynamic>? ?? {};
+    final data = doc.data() ?? {};
     
     setState(() {
       userName = (data['fullName'] ?? data['name'] ?? 'User').toString();
@@ -245,7 +245,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
       case 0:
         return _buildDashboardContent();
       case 1:
-        return WebUsersProfilesScreen();
+        return const WebUsersProfilesScreen();
       case 2:
         return ExchangeProjectsScreen(currentUserId: widget.userId ?? '');
       case 3:
@@ -255,19 +255,19 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
       case 5:
         return AgencyScreen(userId: widget.userId ?? '');
       case 6:
-        return LiveSupportScreen();
+        return const LiveSupportScreen();
       case 7:
         return _buildAdminDashboard();
       case 8:
-        return AdminPaymentsScreen();
+        return const AdminPaymentsScreen();
       case 9:
-        return AdminSupportScreen();
+        return const AdminSupportScreen();
       case 10:
-        return SliderAdminScreen();
+        return const SliderAdminScreen();
       case 11:
-        return PopupAdminScreen();
+        return const PopupAdminScreen();
       case 12:
-        return SettingsScreen();
+        return const SettingsScreen();
       case 13:
         return _buildLogoutScreen();
       default:
@@ -288,7 +288,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.people, color: Colors.blue, size: 32),
+                    const Icon(Icons.people, color: Colors.blue, size: 32),
                     const SizedBox(height: 12),
                     Text(
                       'Total Users',
@@ -314,7 +314,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.swap_horiz, color: Colors.green, size: 32),
+                    const Icon(Icons.swap_horiz, color: Colors.green, size: 32),
                     const SizedBox(height: 12),
                     Text(
                       'Projects Exchanged',
@@ -340,7 +340,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.chat, color: Colors.orange, size: 32),
+                    const Icon(Icons.chat, color: Colors.orange, size: 32),
                     const SizedBox(height: 12),
                     Text(
                       'Messages',
@@ -366,7 +366,7 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.trending_up, color: Colors.purple, size: 32),
+                    const Icon(Icons.trending_up, color: Colors.purple, size: 32),
                     const SizedBox(height: 12),
                     Text(
                       'Active Now',
@@ -464,17 +464,17 @@ class _WebDashboardScreenState extends State<WebDashboardScreen> {
   }
 
   Widget _buildLogoutScreen() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.logout,
             size: 64,
             color: Colors.grey,
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Logging out...',
             style: TextStyle(fontSize: 18, color: Colors.grey),
           ),

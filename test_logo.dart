@@ -5,6 +5,8 @@ void main() {
 }
 
 class TestApp extends StatelessWidget {
+  const TestApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,8 +16,8 @@ class TestApp extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Testing Logo Display', style: TextStyle(color: Colors.white)),
-              SizedBox(height: 20),
+              const Text('Testing Logo Display', style: TextStyle(color: Colors.white)),
+              const SizedBox(height: 20),
               Image.asset(
                 'assets/logo.png',
                 width: 200,
@@ -23,8 +25,8 @@ class TestApp extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) {
                   return Column(
                     children: [
-                      Icon(Icons.error, color: Colors.red, size: 50),
-                      Text('Error loading logo: $error', style: TextStyle(color: Colors.white)),
+                      const Icon(Icons.error, color: Colors.red, size: 50),
+                      Text('Error loading logo: $error', style: const TextStyle(color: Colors.white)),
                     ],
                   );
                 },

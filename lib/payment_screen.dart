@@ -75,7 +75,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             TextField(
               controller: _cardNumberController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Card Number'),
+              decoration: const InputDecoration(labelText: 'Card Number'),
             ),
             Row(
               children: [
@@ -83,32 +83,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: TextField(
                     controller: _expiryController,
                     keyboardType: TextInputType.datetime,
-                    decoration: InputDecoration(labelText: 'Expiry (M  M/YY)'),
+                    decoration: const InputDecoration(labelText: 'Expiry (M  M/YY)'),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
                     controller: _cvvController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'CVV'),
+                    decoration: const InputDecoration(labelText: 'CVV'),
                   ),
                 ),
               ],
             ),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name on Card'),
+              decoration: const InputDecoration(labelText: 'Name on Card'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Dummy action
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Credit Card payment submitted (dummy)!')),
+                  const SnackBar(content: Text('Credit Card payment submitted (dummy)!')),
                 );
               },
-              child: Text('Pay with Credit Card'),
+              child: const Text('Pay with Credit Card'),
             ),
           ],
         );
@@ -117,23 +117,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Send payment to EasyPaisa account:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Account: 0345-XXXXXXX'),
-            SizedBox(height: 8),
+            const Text('Send payment to EasyPaisa account:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Account: 0345-XXXXXXX'),
+            const SizedBox(height: 8),
             TextField(
               controller: _accountController,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: 'Your EasyPaisa Number'),
+              decoration: const InputDecoration(labelText: 'Your EasyPaisa Number'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('EasyPaisa payment info submitted (dummy)!')),
+                  const SnackBar(content: Text('EasyPaisa payment info submitted (dummy)!')),
                 );
               },
-              child: Text('Submit EasyPaisa Payment'),
+              child: const Text('Submit EasyPaisa Payment'),
             ),
           ],
         );
@@ -142,23 +142,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Send payment to JazzCash account:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Account: 0300-XXXXXXX'),
-            SizedBox(height: 8),
+            const Text('Send payment to JazzCash account:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Account: 0300-XXXXXXX'),
+            const SizedBox(height: 8),
             TextField(
               controller: _accountController,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: 'Your JazzCash Number'),
+              decoration: const InputDecoration(labelText: 'Your JazzCash Number'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('JazzCash payment info submitted (dummy)!')),
+                  const SnackBar(content: Text('JazzCash payment info submitted (dummy)!')),
                 );
               },
-              child: Text('Submit JazzCash Payment'),
+              child: const Text('Submit JazzCash Payment'),
             ),
           ],
         );
@@ -167,29 +167,29 @@ class _PaymentScreenState extends State<PaymentScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Bank Transfer Details:', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Account Title: XCODE360'),
-            Text('Account Number: 1234567890'),
-            Text('Bank: ABC Bank'),
-            SizedBox(height: 8),
+            const Text('Bank Transfer Details:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Account Title: XCODE360'),
+            const Text('Account Number: 1234567890'),
+            const Text('Bank: ABC Bank'),
+            const SizedBox(height: 8),
             TextField(
               controller: _accountController,
-              decoration: InputDecoration(labelText: 'Your Bank Account/Ref No'),
+              decoration: const InputDecoration(labelText: 'Your Bank Account/Ref No'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Bank transfer info submitted (dummy)!')),
+                  const SnackBar(content: Text('Bank transfer info submitted (dummy)!')),
                 );
               },
-              child: Text('Submit Bank Transfer'),
+              child: const Text('Submit Bank Transfer'),
             ),
           ],
         );
       default:
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
     }
   }
 
@@ -197,7 +197,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment Methods'),
+        title: const Text('Payment Methods'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -225,8 +225,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ],
                 ),
               ),
-            Text('Select Payment Method:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            SizedBox(height: 16),
+            const Text('Select Payment Method:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(_methods.length, (i) => ChoiceChip(
@@ -237,7 +237,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 },
               )),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             _buildMethodContent(),
           ],
         ),

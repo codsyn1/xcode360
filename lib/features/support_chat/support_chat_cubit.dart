@@ -14,7 +14,7 @@ class SupportChatCubit extends Cubit<SupportChatState> {
 
   Future<void> init({required String userId, required String category}) async {
     emit(state.copyWith(loading: true, error: null, userId: userId, category: category));
-    _ticketId = '${userId}_${category}';
+    _ticketId = '${userId}_$category';
     await _ensureTicket(userId, category);
     await _loadUserInfo(userId);
     _listenMessages();
@@ -58,8 +58,9 @@ class SupportChatCubit extends Cubit<SupportChatState> {
         final data = d.data();
         final ts = data['timestamp'];
         DateTime dt;
-        if (ts is Timestamp) dt = ts.toDate();
-        else if (ts is DateTime) dt = ts;
+        if (ts is Timestamp) {
+          dt = ts.toDate();
+        } else if (ts is DateTime) dt = ts;
         else dt = DateTime.fromMillisecondsSinceEpoch(0);
         return SupportChatMessage(
           id: d.id,

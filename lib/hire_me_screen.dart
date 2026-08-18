@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 
 class HireMeScreen extends StatelessWidget {
+  const HireMeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hire Me'),
+        title: const Text('Hire Me'),
         backgroundColor: isDarkMode ? Colors.black : const Color(0xFFF2F2F7),
         foregroundColor: isDarkMode ? Colors.white : Colors.black,
       ),

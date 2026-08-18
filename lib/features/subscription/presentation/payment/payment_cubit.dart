@@ -56,7 +56,7 @@ class PaymentCubit extends Cubit<PaymentState> {
     ];
 
     // Helper with 1s timeout per attempt
-    Future<bool> _try(Uri uri, LaunchMode mode) async {
+    Future<bool> tryLaunchUrl(Uri uri, LaunchMode mode) async {
       try {
         final can = await canLaunchUrl(uri);
         if (!can) return false;
@@ -70,12 +70,12 @@ class PaymentCubit extends Cubit<PaymentState> {
 
     for (final uri in candidates) {
       // Prefer non-browser applications (WhatsApp app) for faster handoff
-      if (await _try(uri, LaunchMode.externalNonBrowserApplication)) {
+      if (await tryLaunchUrl(uri, LaunchMode.externalNonBrowserApplication)) {
         emit(state.copyWith(message: 'Opening WhatsApp...'));
         return;
       }
       // Fallback to externalApplication (may open chooser/browser)
-      if (await _try(uri, LaunchMode.externalApplication)) {
+      if (await tryLaunchUrl(uri, LaunchMode.externalApplication)) {
         emit(state.copyWith(message: 'Opening WhatsApp...'));
         return;
       }

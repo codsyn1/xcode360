@@ -9,7 +9,7 @@ import 'create_agency_profile_screen.dart';
 class AgencyProfileScreen extends StatefulWidget {
   final String userId;
   final String agencyId;
-  const AgencyProfileScreen({Key? key, required this.userId, required this.agencyId}) : super(key: key);
+  const AgencyProfileScreen({super.key, required this.userId, required this.agencyId});
 
   @override
   State<AgencyProfileScreen> createState() => _AgencyProfileScreenState();
@@ -791,7 +791,7 @@ class _AgencyProfileScreenState extends State<AgencyProfileScreen> with SingleTi
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -840,12 +840,12 @@ class _AgencyProfileScreenState extends State<AgencyProfileScreen> with SingleTi
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(isWide ? 16 : 12),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.chat, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  const Text(
+                  Icon(Icons.chat, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
                     'Start Chat',
                     style: TextStyle(
                       color: Colors.white,
@@ -871,12 +871,12 @@ class _AgencyProfileScreenState extends State<AgencyProfileScreen> with SingleTi
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(isWide ? 16 : 12),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.language, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  const Text(
+                  Icon(Icons.language, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
                     'Visit Website',
                     style: TextStyle(
                       color: Colors.white,

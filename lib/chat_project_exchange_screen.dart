@@ -63,8 +63,8 @@ class ChatProjectExchangeScreen extends StatefulWidget {
     required this.profileUserId, 
     this.otherUserName,
     this.userPlan,
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   State<ChatProjectExchangeScreen> createState() => _ChatProjectExchangeScreenState();
@@ -161,11 +161,11 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
 
   void _scrollToBottom() {
     // Auto-scroll to latest message
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted && _scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       }
@@ -265,7 +265,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
               .collection('users')
               .doc(widget.currentUserId)
               .get();
-          final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+          final currentUserData = currentUserDoc.data();
           final currentUserName = currentUserData?['name'] ?? 
                                   currentUserData?['userName'] ?? 
                                   currentUserData?['fullName'] ?? 
@@ -276,7 +276,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
               .collection('users')
               .doc(widget.profileUserId)
               .get();
-          final receiverData = receiverDoc.data() as Map<String, dynamic>?;
+          final receiverData = receiverDoc.data();
           final receiverFcmToken = receiverData?['fcmToken'];
           final receiverTokenUserId = receiverData?['tokenUserId'];
           final receiverDeviceActive = receiverData?['deviceActive'] ?? false;
@@ -346,7 +346,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       appBar: AppBar(
-        backgroundColor: Color(0xFF2D2D2D),
+        backgroundColor: const Color(0xFF2D2D2D),
         foregroundColor: Colors.white,
         elevation: 0.5,
         titleSpacing: 0,
@@ -354,7 +354,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
           stream: FirebaseFirestore.instance.collection('users').doc(widget.profileUserId).snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2));
+              return const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2));
             }
             final data = snapshot.data!.data() as Map<String, dynamic>?;
             final profileUserName = data?['fullName'] ?? data?['name'] ?? 'User';
@@ -398,7 +398,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                               color: profileUserOnlineStatus ? Colors.green : Colors.grey,
                               size: isWide ? 14 : 12,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
                               profileUserOnlineStatus ? 'Online' : 'Offline',
                               style: TextStyle(
@@ -424,7 +424,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 8),
             child: Tooltip(
               message: _currentUserPlan.toLowerCase() == 'free' && _sentExchangeCount >= 5 
                   ? 'Free plan limit reached. Upgrade to Pro for unlimited requests.'
@@ -435,11 +435,11 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                   backgroundColor: _currentUserPlan.toLowerCase() == 'free' && _sentExchangeCount >= 5 
                       ? Colors.grey 
                       : Colors.blueGrey[700],
-                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                icon: Icon(Icons.swap_horiz, size: 22, color: Colors.white),
-              label: Text('Start Exchange', style: TextStyle(fontSize: 15, color: Colors.white)),
+                icon: const Icon(Icons.swap_horiz, size: 22, color: Colors.white),
+              label: const Text('Start Exchange', style: TextStyle(fontSize: 15, color: Colors.white)),
                 onPressed: _loadingExchangeCount
                     ? null
                     : () async {
@@ -458,7 +458,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                           print('=== CONTEXT MOUNTED, TRYING SHOWDIALOG ===');
                           
                           // Try with a small delay to ensure UI is ready
-                          Future.delayed(Duration(milliseconds: 100), () {
+                          Future.delayed(const Duration(milliseconds: 100), () {
                             if (context.mounted) {
                               print('=== DELAYED DIALOG ATTEMPT ===');
                               showDialog(
@@ -467,16 +467,16 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                 builder: (ctx2) {
                                   print('=== DIALOG BUILDER CALLED ===');
                                   return AlertDialog(
-                                    backgroundColor: Color(0xFF232323),
-                                    title: Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
-                                    content: Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
+                                    backgroundColor: const Color(0xFF232323),
+                                    title: const Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
+                                    content: const Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
                                           print('=== MAYBE LATER PRESSED ===');
                                           Navigator.of(ctx2).pop();
                                         },
-                                        child: Text('Maybe Later', style: TextStyle(color: Colors.white70)),
+                                        child: const Text('Maybe Later', style: TextStyle(color: Colors.white70)),
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
@@ -487,7 +487,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
-                                        child: Text('Upgrade to Pro', style: TextStyle(color: Colors.white)),
+                                        child: const Text('Upgrade to Pro', style: TextStyle(color: Colors.white)),
                                       ),
                                     ],
                                   );
@@ -522,12 +522,12 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                             .limit(1)
                             .get();
                         if (exchangeQuery.docs.isNotEmpty) {
-                          existingExchange = exchangeQuery.docs.first.data() as Map<String, dynamic>;
+                          existingExchange = exchangeQuery.docs.first.data();
                           exchangeId = exchangeQuery.docs.first.id;
                         }
                         print('Firestore query success - found ${exchangeQuery.docs.length} exchanges');
                       } catch (e) {
-                        print('Firestore query failed: ' + e.toString());
+                        print('Firestore query failed: $e');
                         // Try without ordering as fallback
                         try {
                           print('Trying fallback query without ordering...');
@@ -538,12 +538,12 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                               .limit(1)
                               .get();
                           if (fallbackQuery.docs.isNotEmpty) {
-                            existingExchange = fallbackQuery.docs.first.data() as Map<String, dynamic>;
+                            existingExchange = fallbackQuery.docs.first.data();
                             exchangeId = fallbackQuery.docs.first.id;
                           }
                           print('Fallback query success');
                         } catch (fallbackError) {
-                          print('Fallback query also failed: ' + fallbackError.toString());
+                          print('Fallback query also failed: $fallbackError');
                           // Continue without existing exchange check
                         }
                       }
@@ -552,12 +552,12 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                         showDialog(
                           context: context,
                           builder: (ctx) {
-                            final _titleController = TextEditingController();
-                            final _typeController = TextEditingController();
-                            final _descController = TextEditingController();
-                            final _linkController = TextEditingController();
-                            final _noteController = TextEditingController();
-                            String _selectedLinkType = 'Google Drive';
+                            final titleController = TextEditingController();
+                            final typeController = TextEditingController();
+                            final descController = TextEditingController();
+                            final linkController = TextEditingController();
+                            final noteController = TextEditingController();
+                            String selectedLinkType = 'Google Drive';
                             return StatefulBuilder(
                               builder: (context, setState) {
                                 bool showProjectLinkFields = false;
@@ -569,27 +569,27 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                   }
                                 }
                                 return AlertDialog(
-                                  backgroundColor: Color(0xFF232323),
-                                  title: Text('Start Exchange', style: TextStyle(color: Colors.white)),
+                                  backgroundColor: const Color(0xFF232323),
+                                  title: const Text('Start Exchange', style: TextStyle(color: Colors.white)),
                                   content: SingleChildScrollView(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         TextFormField(
-                                          controller: _titleController,
-                                          style: TextStyle(color: Colors.white),
-                                          decoration: InputDecoration(
+                                          controller: titleController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: const InputDecoration(
                                             labelText: 'Project Title',
                                             labelStyle: TextStyle(color: Colors.white70),
                                             enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
                                             focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
                                           ),
                                         ),
-                                        SizedBox(height: 14),
+                                        const SizedBox(height: 14),
                                         TextFormField(
-                                          controller: _typeController,
-                                          style: TextStyle(color: Colors.white),
-                                          decoration: InputDecoration(
+                                          controller: typeController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: const InputDecoration(
                                             labelText: 'Project Type',
                                             hintText: 'e.g. Flutter, Web, SEO, Design',
                                             hintStyle: TextStyle(color: Colors.white38),
@@ -598,11 +598,11 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                             focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
                                           ),
                                         ),
-                                        SizedBox(height: 14),
+                                        const SizedBox(height: 14),
                                         TextFormField(
-                                          controller: _descController,
-                                          style: TextStyle(color: Colors.white),
-                                          decoration: InputDecoration(
+                                          controller: descController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: const InputDecoration(
                                             labelText: 'Project Description',
                                             hintText: 'Describe your project',
                                             hintStyle: TextStyle(color: Colors.white38),
@@ -612,13 +612,13 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                           ),
                                           maxLines: 2,
                                         ),
-                                        SizedBox(height: 14),
+                                        const SizedBox(height: 14),
                                         if (showProjectLinkFields) ...[
                                           DropdownButtonFormField<String>(
-                                            value: _selectedLinkType,
-                                            dropdownColor: Color(0xFF232323),
-                                            style: TextStyle(color: Colors.white),
-                                            decoration: InputDecoration(
+                                            initialValue: selectedLinkType,
+                                            dropdownColor: const Color(0xFF232323),
+                                            style: const TextStyle(color: Colors.white),
+                                            decoration: const InputDecoration(
                                               labelText: 'Project Link Type',
                                               labelStyle: TextStyle(color: Colors.white70),
                                               enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
@@ -633,29 +633,29 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                             onChanged: (val) {
                                               if (val != null) {
                                                 setState(() {
-                                                  _selectedLinkType = val;
+                                                  selectedLinkType = val;
                                                 });
                                               }
                                             },
                                           ),
-                                          SizedBox(height: 14),
+                                          const SizedBox(height: 14),
                                           TextFormField(
-                                            controller: _linkController,
-                                            style: TextStyle(color: Colors.white),
+                                            controller: linkController,
+                                            style: const TextStyle(color: Colors.white),
                                             decoration: InputDecoration(
-                                              labelText: _selectedLinkType == 'Google Drive'
+                                              labelText: selectedLinkType == 'Google Drive'
                                                   ? 'Google Drive Project Link'
                                                   : 'Github Project Link',
-                                              hintText: _selectedLinkType == 'Google Drive'
+                                              hintText: selectedLinkType == 'Google Drive'
                                                   ? 'Please drop your Google Drive project link'
                                                   : 'Please drop your Github project link',
-                                              hintStyle: TextStyle(color: Colors.white38),
-                                              labelStyle: TextStyle(color: Colors.white70),
-                                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
-                                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                                              hintStyle: const TextStyle(color: Colors.white38),
+                                              labelStyle: const TextStyle(color: Colors.white70),
+                                              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+                                              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
                                             ),
                                           ),
-                                          SizedBox(height: 14),
+                                          const SizedBox(height: 14),
                                         ],
                                         Row(
                                           children: [
@@ -669,13 +669,12 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                     lastDate: DateTime(2100),
                                                     builder: (context, child) => Theme(
                                                       data: ThemeData.dark().copyWith(
-                                                        colorScheme: ColorScheme.dark(
+                                                        colorScheme: const ColorScheme.dark(
                                                           primary: Colors.blueAccent,
                                                           onPrimary: Colors.white,
                                                           surface: Color(0xFF232323),
                                                           onSurface: Colors.white,
-                                                        ),
-                                                        dialogBackgroundColor: Color(0xFF232323),
+                                                        ), dialogTheme: DialogThemeData(backgroundColor: Color(0xFF232323)),
                                                       ),
                                                       child: child!,
                                                     ),
@@ -688,8 +687,8 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                 },
                                                 child: AbsorbPointer(
                                                   child: TextFormField(
-                                                    style: TextStyle(color: Colors.white),
-                                                    decoration: InputDecoration(
+                                                    style: const TextStyle(color: Colors.white),
+                                                    decoration: const InputDecoration(
                                                       labelText: 'Start Project Date',
                                                       labelStyle: TextStyle(color: Colors.white70),
                                                       hintText: 'Select start date',
@@ -704,7 +703,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(width: 10),
+                                            const SizedBox(width: 10),
                                             Expanded(
                                               child: GestureDetector(
                                                 onTap: () async {
@@ -715,13 +714,12 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                     lastDate: DateTime(2100),
                                                     builder: (context, child) => Theme(
                                                       data: ThemeData.dark().copyWith(
-                                                        colorScheme: ColorScheme.dark(
+                                                        colorScheme: const ColorScheme.dark(
                                                           primary: Colors.blueAccent,
                                                           onPrimary: Colors.white,
                                                           surface: Color(0xFF232323),
                                                           onSurface: Colors.white,
-                                                        ),
-                                                        dialogBackgroundColor: Color(0xFF232323),
+                                                        ), dialogTheme: DialogThemeData(backgroundColor: Color(0xFF232323)),
                                                       ),
                                                       child: child!,
                                                     ),
@@ -734,8 +732,8 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                 },
                                                 child: AbsorbPointer(
                                                   child: TextFormField(
-                                                    style: TextStyle(color: Colors.white),
-                                                    decoration: InputDecoration(
+                                                    style: const TextStyle(color: Colors.white),
+                                                    decoration: const InputDecoration(
                                                       labelText: 'End Project Date',
                                                       labelStyle: TextStyle(color: Colors.white70),
                                                       hintText: 'Select end date',
@@ -752,40 +750,40 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                             ),
                                           ],
                                         ),
-                                        SizedBox(height: 14),
+                                        const SizedBox(height: 14),
                                         TextFormField(
-                                          controller: _noteController,
-                                          style: TextStyle(color: Colors.white),
-                                          decoration: InputDecoration(
+                                          controller: noteController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: const InputDecoration(
                                             labelText: 'Exchange Note',
                                             labelStyle: TextStyle(color: Colors.white70),
                                             enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
                                             focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
                                           ),
                                         ),
-                                        SizedBox(height: 14),
+                                        const SizedBox(height: 14),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
                                             TextButton(
                                               onPressed: () => Navigator.of(ctx).pop(),
-                                              child: Text('Cancel', style: TextStyle(color: Colors.white70)),
+                                              child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
                                             ),
-                                            SizedBox(width: 8),
+                                            const SizedBox(width: 8),
                                             ElevatedButton(
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor: Colors.blueAccent,
                                                 foregroundColor: Colors.white,
                                               ),
                                               onPressed: () async {
-                                                final title = _titleController.text.trim();
-                                                final desc = _descController.text.trim();
+                                                final title = titleController.text.trim();
+                                                final desc = descController.text.trim();
                                                 final startDate = _startDate?.toIso8601String();
                                                 final endDate = _endDate?.toIso8601String();
-                                                final note = _noteController.text.trim();
+                                                final note = noteController.text.trim();
                                                 if (title.isEmpty || desc.isEmpty) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Please fill all required fields!')),
+                                                    const SnackBar(content: Text('Please fill all required fields!')),
                                                   );
                                                   return;
                                                 }
@@ -805,13 +803,13 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                     showDialog(
                                                       context: context,
                                                       builder: (ctx2) => AlertDialog(
-                                                        backgroundColor: Color(0xFF232323),
-                                                        title: Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
-                                                        content: Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
+                                                        backgroundColor: const Color(0xFF232323),
+                                                        title: const Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
+                                                        content: const Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
                                                         actions: [
                                                           TextButton(
                                                             onPressed: () => Navigator.of(ctx2).pop(),
-                                                            child: Text('OK', style: TextStyle(color: Colors.blueAccent)),
+                                                            child: const Text('OK', style: TextStyle(color: Colors.blueAccent)),
                                                           ),
                                                         ],
                                                       ),
@@ -823,7 +821,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                 // Create and send exchange request
                                                 final exchangeData = {
                                                     'title': title,
-                                                    'type': _typeController.text.trim(),
+                                                    'type': typeController.text.trim(),
                                                     'description': desc,
                                                     'status': 'pending',
                                                     'startDate': startDate,
@@ -840,7 +838,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                       .collection('users')
                                                       .doc(widget.currentUserId)
                                                       .get();
-                                                  final currentUserData = currentUserDoc.data() as Map<String, dynamic>?;
+                                                  final currentUserData = currentUserDoc.data();
                                                   final currentUserName = currentUserData?['name'] ?? 
                                                                           currentUserData?['userName'] ?? 
                                                                           currentUserData?['fullName'] ?? 
@@ -891,7 +889,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
 
                                                   Navigator.of(ctx).pop();
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Exchange request sent!')),
+                                                    const SnackBar(content: Text('Exchange request sent!')),
                                                   );
                                                 } catch (e) {
                                                   Navigator.of(ctx).pop();
@@ -900,7 +898,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                   );
                                                 }
                                               },
-                                              child: Text('Send Request'),
+                                              child: const Text('Send Request'),
                                             ),
                                           ],
                                         ),
@@ -914,10 +912,10 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                         );
                         print('Dialog should be visible');
                       } catch (e) {
-                        print('Dialog failed: ' + e.toString());
+                        print('Dialog failed: $e');
                         showDialog(
                           context: context,
-                          builder: (ctx) => AlertDialog(
+                          builder: (ctx) => const AlertDialog(
                             title: Text('Error'),
                             content: Text('Something went wrong. Please try again.'),
                           ),
@@ -941,7 +939,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
               children: [
                 Expanded(
                   child: _allMessages.isEmpty 
-                    ? Center(
+                    ? const Center(
                         child: Text(
                           'No messages yet. Start the conversation!',
                           style: TextStyle(color: Colors.white70, fontSize: 16),
@@ -949,7 +947,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                       )
                     : ListView.builder(
                         controller: _scrollController,
-                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
                         itemCount: _allMessages.length,
                         itemBuilder: (context, index) {
                           final msg = _allMessages[index].data() as Map<String, dynamic>;
@@ -957,14 +955,14 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                           return Align(
                             alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                             child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 4),
-                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
                               decoration: BoxDecoration(
-                                color: isMe ? Color(0xFF005C4B) : Color(0xFF222B32),
+                                color: isMe ? const Color(0xFF005C4B) : const Color(0xFF222B32),
                                 borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
+                                  topLeft: const Radius.circular(16),
+                                  topRight: const Radius.circular(16),
                                   bottomLeft: Radius.circular(isMe ? 16 : 4),
                                   bottomRight: Radius.circular(isMe ? 4 : 16),
                                 ),
@@ -974,9 +972,9 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                 children: [
                                   Text(
                                     msg['text'] ?? '',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                    style: const TextStyle(color: Colors.white, fontSize: 16),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -984,9 +982,9 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                         msg['timestamp'] != null && msg['timestamp'] is Timestamp
                                             ? (msg['timestamp'] as Timestamp).toDate().toLocal().toString().substring(11, 16)
                                             : '',
-                                        style: TextStyle(color: Colors.white38, fontSize: 11),
+                                        style: const TextStyle(color: Colors.white38, fontSize: 11),
                                       ),
-                                      SizedBox(width: 6),
+                                      const SizedBox(width: 6),
                                       Icon(
                                         (msg['seen'] ?? false) == true ? Icons.done_all : Icons.check,
                                         size: 16,
@@ -1004,7 +1002,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                 if (_showEmojiPicker)
                   Container(
                     height: 220,
-                    color: Color(0xFF232323),
+                    color: const Color(0xFF232323),
                     child: GridView.count(
                       crossAxisCount: 8,
                       children: _emojis.map((emoji) => InkWell(
@@ -1012,13 +1010,13 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                           _controller.text += emoji;
                           _controller.selection = TextSelection.fromPosition(TextPosition(offset: _controller.text.length));
                         },
-                        child: Center(child: Text(emoji, style: TextStyle(fontSize: 22))),
+                        child: Center(child: Text(emoji, style: const TextStyle(fontSize: 22))),
                       )).toList(),
                     ),
                   ),
                 Container(
-                  color: Color(0xFF232323),
-                  padding: EdgeInsets.only(
+                  color: const Color(0xFF232323),
+                  padding: const EdgeInsets.only(
                     left: 10,
                     right: 10,
                     top: 8,
@@ -1028,7 +1026,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.emoji_emotions, color: Colors.orangeAccent),
+                          icon: const Icon(Icons.emoji_emotions, color: Colors.orangeAccent),
                           onPressed: () {
                             setState(() {
                               _showEmojiPicker = !_showEmojiPicker;
@@ -1038,13 +1036,13 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Color(0xFF2D2D2D),
+                              color: const Color(0xFF2D2D2D),
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: TextField(
                               controller: _controller,
-                              style: TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
+                              style: const TextStyle(color: Colors.white),
+                              decoration: const InputDecoration(
                                 hintText: 'Type a message...',
                                 hintStyle: TextStyle(color: Colors.white54),
                                 border: InputBorder.none,
@@ -1056,14 +1054,14 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF2D2D2D),
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
-                            icon: Icon(Icons.send, color: Colors.greenAccent),
+                            icon: const Icon(Icons.send, color: Colors.greenAccent),
                             onPressed: _isSendingMessage ? null : _sendMessage,
                           ),
                         ),

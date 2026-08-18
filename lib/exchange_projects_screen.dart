@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 
 class ExchangeProjectsScreen extends StatefulWidget {
   final String currentUserId;
-  const ExchangeProjectsScreen({Key? key, required this.currentUserId}) : super(key: key);
+  const ExchangeProjectsScreen({super.key, required this.currentUserId});
 
   @override
   State<ExchangeProjectsScreen> createState() => _ExchangeProjectsScreenState();
@@ -81,7 +81,7 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
           final aTime = aData?['timestamp'] as Timestamp?;
           final bTime = bData?['timestamp'] as Timestamp?;
           if (aTime == null || bTime == null) return 0;
-          return bTime?.compareTo(aTime) ?? 0;
+          return bTime.compareTo(aTime) ?? 0;
         });
       }
       
@@ -241,10 +241,9 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
                     colorScheme: const ColorScheme.dark(
                       primary: Colors.blueAccent,
                       onPrimary: Colors.white,
-                      surface: const Color(0xFF232323),
+                      surface: Color(0xFF232323),
                       onSurface: Colors.white,
-                    ),
-                    dialogBackgroundColor: const Color(0xFF232323),
+                    ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF232323)),
                   ),
                   child: child!,
                 ),
@@ -475,12 +474,12 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFF3A3A3A),
-                          const Color(0xFF2C2C2C),
+                          Color(0xFF3A3A3A),
+                          Color(0xFF2C2C2C),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -671,7 +670,7 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
                                         backgroundColor: Colors.white24,
                                         backgroundImage: userImage.isNotEmpty ? NetworkImage(userImage) : null,
                                         child: userImage.isEmpty 
-                                          ? Icon(
+                                          ? const Icon(
                                               Icons.person,
                                               color: Colors.white70,
                                               size: 28,
@@ -1729,7 +1728,7 @@ class _ProjectLinkSubmitWidget extends StatefulWidget {
   final String requestId;
   final String currentUserId;
   final bool isSender;
-  const _ProjectLinkSubmitWidget({Key? key, required this.requestId, required this.currentUserId, required this.isSender}) : super(key: key);
+  const _ProjectLinkSubmitWidget({super.key, required this.requestId, required this.currentUserId, required this.isSender});
 
   @override
   State<_ProjectLinkSubmitWidget> createState() => _ProjectLinkSubmitWidgetState();
@@ -1780,7 +1779,7 @@ class _ProjectLinkSubmitWidgetState extends State<_ProjectLinkSubmitWidget> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedLinkType,
+            initialValue: _selectedLinkType,
             dropdownColor: const Color(0xFF232323),
             style: const TextStyle(color: Colors.white),
             decoration: const InputDecoration(
@@ -1876,7 +1875,7 @@ class _ReviewSubmitWidget extends StatefulWidget {
   final String requestId;
   final String currentUserId;
   final bool isSender;
-  const _ReviewSubmitWidget({Key? key, required this.requestId, required this.currentUserId, required this.isSender}) : super(key: key);
+  const _ReviewSubmitWidget({super.key, required this.requestId, required this.currentUserId, required this.isSender});
 
   @override
   State<_ReviewSubmitWidget> createState() => _ReviewSubmitWidgetState();

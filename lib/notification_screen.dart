@@ -10,9 +10,9 @@ class NotificationScreen extends StatefulWidget {
   final String userId;
 
   const NotificationScreen({
-    Key? key,
+    super.key,
     required this.userId,
-  }) : super(key: key);
+  });
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -51,7 +51,7 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
           .get();
 
       for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         if (data['isRead'] == false) {
           await NotificationService().markNotificationAsRead(widget.userId, doc.id);
         }
@@ -131,18 +131,18 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
           final notifications = snapshot.data?.docs ?? [];
 
           if (notifications.isEmpty) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.notifications_off_outlined, color: Colors.white54, size: 60),
-                  const SizedBox(height: 16),
-                  const Text(
+                  Icon(Icons.notifications_off_outlined, color: Colors.white54, size: 60),
+                  SizedBox(height: 16),
+                  Text(
                     'No notifications yet',
                     style: TextStyle(color: Colors.white54, fontSize: 18),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Notifications will appear here',
                     style: TextStyle(color: Colors.white38, fontSize: 14),
                   ),

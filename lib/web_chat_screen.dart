@@ -3,7 +3,7 @@ import '../widgets/web_layout.dart';
 
 class WebChatScreen extends StatefulWidget {
   final String userId;
-  const WebChatScreen({Key? key, required this.userId}) : super(key: key);
+  const WebChatScreen({super.key, required this.userId});
 
   @override
   State<WebChatScreen> createState() => _WebChatScreenState();
@@ -72,13 +72,13 @@ class _WebChatScreenState extends State<WebChatScreen> {
                     child: const Icon(Icons.person),
                   ),
                   title: Text('User ${index + 1}'),
-                  subtitle: Text('Last message...'),
+                  subtitle: const Text('Last message...'),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '12:3${index}',
+                        '12:3$index',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -114,9 +114,9 @@ class _WebChatScreenState extends State<WebChatScreen> {
 
   Widget _buildChatArea() {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.only(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           bottomLeft: Radius.circular(12),
         ),

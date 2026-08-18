@@ -13,12 +13,12 @@ class CreateAgencyProfileScreen extends StatefulWidget {
   final bool isAdmin;
   
   const CreateAgencyProfileScreen({
-    Key? key,
+    super.key,
     required this.userId,
     this.agencyId,
     this.isEditing = false,
     this.isAdmin = false,
-  }) : super(key: key);
+  });
 
   @override
   State<CreateAgencyProfileScreen> createState() => _CreateAgencyProfileScreenState();

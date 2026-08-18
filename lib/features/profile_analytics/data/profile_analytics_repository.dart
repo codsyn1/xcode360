@@ -9,6 +9,9 @@ class ProfileLevelInfo {
   final String nextTargetLabel; // Human label for next milestone
   final IconData icon;
   final Color color;
+  final int completedCount; // input completed-exchanges count (for convenience)
+  final int baseCount; // lower bound of current level
+  final int nextTargetCount; // upper bound (target) for next level
 
   const ProfileLevelInfo({
     required this.level,
@@ -18,7 +21,30 @@ class ProfileLevelInfo {
     required this.nextTargetLabel,
     required this.icon,
     required this.color,
+    required this.completedCount,
+    required this.baseCount,
+    required this.nextTargetCount,
   });
+
+  /// Remaining exchanges needed to reach the next level, or 0 if already top tier.
+  int get remainingForNext {
+    if (topRated || nextTargetCount <= baseCount) return 0;
+    final delta = nextTargetCount - completedCount;
+    return delta < 0 ? 0 : delta;
+  }
+
+  /// Short subtitle like "50 more to Level 2" or "Top tier achieved".
+  String get progressSubtitle {
+    if (topRated) return 'Top tier achieved';
+    final remaining = remainingForNext;
+    final nextLabel = levelLabel == 'Level 1'
+        ? 'Level 2'
+        : levelLabel == 'Level 2'
+            ? 'Level 3'
+            : 'X360 Top Rated';
+    if (remaining == 0) return 'Next: $nextLabel';
+    return '$remaining more to $nextLabel';
+  }
 }
 
 class ProfileAnalyticsData {
@@ -115,6 +141,9 @@ class ProfileAnalyticsRepository {
       nextTargetLabel: nextTargetLabel,
       icon: icon,
       color: color,
+      completedCount: completed,
+      baseCount: base,
+      nextTargetCount: nextTarget,
     );
   }
 
