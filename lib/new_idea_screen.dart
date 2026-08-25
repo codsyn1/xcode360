@@ -74,7 +74,7 @@ class _NewIdeaScreenState extends State<NewIdeaScreen> with SingleTickerProvider
                           ),
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => OnboardingScreen()),
+                              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
                             );
                           },
                           child: const Text('Continue'),

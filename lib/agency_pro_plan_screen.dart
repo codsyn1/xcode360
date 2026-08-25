@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'subscription_screen.dart';
 import 'agency_screen.dart';
 import 'agency_payment_page.dart';
-import 'agency_options_screen.dart';
 
 class AgencyProPlanScreen extends StatefulWidget {
   final String userId;

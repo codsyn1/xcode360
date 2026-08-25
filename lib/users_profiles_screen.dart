@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'profile_screen.dart';
 import 'dashboard_screen.dart';
-import 'subscription_screen.dart';
-import 'chat_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'community_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/users/presentation/bloc/users_cubit.dart';
@@ -15,9 +14,6 @@ import 'features/users/data/users_repository.dart';
 import 'features/users/presentation/bloc/users_ui_config_cubit.dart';
 import 'features/users/presentation/bloc/users_filter_cubit.dart';
 import 'features/users/presentation/bloc/users_card_ui_cubit.dart';
-import 'features/profile_analytics/presentation/bloc/profile_analytics_cubit.dart';
-import 'features/profile_analytics/presentation/bloc/profile_analytics_state.dart';
-import 'features/profile_analytics/data/profile_analytics_repository.dart';
 
 class UsersProfilesScreen extends StatefulWidget {
   final String? subcategory;
@@ -58,7 +54,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
         BlocProvider(create: (_) => UsersCubit(UsersRepository())..start(subcategory: widget.subcategory)),
       ],
       child: Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: AppBar(
         backgroundColor: const Color(0xFF23272A),
         elevation: 0,
@@ -132,7 +128,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                       final currentOnlineOnly = filterState.onlineOnly;
                       final currentLevel = filterState.level;
                       return AlertDialog(
-                        backgroundColor: const Color(0xFF232323),
+                        backgroundColor: AppColors.card(isDarkMode),
                         title: const Text('Filters', style: TextStyle(color: Colors.white)),
                         content: SizedBox(
                           width: double.maxFinite,
@@ -540,10 +536,8 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   if (country.isNotEmpty) ...[
-                                                    Text(
-                                                      '${countryCodeToEmojiStatic(country)} ',
-                                                      style: const TextStyle(fontSize: 15),
-                                                    ),
+                                                    countryFlagImage(country, height: 15),
+                                                    const SizedBox(width: 4),
                                                     Flexible(
                                                       child: Text(
                                                         country,
@@ -948,7 +942,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
                                         Row(
                                           children: [
                                             if (country.isNotEmpty) ...[
-                                              Text(countryCodeToEmojiStatic(country)),
+                                              countryFlagImage(country, height: 15),
                                               const SizedBox(width: 6),
                                               Flexible(
                                                 child: Text(
@@ -1056,7 +1050,7 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
       },
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF232323),
+        backgroundColor: AppColors.card(isDarkMode),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white54,
         type: BottomNavigationBarType.fixed,
@@ -1110,12 +1104,31 @@ class _UsersProfilesScreenState extends State<UsersProfilesScreen> {
 }
 
 // Helper for country flag emoji
-String countryCodeToEmojiStatic(String? countryOrCode) {
-  if (countryOrCode == null || countryOrCode.isEmpty) return '';
+TextStyle flagEmojiTextStyle(double fontSize) {
+  // Flags are composed of 2 regional-indicator code points (e.g. 🇵🇰).
+  // Some environments don’t reliably pick an emoji font for these unless
+  // we explicitly select a color-emoji font.
+  if (kIsWeb) return TextStyle(fontSize: fontSize); // let the browser handle
+
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.iOS:
+    case TargetPlatform.macOS:
+      return TextStyle(fontSize: fontSize, fontFamily: 'Apple Color Emoji');
+    case TargetPlatform.android:
+      return TextStyle(fontSize: fontSize, fontFamily: 'Noto Color Emoji');
+    case TargetPlatform.windows:
+      return TextStyle(fontSize: fontSize, fontFamily: 'Segoe UI Emoji');
+    default:
+      return TextStyle(fontSize: fontSize);
+  }
+}
+
+// Converts a country name or 2-letter code to an ISO 2-letter country code.
+String? countryToCode(String? countryOrCode) {
+  if (countryOrCode == null || countryOrCode.trim().isEmpty) return null;
   String code = countryOrCode.trim();
   if (code.length != 2) {
-    // Use the same mapping as in profile_screen.dart
-    final map = {
+    const map = {
       'Pakistan': 'PK', 'India': 'IN', 'Azerbaijan': 'AZ', 'United States': 'US', 'United Kingdom': 'GB',
       'Germany': 'DE', 'France': 'FR', 'Canada': 'CA', 'Australia': 'AU', 'Bangladesh': 'BD', 'Nepal': 'NP',
       'China': 'CN', 'Japan': 'JP', 'Turkey': 'TR', 'Russia': 'RU', 'Saudi Arabia': 'SA', 'UAE': 'AE',
@@ -1129,13 +1142,111 @@ String countryCodeToEmojiStatic(String? countryOrCode) {
     };
     if (map.containsKey(code)) code = map[code]!;
   }
-  if (code.length != 2) return '';
+  if (code.length != 2) return null;
+  return code.toUpperCase();
+}
+
+// Renders a real flag IMAGE (works on iOS Simulator AND real devices, unlike emoji flags).
+Widget countryFlagImage(String? country, {double height = 15}) {
+  final code = countryToCode(country);
+  if (code == null) return const SizedBox.shrink();
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(2),
+    child: Image.network(
+      'https://flagcdn.com/h40/${code.toLowerCase()}.png',
+      height: height,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stack) => const SizedBox.shrink(),
+    ),
+  );
+}
+
+String countryCodeToEmojiStatic(String? countryOrCode) {
+  if (countryOrCode == null || countryOrCode.trim().isEmpty) return '';
+
+  String normalized = countryOrCode.trim();
+
+  // If the incoming value already contains a flag emoji, reuse it directly.
+  final flagMatch = RegExp(r'[\u{1F1E6}-\u{1F1FF}]{2}', unicode: true).firstMatch(normalized);
+  if (flagMatch != null) {
+    return flagMatch.group(0) ?? '';
+  }
+
+  final lookup = normalized.toLowerCase();
+  final countryNameToCode = <String, String>{
+    'pakistan': 'PK',
+    'india': 'IN',
+    'azerbaijan': 'AZ',
+    'united states': 'US',
+    'united states of america': 'US',
+    'usa': 'US',
+    'united kingdom': 'GB',
+    'uk': 'GB',
+    'germany': 'DE',
+    'france': 'FR',
+    'canada': 'CA',
+    'australia': 'AU',
+    'bangladesh': 'BD',
+    'nepal': 'NP',
+    'china': 'CN',
+    'japan': 'JP',
+    'turkey': 'TR',
+    'russia': 'RU',
+    'saudi arabia': 'SA',
+    'uae': 'AE',
+    'united arab emirates': 'AE',
+    'afghanistan': 'AF',
+    'sri lanka': 'LK',
+    'south africa': 'ZA',
+    'brazil': 'BR',
+    'italy': 'IT',
+    'spain': 'ES',
+    'egypt': 'EG',
+    'indonesia': 'ID',
+    'malaysia': 'MY',
+    'singapore': 'SG',
+    'qatar': 'QA',
+    'kuwait': 'KW',
+    'oman': 'OM',
+    'yemen': 'YE',
+    'jordan': 'JO',
+    'iraq': 'IQ',
+    'iran': 'IR',
+    'philippines': 'PH',
+    'thailand': 'TH',
+    'vietnam': 'VN',
+    'south korea': 'KR',
+    'north korea': 'KP',
+    'sweden': 'SE',
+    'norway': 'NO',
+    'denmark': 'DK',
+    'finland': 'FI',
+    'poland': 'PL',
+    'netherlands': 'NL',
+    'belgium': 'BE',
+    'switzerland': 'CH',
+    'austria': 'AT',
+    'greece': 'GR',
+    'portugal': 'PT',
+    'mexico': 'MX',
+    'argentina': 'AR',
+    'colombia': 'CO',
+    'chile': 'CL',
+    'new zealand': 'NZ',
+  };
+
+  String code = normalized;
+  if (!RegExp(r'^[a-zA-Z]{2}$').hasMatch(code)) {
+    code = countryNameToCode[lookup] ?? '';
+  }
+  if (!RegExp(r'^[a-zA-Z]{2}$').hasMatch(code)) return '';
+
   code = code.toUpperCase();
   return String.fromCharCodes([
     code.codeUnitAt(0) + 127397,
     code.codeUnitAt(1) + 127397,
   ]);
-} 
+}
 // Helper to compute level label from projectsExchanged
 // Ensures the badge label matches the filter logic everywhere
 String computeLevelLabelFromProjects(dynamic raw) {

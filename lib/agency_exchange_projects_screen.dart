@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../services/notification_service.dart';
 
@@ -73,7 +72,7 @@ class _AgencyExchangeProjectsScreenState extends State<AgencyExchangeProjectsScr
               onPrimary: Colors.white,
               surface: Color(0xFF1A1A1A),
               onSurface: Colors.white,
-            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF2C2C2C)),
+            ), dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF2C2C2C)),
           ),
           child: child!,
         );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
-import 'sign_up_screen.dart';
 import 'login_signup_screen.dart';
 import 'dart:math' as math;
 

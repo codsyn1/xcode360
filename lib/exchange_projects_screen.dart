@@ -243,7 +243,7 @@ class _ExchangeProjectsScreenState extends State<ExchangeProjectsScreen> with Si
                       onPrimary: Colors.white,
                       surface: Color(0xFF232323),
                       onSurface: Colors.white,
-                    ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF232323)),
+                    ), dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF232323)),
                   ),
                   child: child!,
                 ),
@@ -1728,7 +1728,7 @@ class _ProjectLinkSubmitWidget extends StatefulWidget {
   final String requestId;
   final String currentUserId;
   final bool isSender;
-  const _ProjectLinkSubmitWidget({super.key, required this.requestId, required this.currentUserId, required this.isSender});
+  const _ProjectLinkSubmitWidget({required this.requestId, required this.currentUserId, required this.isSender});
 
   @override
   State<_ProjectLinkSubmitWidget> createState() => _ProjectLinkSubmitWidgetState();
@@ -1875,7 +1875,7 @@ class _ReviewSubmitWidget extends StatefulWidget {
   final String requestId;
   final String currentUserId;
   final bool isSender;
-  const _ReviewSubmitWidget({super.key, required this.requestId, required this.currentUserId, required this.isSender});
+  const _ReviewSubmitWidget({required this.requestId, required this.currentUserId, required this.isSender});
 
   @override
   State<_ReviewSubmitWidget> createState() => _ReviewSubmitWidgetState();

@@ -83,7 +83,7 @@ class SettingsState extends Equatable {
         skills = skills ?? const [];
   
   factory SettingsState.initial() {
-    return SettingsState();
+    return const SettingsState();
   }
 
   SettingsState copyWith({

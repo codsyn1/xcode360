@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
-import 'group_chat_screen.dart'; // Add this import
+// Add this import
 import 'department_list_screen.dart'; // Add this import
 import 'fun_group_chat_screen.dart'; // Add this import
 
@@ -15,7 +16,7 @@ class CommunityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: showAppBar
           ? AppBar(
               backgroundColor: Colors.transparent,
@@ -77,7 +78,6 @@ class _CommunityCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
-    super.key,
   });
 
   @override

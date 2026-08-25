@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'subscription_screen.dart';
 import '../services/notification_service.dart';
 import 'dart:async';
@@ -344,7 +344,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2D2D2D),
         foregroundColor: Colors.white,
@@ -467,7 +467,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                 builder: (ctx2) {
                                   print('=== DIALOG BUILDER CALLED ===');
                                   return AlertDialog(
-                                    backgroundColor: const Color(0xFF232323),
+                                    backgroundColor: AppColors.card(isDarkMode),
                                     title: const Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
                                     content: const Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
                                     actions: [
@@ -569,7 +569,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                   }
                                 }
                                 return AlertDialog(
-                                  backgroundColor: const Color(0xFF232323),
+                                  backgroundColor: AppColors.card(isDarkMode),
                                   title: const Text('Start Exchange', style: TextStyle(color: Colors.white)),
                                   content: SingleChildScrollView(
                                     child: Column(
@@ -674,7 +674,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                           onPrimary: Colors.white,
                                                           surface: Color(0xFF232323),
                                                           onSurface: Colors.white,
-                                                        ), dialogTheme: DialogThemeData(backgroundColor: Color(0xFF232323)),
+                                                        ), dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF232323)),
                                                       ),
                                                       child: child!,
                                                     ),
@@ -719,7 +719,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                           onPrimary: Colors.white,
                                                           surface: Color(0xFF232323),
                                                           onSurface: Colors.white,
-                                                        ), dialogTheme: DialogThemeData(backgroundColor: Color(0xFF232323)),
+                                                        ), dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF232323)),
                                                       ),
                                                       child: child!,
                                                     ),
@@ -803,7 +803,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                                     showDialog(
                                                       context: context,
                                                       builder: (ctx2) => AlertDialog(
-                                                        backgroundColor: const Color(0xFF232323),
+                                                        backgroundColor: AppColors.card(isDarkMode),
                                                         title: const Text('Pro Plan Required', style: TextStyle(color: Colors.white)),
                                                         content: const Text('You have reached the free request limit (5) total. Upgrade to Pro plan for unlimited requests.', style: TextStyle(color: Colors.white70)),
                                                         actions: [

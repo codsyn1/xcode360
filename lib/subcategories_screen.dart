@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 import 'users_profiles_screen.dart';
-import 'dart:ui';
 import 'dart:async'; // Added for Timer
 import 'dashboard_screen.dart';
-import 'subscription_screen.dart';
-import 'chat_list_screen.dart';
-import 'profile_screen.dart';
 
 class SubcategoriesScreen extends StatefulWidget {
   final String categoryTitle;
@@ -355,7 +352,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
     final isWide = screenWidth > 700;
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -524,7 +521,7 @@ class _SubcategoriesScreenState extends State<SubcategoriesScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF232323),
+        backgroundColor: AppColors.card(isDarkMode),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white54,
         type: BottomNavigationBarType.fixed,
