@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import '../widgets/web_layout.dart';
 import '../login_screen.dart';
 import '../login_signup_screen.dart';
 import '../web_dashboard_screen.dart';
-import '../features/splash/presentation/bloc/splash_cubit.dart';
-import '../features/splash/presentation/bloc/splash_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WebHomePage extends StatefulWidget {

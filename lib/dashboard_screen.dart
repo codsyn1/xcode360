@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'login_screen.dart';
 import 'onboarding_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math' as math;
 import 'profile_screen.dart';
 import 'users_profiles_screen.dart'; // Added import for UsersProfilesScreen
@@ -12,11 +11,10 @@ import 'exchange_projects_screen.dart'; // Added import for ExchangeProjectsScre
 import 'chat_project_exchange_screen.dart';
 import 'chat_list_screen.dart';
 import 'subcategories_screen.dart'; // Added import for SubcategoriesScreen
-import 'package:intl/intl.dart';
 import 'community_screen.dart'; // Add this import
 import 'live_support_screen.dart'; // Added import for LiveSupportScreen
-import 'agency_screen.dart'; // Added import for AgencyScreen
-import 'agency_options_screen.dart'; // Added import for AgencyOptionsScreen
+// Added import for AgencyScreen
+// Added import for AgencyOptionsScreen
 import 'settings_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
@@ -29,7 +27,6 @@ import 'features/admin/popup/popup_admin_screen.dart';
 import 'features/profile_analytics/presentation/bloc/analytics_access_cubit.dart';
 import 'subscription_screen.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/ai_services/presentation/bloc/ai_services_cubit.dart';
 import 'features/ai_services/presentation/bloc/ai_services_state.dart';
 
@@ -462,7 +459,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     if (widget.userId.isEmpty) {
       Future.microtask(() {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => OnboardingScreen()),
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
           (route) => false,
         );
       });
@@ -639,7 +636,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final List<Widget> pages = [
       Stack(
         children: [
-          Container(color: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7)),
+          Container(color: AppColors.background(isDarkMode)),
           AnimatedBuilder(
             animation: _bgAnimationController,
             builder: (context, child) {
@@ -692,8 +689,6 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
                           builder: (context, snapshot) {
                             final data = snapshot.data?.data() as Map<String, dynamic>?;
-                            final plan = (data?['plan'] ?? '').toString().trim();
-                            final isProAccount = plan.toLowerCase() == 'pro';
                             final int projectsExchanged = (data?['projectsExchanged'] ?? 0) is int
                                 ? (data?['projectsExchanged'] ?? 0) as int
                                 : int.tryParse((data?['projectsExchanged'] ?? '0').toString()) ?? 0;
@@ -707,54 +702,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
                             Future<void> onTapLevel() async {
                               if (snapshot.connectionState != ConnectionState.done) return;
-                              try {
-                                if (isProAccount) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ProfileAnalyticsScreen(userId: widget.userId),
-                                    ),
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text('Pro Feature'),
-                                      content: const Text('Profile Analytics is available for Pro accounts only. Upgrade to Pro to access advanced analytics.'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.of(ctx).pop();
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (_) => SubscriptionScreen(userId: widget.userId),
-                                              ),
-                                            );
-                                          },
-                                          child: const Text('Upgrade to Pro'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                              } catch (_) {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Error'),
-                                    content: const Text('Unable to verify account status. Please try again.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(ctx).pop(),
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
+                              // Viewing your own current level is free for ALL users
+                              // (Pro or not) — navigate directly to Profile Analytics.
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => ProfileAnalyticsScreen(userId: widget.userId),
+                                ),
+                              );
                             }
 
                             return GestureDetector(
@@ -1867,7 +1821,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       ),
     ];
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: _selectedIndex == 4 ? null : AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -1887,7 +1841,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               return IconButton(
                 icon: Stack(
                   children: [
-                    Icon(Icons.notifications, color: isDarkMode ? Colors.white : Colors.black),
+                    Icon(Icons.notifications, color: AppColors.textPrimary(isDarkMode)),
                     if (hasNotifications)
                       Positioned(
                         right: 0,
@@ -2145,7 +2099,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   await prefs.setBool('isLoggedIn', false);
                   await prefs.remove('userId');
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => OnboardingScreen()),
+                    MaterialPageRoute(builder: (_) => const OnboardingScreen()),
                     (route) => false,
                   );
                 },

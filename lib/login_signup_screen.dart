@@ -134,7 +134,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                           ),
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => SignUpScreen()),
+                              MaterialPageRoute(builder: (_) => const SignUpScreen()),
                             );
                           },
                           child: const Row(

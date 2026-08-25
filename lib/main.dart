@@ -6,26 +6,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'splash_screen.dart';
 import 'web_homepage.dart';
-import 'subscription_screen.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'payment_screen.dart';
-import 'users_profiles_screen.dart';
 import 'admin_password_utility.dart';
 import 'features/splash/presentation/bloc/splash_cubit.dart';
 import 'core/app/app_cubit.dart';
 import 'theme_cubit.dart';
 import 'core/navigation/navigation_cubit.dart';
-import 'web_dashboard_screen.dart';
 import 'services/notification_service.dart';
 import 'services/auto_notification_permission.dart';
 import 'services/admob_service.dart';
 import 'dart:io' show Platform;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 // Global notification plugin instance
@@ -89,9 +84,20 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         priority: Priority.high,
         icon: '@mipmap/ic_launcher',
       );
+
+  const DarwinNotificationDetails darwinPlatformChannelSpecifics =
+      DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
   
   const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: darwinPlatformChannelSpecifics,
+        macOS: darwinPlatformChannelSpecifics,
+      );
 
   // Include message data in payload for navigation on tap
   final notificationPayload = jsonEncode({
@@ -328,9 +334,18 @@ Future<void> _initializeServices() async {
     // Initialize Local Notifications for mobile
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/launcher_icon');
+
+    const DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
     
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin,
     );
     
     // Create notification channels for Android 8.0+
@@ -602,7 +617,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: themeMode,
-      home: kIsWeb ? const WebHomePage() : SplashScreen(),
+      home: kIsWeb ? const WebHomePage() : const SplashScreen(),
       routes: {
         '/admin_password': (context) => const AdminPasswordUtility(),
         '/payment': (context) {

@@ -301,6 +301,10 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           foregroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
           title: const Text('Profile Analytics'),
         ),
         body: BlocBuilder<ProfileAnalyticsCubit, ProfileAnalyticsState>(

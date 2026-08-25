@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'app_colors.dart';
 import 'dashboard_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'theme_cubit.dart';
 import 'features/subscription/presentation/bloc/subscription_cubit.dart';
@@ -210,7 +208,7 @@ class NextScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF232323),
+      backgroundColor: AppColors.card(Theme.of(context).brightness == Brightness.dark),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

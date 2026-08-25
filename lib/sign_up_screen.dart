@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'subscription_screen.dart';
+import 'login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/signup/presentation/bloc/signup_cubit.dart';
 import 'features/auth/signup/presentation/bloc/signup_state.dart';
@@ -816,6 +817,28 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                           )
                                         : const Text('SIGN UP'),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Center(
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                      );
+                                    },
+                                    child: RichText(
+                                      text: const TextSpan(
+                                        text: 'Already have an account? ',
+                                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Login',
+                                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],
