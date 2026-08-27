@@ -111,8 +111,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Top 10 locations
-                        ...data.entries.toList()
-                          ..sort((a, b) => b.value.compareTo(a.value))
+                        ...(data.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
                           .take(10)
                           .map((entry) => _buildLocationItem(entry.key, entry.value)),
                         
@@ -134,7 +133,7 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                                       final location = data.keys.elementAt(group.x.toInt());
                                       return BarTooltipItem(
-                                        '$location: ${group.y}',
+                                        '$location: ${rod.toY.toInt()}',
                                         const TextStyle(color: Colors.white),
                                       );
                                     },
@@ -176,19 +175,19 @@ class _AdminPaymentsScreenState extends State<AdminPaymentsScreen> {
                                   rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                                 ),
                                 borderData: FlBorderData(show: false),
-                                barGroups: data.entries.toList()
-                                  ..sort((a, b) => b.value.compareTo(a.value))
+                                barGroups: (data.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
                                   .take(10)
+                                  .toList()
                                   .asMap()
                                   .entries
                                   .map((entry) {
                                     final index = entry.key;
-                                    final data = entry.value;
+                                    final item = entry.value;
                                     return BarChartGroupData(
-                                      x: index.toDouble(),
+                                      x: index,
                                       barRods: [
                                         BarChartRodData(
-                                          toY: data.value.toDouble(),
+                                          toY: item.value.toDouble(),
                                           color: Colors.blue,
                                           width: 16,
                                           borderRadius: const BorderRadius.vertical(

@@ -30,6 +30,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   static const _cardBg = Color(0xFF1A1A1A);
   static const _cardBorder = Color(0xFF2D2D2D);
 
+  bool get isDarkMode => context.watch<ThemeCubit>().state == ThemeMode.dark;
+
   int projectsExchanged = 0;
   List<Map<String, dynamic>> receivedReviews = [];
   bool reviewsLoading = true;
@@ -550,10 +552,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             isWide ? 28 : 16,
             isSmallScreen ? 8 : 16,
           ),
-          decoration: const BoxDecoration(
-            color: Color(0xFF121212),
+          decoration: BoxDecoration(
+            color: AppColors.background(isDarkMode),
             border: Border(
-              bottom: BorderSide(color: Color(0xFF2A2A2A)),
+              bottom: BorderSide(color: AppColors.divider(isDarkMode)),
             ),
           ),
           child: Row(
@@ -565,9 +567,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     width: avatarRadius * 2,
                     height: avatarRadius * 2,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFF242424),
+                      color: AppColors.cardSurface(isDarkMode),
                     ),
                     child: ClipOval(
                       child: imageUrl.isNotEmpty
@@ -602,7 +604,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : const Color(0xFF6B7280),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color(0xFF121212),
+                            color: AppColors.background(isDarkMode),
                             width: 2,
                           ),
                         ),
@@ -649,7 +651,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary(isDarkMode),
                               fontWeight: FontWeight.w700,
                               fontSize: isWide ? 36 : (isSmallScreen ? 16 : 22),
                             ),
@@ -670,7 +672,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Icon(
                           Icons.location_on_outlined,
-                          color: Colors.white54,
+                          color: AppColors.textSecondary(isDarkMode),
                           size: isSmallScreen ? 14 : 18,
                         ),
                         SizedBox(width: isSmallScreen ? 4 : 6),
@@ -682,7 +684,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.white54,
+                              color: AppColors.textSecondary(isDarkMode),
                               fontSize: isSmallScreen ? 13 : 15,
                             ),
                           ),
@@ -693,12 +695,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       children: [
                         Icon(Icons.schedule,
-                            color: Colors.white38, size: isSmallScreen ? 14 : 18),
+                            color: AppColors.textSecondary(isDarkMode), size: isSmallScreen ? 14 : 18),
                         SizedBox(width: isSmallScreen ? 4 : 6),
                         Text(
                           _formatLocalTimeLabel(),
                           style: TextStyle(
-                            color: Colors.white54,
+                            color: AppColors.textSecondary(isDarkMode),
                             fontSize: isSmallScreen ? 13 : 15,
                           ),
                         ),
@@ -872,7 +874,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              side: const BorderSide(color: Color(0xFF3A3A3A)),
+                              side: BorderSide(color: AppColors.border(isDarkMode)),
                               padding: EdgeInsets.symmetric(vertical: isSmallScreen ? 10 : 12, horizontal: 8),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
@@ -906,7 +908,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               bio.isEmpty ? '$name has not added an overview yet.' : bio,
               style: TextStyle(
-                color: Colors.white70,
+                color: AppColors.textSecondary(isDarkMode),
                 height: 1.45,
                 fontSize: isSmallScreen ? 13 : 14,
               ),
@@ -923,8 +925,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 vertical: isSmallScreen ? 7 : 9
               ),
               decoration: BoxDecoration(
-                color: _cardBg,
-                border: Border.all(color: _cardBorder),
+                color: AppColors.card(isDarkMode),
+                border: Border.all(color: AppColors.border(isDarkMode)),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: InkWell(
@@ -953,7 +955,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Text(
                   website,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary(isDarkMode),
                     fontWeight: FontWeight.w600,
                     fontSize: isSmallScreen ? 13 : 14,
                     decoration: TextDecoration.none,
@@ -1003,7 +1005,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? Text(
                   'No skills added yet.',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: AppColors.textSecondary(isDarkMode),
                     fontSize: isSmallScreen ? 13 : 14,
                   ),
                 )
@@ -1018,14 +1020,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               vertical: isSmallScreen ? 5 : 7
                           ),
                           decoration: BoxDecoration(
-                            color: _cardBg,
+                            color: AppColors.card(isDarkMode),
                             borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: _cardBorder),
+                            border: Border.all(color: AppColors.border(isDarkMode)),
                           ),
                           child: Text(
                             skill,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.textPrimary(isDarkMode),
                               fontSize: isSmallScreen ? 11 : 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -1058,7 +1060,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? Text(
                   'No reviews yet.',
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: AppColors.textSecondary(isDarkMode),
                     fontSize: isSmallScreen ? 13 : 14,
                   ),
                 )
@@ -1073,9 +1075,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       margin: EdgeInsets.only(bottom: isSmallScreen ? 6 : 10),
                       padding: EdgeInsets.all(isSmallScreen ? 8 : 12),
                       decoration: BoxDecoration(
-                        color: _cardBg,
+                        color: AppColors.card(isDarkMode),
                         borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 10),
-                        border: Border.all(color: _cardBorder),
+                        border: Border.all(color: AppColors.border(isDarkMode)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1096,7 +1098,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: AppColors.textSecondary(isDarkMode),
                                       fontSize: isSmallScreen ? 11 : 12,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -1120,7 +1122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               comment,
                               style: TextStyle(
-                                color: Colors.white70,
+                                color: AppColors.textSecondary(isDarkMode),
                                 height: 1.4,
                                 fontSize: isSmallScreen ? 12 : 14,
                               ),
@@ -1144,9 +1146,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       margin: EdgeInsets.only(bottom: isSmallScreen ? 6 : 8),
       padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
       decoration: BoxDecoration(
-        color: _cardBg,
+        color: AppColors.card(isDarkMode),
         borderRadius: BorderRadius.circular(isSmallScreen ? 10 : 14),
-        border: Border.all(color: _cardBorder),
+        border: Border.all(color: AppColors.border(isDarkMode)),
         boxShadow: const [
           BoxShadow(
             color: Color(0x0F000000),
@@ -1161,7 +1163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.textPrimary(isDarkMode),
               fontSize: isSmallScreen ? 14 : 16,
               fontWeight: FontWeight.w700,
             ),
@@ -1183,7 +1185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               title,
               style: TextStyle(
-                color: Colors.white70,
+                color: AppColors.textSecondary(isDarkMode),
                 fontSize: isSmallScreen ? 12 : 13,
               ),
             ),
@@ -1194,7 +1196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               value,
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary(isDarkMode),
                 fontSize: isSmallScreen ? 12 : 13,
                 fontWeight: FontWeight.w600,
               ),

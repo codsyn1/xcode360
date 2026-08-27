@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/notification_service.dart';
-import 'notification_screen.dart';
+import '../notification_screen.dart';
 
 class NotificationBell extends StatefulWidget {
   const NotificationBell({super.key});

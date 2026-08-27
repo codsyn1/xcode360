@@ -158,6 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
   _SectionCard(
     title: 'Appearance',
+    isDarkMode: isDarkMode,
     child: BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, mode) {
         final isDark = mode == ThemeMode.dark;
@@ -166,11 +167,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           activeThumbColor: const Color(0xFF1976D2),
           title: Text(
             isDark ? 'Dark Mode' : 'Light Mode',
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: isDark ? Colors.white : Colors.black87),
           ),
           secondary: Icon(
             isDark ? Icons.dark_mode : Icons.light_mode,
-            color: Colors.white,
+            color: isDark ? Colors.white : Colors.black54,
           ),
           value: isDark,
           onChanged: (_) => context.read<ThemeCubit>().toggle(),
@@ -180,14 +181,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ),
   _SectionCard(
     title: 'Security PIN',
+    isDarkMode: isDarkMode,
     child: Row(
       children: [
-        Expanded(child: _ReadOnlyTile(label: 'User PIN', value: state.userPin)),
+        Expanded(child: _ReadOnlyTile(label: 'User PIN', value: state.userPin, isDarkMode: isDarkMode)),
         const SizedBox(width: 8),
         Tooltip(
           message: 'Copy PIN',
           child: IconButton(
-            icon: const Icon(Icons.copy, color: Colors.white70),
+            icon: Icon(Icons.copy, color: isDarkMode ? Colors.white70 : Colors.black45),
             onPressed: state.userPin.isEmpty ? null : () async {
               await Clipboard.setData(ClipboardData(text: state.userPin));
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PIN copied to clipboard')));
@@ -198,9 +200,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
   ),
 
-  
-                                  _SectionCard(
+  _SectionCard(
     title: 'Profile Photos',
+    isDarkMode: isDarkMode,
     child: Column(
                                   children: [
                                     Center(
@@ -294,18 +296,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const SizedBox(height: 16),
                               _SectionCard(
                                 title: 'Account (Read-only)',
+                                isDarkMode: isDarkMode,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    _ReadOnlyTile(label: 'Full Name', value: state.fullName),
+                                    _ReadOnlyTile(label: 'Full Name', value: state.fullName, isDarkMode: isDarkMode),
                                     const SizedBox(height: 12),
-                                    _ReadOnlyTile(label: 'Country', value: state.country),
+                                    _ReadOnlyTile(label: 'Country', value: state.country, isDarkMode: isDarkMode),
                                     const SizedBox(height: 12),
-                                    _ReadOnlyTile(label: 'City', value: state.city),
+                                    _ReadOnlyTile(label: 'City', value: state.city, isDarkMode: isDarkMode),
                                     const SizedBox(height: 12),
-                                    _ReadOnlyTile(label: 'Email', value: state.email),
+                                    _ReadOnlyTile(label: 'Email', value: state.email, isDarkMode: isDarkMode),
                                     const SizedBox(height: 12),
-                                    _ReadOnlyTile(label: 'Username', value: state.username),
+                                    _ReadOnlyTile(label: 'Username', value: state.username, isDarkMode: isDarkMode),
                                   ],
                                 ),
                               ),
@@ -313,6 +316,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const SizedBox(height: 16),
                               _SectionCard(
                                 title: 'Edit Profile',
+                                isDarkMode: isDarkMode,
                                 child: Column(
                                   children: [
                                     // Profession (editable)
@@ -351,6 +355,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     SkillChipSelector(
                                       skills: state.skillsOptions,
                                       selectedSkills: state.skills,
+                                      isDarkMode: isDarkMode,
                                       onChanged: (skills) => context.read<SettingsCubit>().setSkills(skills),
                                     ),
                                     // Custom skills input when 'Other' selected OR existing custom skills present
@@ -473,21 +478,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
 
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Tip: Only photos, website, bio and password can be edited here.',
-                                style: TextStyle(color: Colors.white70, fontSize: 12),
+                                style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontSize: 12),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 24),
 
                               // Account Deletion Section
-                              _SectionCard(
+                               _SectionCard(
                                 title: 'Account Management',
+                                isDarkMode: isDarkMode,
                                 child: Column(
                                   children: [
-                                    const Text(
+                                    Text(
                                       'If you want to delete your account and all associated data, you can request account deletion.',
-                                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                                      style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontSize: 14),
                                       textAlign: TextAlign.center,
                                     ),
                                     const SizedBox(height: 16),
@@ -532,23 +538,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class _ReadOnlyTile extends StatelessWidget {
   final String label;
   final String value;
-  const _ReadOnlyTile({required this.label, required this.value});
+  final bool isDarkMode;
+  const _ReadOnlyTile({required this.label, required this.value, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(label, style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54, fontSize: 12, fontWeight: FontWeight.w500)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFF2C2C2C),
+            color: isDarkMode ? const Color(0xFF2C2C2C) : const Color(0xFFEEEEEE),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(color: isDarkMode ? Colors.white24 : Colors.black12),
           ),
-          child: Text(value.isEmpty ? '-' : value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+          child: Text(value.isEmpty ? '-' : value, style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87, fontWeight: FontWeight.w500)),
         ),
       ],
     );
@@ -559,12 +566,13 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final Widget child;
   final WidgetBuilder? footerBuilder;
-  const _SectionCard({required this.title, required this.child, this.footerBuilder});
+  final bool isDarkMode;
+  const _SectionCard({required this.title, required this.child, this.footerBuilder, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF2C2C2C),
+      color: isDarkMode ? const Color(0xFF2C2C2C) : Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -580,7 +588,7 @@ class _SectionCard extends StatelessWidget {
                   decoration: BoxDecoration(color: const Color(0xFF1976D2), borderRadius: BorderRadius.circular(3)),
                 ),
                 const SizedBox(width: 8),
-                Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(title, style: TextStyle(color: isDarkMode ? Colors.white : Colors.black87, fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 16),

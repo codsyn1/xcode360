@@ -864,25 +864,50 @@ class SkillChipSelector extends StatelessWidget {
   final List<String> skills;
   final List<String> selectedSkills;
   final ValueChanged<List<String>> onChanged;
-  const SkillChipSelector({required this.skills, required this.selectedSkills, required this.onChanged, super.key});
+  /// Set to false when rendering inside a light-mode settings card.
+  /// Defaults to true so the sign-up screen (dark background) keeps its current look.
+  final bool isDarkMode;
+  const SkillChipSelector({
+    required this.skills,
+    required this.selectedSkills,
+    required this.onChanged,
+    this.isDarkMode = true,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: 'Skill Categories',
-        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+        labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
+        border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          borderSide: BorderSide(color: isDarkMode ? Colors.white24 : Colors.black12),
+        ),
       ),
       child: Wrap(
         spacing: 8,
+        runSpacing: 4,
         children: skills.map((skill) {
           final selected = selectedSkills.contains(skill);
           return FilterChip(
-            label: Text(skill, style: const TextStyle(color: Colors.white)),
+            label: Text(
+              skill,
+              style: TextStyle(
+                color: selected
+                    ? Colors.white
+                    : (isDarkMode ? Colors.white : Colors.black87),
+              ),
+            ),
             selected: selected,
             selectedColor: const Color(0xFF1976D2),
             checkmarkColor: Colors.white,
-            backgroundColor: const Color(0xFF232323),
+            backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFEEEEEE),
+            side: BorderSide(
+              color: isDarkMode ? Colors.white24 : Colors.black12,
+            ),
             onSelected: (val) {
               final newSkills = List<String>.from(selectedSkills);
               if (val) {

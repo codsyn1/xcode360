@@ -78,26 +78,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       children: [
                         // Current Plan + Upgrade/Downgrade
                         Card(
-                          color: Colors.grey[900],
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          color: AppColors.card(isDarkMode),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: AppColors.border(isDarkMode)),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Row(
                               children: [
                                 Icon(
                                   isPro ? Icons.verified : Icons.workspace_premium_outlined,
-                                  color: isPro ? Colors.amber : Colors.white70,
+                                  color: isPro ? Colors.amber : (isDarkMode ? Colors.white70 : Colors.black54),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text('Your Current Plan', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                      Text('Your Current Plan', style: TextStyle(color: AppColors.textSecondary(isDarkMode), fontSize: 12)),
                                       const SizedBox(height: 4),
                                       Text(
                                         plan,
-                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                        style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontWeight: FontWeight.bold, fontSize: 18),
                                       ),
                                     ],
                                   ),
@@ -145,21 +148,24 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         // Pro details card (visible only if Pro)
                         if (isPro)
                           Card(
-                            color: const Color(0xFF1E1E1E),
+                            color: AppColors.card(isDarkMode),
                             elevation: 6,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            child: const Padding(
-                              padding: EdgeInsets.all(16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(color: AppColors.border(isDarkMode)),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Pro Benefits', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
-                                  SizedBox(height: 8),
-                                  _Bullet(text: 'Verified badge on your profile'),
-                                  _Bullet(text: 'Featured profile listing for better discovery'),
-                                  _Bullet(text: 'Profile view analytics'),
-                                  _Bullet(text: 'Online availability status'),
-                                  _Bullet(text: 'Unlimited project exchanges'),
+                                  const Text('Pro Benefits', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  const SizedBox(height: 8),
+                                  const _Bullet(text: 'Verified badge on your profile'),
+                                  const _Bullet(text: 'Featured profile listing for better discovery'),
+                                  const _Bullet(text: 'Profile view analytics'),
+                                  const _Bullet(text: 'Online availability status'),
+                                  const _Bullet(text: 'Unlimited project exchanges'),
                                 ],
                               ),
                             ),
@@ -168,7 +174,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         const SizedBox(height: 20),
 
                         // Features comparison table (existing)
-                        const _FeaturesTable(),
+                        _FeaturesTable(),
 
                         const SizedBox(height: 20),
 
@@ -179,8 +185,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             child: ElevatedButton(
                               onPressed: state.upgrading ? null : () => context.read<SubscriptionCubit>().proceedWithFree(),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white12,
-                                foregroundColor: Colors.white,
+                                backgroundColor: isDarkMode ? Colors.white12 : Colors.black12,
+                                foregroundColor: AppColors.textPrimary(isDarkMode),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                               ),
@@ -207,18 +213,19 @@ class NextScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
-      backgroundColor: AppColors.card(Theme.of(context).brightness == Brightness.dark),
+      backgroundColor: AppColors.background(isDarkMode),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textPrimary(isDarkMode),
         title: const Text('Next Screen'),
       ),
       body: Center(
         child: Text(
           'You selected $plan Plan',
-          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -241,33 +248,37 @@ class _FeaturesTable extends StatelessWidget {
     {'name': 'Online Availability Status', 'free': false, 'pro': true},
   ];
 
-  const _FeaturesTable();
+  _FeaturesTable();
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Card(
-      color: const Color(0xFF1E1E1E),
+      color: AppColors.card(isDarkMode),
       elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.border(isDarkMode)),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         child: Column(
           children: [
-            const Row(
+            Row(
               children: [
                 Expanded(
                   flex: 2,
-                  child: Text('Features', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: Text('Features', style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
                 Expanded(
-                  child: Text('Free Plan', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 15)),
+                  child: Text('Free Plan', style: TextStyle(color: AppColors.textSecondary(isDarkMode), fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 Expanded(
-                  child: Text('Pro Plan', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 15)),
+                  child: const Text('Pro Plan', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
               ],
             ),
-            const Divider(color: Colors.white24, height: 18),
+            Divider(color: AppColors.divider(isDarkMode), height: 18),
             ...features.map((feature) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
@@ -276,7 +287,7 @@ class _FeaturesTable extends StatelessWidget {
                         flex: 2,
                         child: Text(
                           feature['name'],
-                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                          style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontSize: 15),
                         ),
                       ),
                       Expanded(
@@ -322,13 +333,14 @@ class _Bullet extends StatelessWidget {
   const _Bullet({required this.text});
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           const Icon(Icons.check_circle, color: Colors.greenAccent, size: 18),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(color: Colors.white70))),
+          Expanded(child: Text(text, style: TextStyle(color: AppColors.textSecondary(isDarkMode)))),
         ],
       ),
     );
