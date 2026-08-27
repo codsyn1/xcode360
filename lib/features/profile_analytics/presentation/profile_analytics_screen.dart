@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'bloc/profile_analytics_cubit.dart';
 import 'bloc/profile_analytics_state.dart';
 import '../data/profile_analytics_repository.dart';
+import '../../../../app_colors.dart';
+import '../../../../theme_cubit.dart';
 
 class ProfileAnalyticsScreen extends StatefulWidget {
   final String? userId;
@@ -13,7 +15,14 @@ class ProfileAnalyticsScreen extends StatefulWidget {
   State<ProfileAnalyticsScreen> createState() => _ProfileAnalyticsScreenState();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sub-widgets – each accepts isDarkMode so colors match the current theme
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _LevelsInfoList extends StatelessWidget {
+  final bool isDarkMode;
+  const _LevelsInfoList({required this.isDarkMode});
+
   @override
   Widget build(BuildContext context) {
     Widget row(IconData icon, Color color, String title, String subtitle) {
@@ -23,7 +32,10 @@ class _LevelsInfoList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              decoration: BoxDecoration(color: color.withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
               padding: const EdgeInsets.all(8),
               child: Icon(icon, color: color, size: 20),
             ),
@@ -32,9 +44,15 @@ class _LevelsInfoList extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text(title,
+                      style: TextStyle(
+                          color: AppColors.textPrimary(isDarkMode),
+                          fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text(subtitle,
+                      style: TextStyle(
+                          color: AppColors.textSecondary(isDarkMode),
+                          fontSize: 12)),
                 ],
               ),
             ),
@@ -46,18 +64,26 @@ class _LevelsInfoList extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: AppColors.card(isDarkMode),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(isDarkMode)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Levels', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text('Levels',
+              style: TextStyle(
+                  color: AppColors.textPrimary(isDarkMode),
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          row(Icons.emoji_events_outlined, Colors.grey, 'Level 1', 'New Member — fewer than 50 completed exchange projects.'),
-          row(Icons.emoji_events, Colors.blueAccent, 'Level 2', 'Achieved at 50+ completed exchange projects.'),
-          row(Icons.military_tech, Colors.amber, 'Level 3', 'Achieved at 500+ completed exchange projects.'),
-          row(Icons.workspace_premium, Colors.purpleAccent, 'X360 Top Rated', 'Achieved at 1000+ completed exchange projects.'),
+          row(Icons.emoji_events_outlined, Colors.grey, 'Level 1',
+              'New Member — fewer than 50 completed exchange projects.'),
+          row(Icons.emoji_events, Colors.blueAccent, 'Level 2',
+              'Achieved at 50+ completed exchange projects.'),
+          row(Icons.military_tech, Colors.amber, 'Level 3',
+              'Achieved at 500+ completed exchange projects.'),
+          row(Icons.workspace_premium, Colors.purpleAccent, 'X360 Top Rated',
+              'Achieved at 1000+ completed exchange projects.'),
         ],
       ),
     );
@@ -68,23 +94,38 @@ class _MiniStat extends StatelessWidget {
   final Color color;
   final String title;
   final int value;
-  const _MiniStat({required this.color, required this.title, required this.value});
+  final bool isDarkMode;
+  const _MiniStat({
+    required this.color,
+    required this.title,
+    required this.value,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: AppColors.card(isDarkMode),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(
+          color: isDarkMode
+              ? color.withValues(alpha: 0.4)
+              : AppColors.border(isDarkMode),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Text(title,
+              style: TextStyle(
+                  color: AppColors.textSecondary(isDarkMode), fontSize: 12)),
           const SizedBox(height: 6),
-          Text(value.toString(), style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(value.toString(),
+              style: TextStyle(
+                  color: color, fontSize: 18, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -96,11 +137,13 @@ class _RequestsBarChart extends StatelessWidget {
   final int accepted;
   final int rejected;
   final int completed;
+  final bool isDarkMode;
   const _RequestsBarChart({
     required this.pending,
     required this.accepted,
     required this.rejected,
     required this.completed,
+    required this.isDarkMode,
   });
 
   @override
@@ -113,17 +156,22 @@ class _RequestsBarChart extends StatelessWidget {
       Colors.redAccent,
       Colors.tealAccent,
     ];
-    final maxVal = (values.fold<int>(0, (p, e) => e > p ? e : p)).clamp(1, 999999);
+    final maxVal =
+        (values.fold<int>(0, (p, e) => e > p ? e : p)).clamp(1, 999999);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: AppColors.card(isDarkMode),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(isDarkMode)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Requests Overview', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text('Requests Overview',
+              style: TextStyle(
+                  color: AppColors.textPrimary(isDarkMode),
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -136,14 +184,20 @@ class _RequestsBarChart extends StatelessWidget {
                     Container(
                       height: h,
                       decoration: BoxDecoration(
-                        color: colors[i].withOpacity(0.9),
+                        color: colors[i].withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(values[i].toString(), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text(values[i].toString(),
+                        style: TextStyle(
+                            color: AppColors.textSecondary(isDarkMode),
+                            fontSize: 12)),
                     const SizedBox(height: 4),
-                    Text(labels[i], style: const TextStyle(color: Colors.white70, fontSize: 11)),
+                    Text(labels[i],
+                        style: TextStyle(
+                            color: AppColors.textSecondary(isDarkMode),
+                            fontSize: 11)),
                   ],
                 ),
               );
@@ -158,27 +212,34 @@ class _RequestsBarChart extends StatelessWidget {
 class _AvatarWithBadge extends StatelessWidget {
   final String imageUrl;
   final String badgeText;
-  const _AvatarWithBadge({required this.imageUrl, required this.badgeText});
+  final bool isDarkMode;
+  const _AvatarWithBadge({
+    required this.imageUrl,
+    required this.badgeText,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 36,
-              backgroundColor: Colors.white24,
-              backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
-              child: imageUrl.isEmpty ? const Icon(Icons.person, color: Colors.white, size: 36) : null,
-            ),
-          ],
+        CircleAvatar(
+          radius: 36,
+          backgroundColor: AppColors.cardSurface(isDarkMode),
+          backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+          child: imageUrl.isEmpty
+              ? Icon(Icons.person,
+                  color: AppColors.textSecondary(isDarkMode), size: 36)
+              : null,
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Text(
             'Your Profile Analytics',
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: AppColors.textPrimary(isDarkMode),
+                fontSize: 18,
+                fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(width: 8),
@@ -196,19 +257,23 @@ class _AvatarWithBadge extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.workspace_premium, color: Colors.white, size: 14),
+                  const Icon(Icons.workspace_premium,
+                      color: Colors.white, size: 14),
                   const SizedBox(width: 6),
                   Text(
                     badgeText,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -216,24 +281,33 @@ class _AvatarWithBadge extends StatelessWidget {
 
 class _LevelSummary extends StatelessWidget {
   final String levelLabel;
-  final double levelProgress; // 0..1 from Bloc
+  final double levelProgress;
   final String nextTargetLabel;
-  const _LevelSummary({required this.levelLabel, required this.levelProgress, required this.nextTargetLabel});
+  final bool isDarkMode;
+  const _LevelSummary({
+    required this.levelLabel,
+    required this.levelProgress,
+    required this.nextTargetLabel,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Use values from Bloc (repository computed)
     final progress = levelProgress.clamp(0.0, 1.0);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: AppColors.card(isDarkMode),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(isDarkMode)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(levelLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text(levelLabel,
+              style: TextStyle(
+                  color: AppColors.textPrimary(isDarkMode),
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -241,18 +315,79 @@ class _LevelSummary extends StatelessWidget {
               value: progress,
               minHeight: 10,
               color: Colors.blueAccent,
-              backgroundColor: Colors.white10,
+              backgroundColor: isDarkMode ? Colors.white10 : Colors.black12,
             ),
           ),
-          const SizedBox(height: 8),
-          // We keep completed count elsewhere in quick stats; here focus on level guidance
-          const SizedBox(height: 4),
-          Text(nextTargetLabel, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          const SizedBox(height: 12),
+          Text(nextTargetLabel,
+              style: TextStyle(
+                  color: AppColors.textSecondary(isDarkMode), fontSize: 12)),
         ],
       ),
     );
   }
 }
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+  final bool isDarkMode;
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.isDarkMode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.card(isDarkMode),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border(isDarkMode)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isDarkMode
+                  ? Colors.white10
+                  : Colors.black.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(12),
+            child:
+                Icon(icon, color: AppColors.textPrimary(isDarkMode), size: 28),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style:
+                        TextStyle(color: AppColors.textSecondary(isDarkMode))),
+                const SizedBox(height: 4),
+                Text(value,
+                    style: TextStyle(
+                        color: AppColors.textPrimary(isDarkMode),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main screen state
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   String _userId = '';
@@ -264,53 +399,60 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
   }
 
   Future<void> _load() async {
-    // Prefer explicitly provided userId
     String uid = widget.userId ?? '';
     if (uid.isEmpty) {
       final prefs = await SharedPreferences.getInstance();
       uid = prefs.getString('userId') ?? '';
     }
     setState(() => _userId = uid);
-    // After the widget builds with BlocProvider in the tree, trigger the load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (uid.isEmpty) return; // avoid loading with empty user id
+      if (uid.isEmpty) return;
       try {
         context.read<ProfileAnalyticsCubit>().load(uid);
-      } catch (_) {
-        // Provider may not be mounted yet on very first frame; it's okay, the next build will wire it.
-      }
+      } catch (_) {}
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Read live theme — reacts immediately when user toggles Dark/Light Mode
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+
     return BlocProvider(
       create: (_) {
         final cubit = ProfileAnalyticsCubit(ProfileAnalyticsRepository());
         final directId = widget.userId;
         if (directId != null && directId.isNotEmpty) {
-          // Kick off immediately if caller passed userId
           cubit.load(directId);
         }
         return cubit;
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF232323),
+        // ✅ No longer hardcoded — respects ThemeCubit
+        backgroundColor: AppColors.background(isDarkMode),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.background(isDarkMode),
           elevation: 0,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textPrimary(isDarkMode),
+          // ✅ Back button always present
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back,
+                color: AppColors.textPrimary(isDarkMode)),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
-          title: const Text('Profile Analytics'),
+          title: Text(
+            'Profile Analytics',
+            style: TextStyle(color: AppColors.textPrimary(isDarkMode)),
+          ),
         ),
         body: BlocBuilder<ProfileAnalyticsCubit, ProfileAnalyticsState>(
           builder: (context, state) {
             if (_userId.isEmpty || state.loading) {
-              return const Center(child: CircularProgressIndicator(color: Colors.white));
+              return Center(
+                child: CircularProgressIndicator(
+                    color: isDarkMode ? Colors.white : Colors.black54),
+              );
             }
             if (state.error != null) {
               return Center(
@@ -323,8 +465,10 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
             }
             final data = state.data;
             if (data == null) {
-              return const Center(
-                child: Text('No analytics available.', style: TextStyle(color: Colors.white70)),
+              return Center(
+                child: Text('No analytics available.',
+                    style: TextStyle(
+                        color: AppColors.textSecondary(isDarkMode))),
               );
             }
             return SingleChildScrollView(
@@ -332,105 +476,112 @@ class _ProfileAnalyticsScreenState extends State<ProfileAnalyticsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Avatar with Level Badge
-                  _AvatarWithBadge(imageUrl: data.profileImageUrl, badgeText: data.levelLabel),
+                  _AvatarWithBadge(
+                    imageUrl: data.profileImageUrl,
+                    badgeText: data.levelLabel,
+                    isDarkMode: isDarkMode,
+                  ),
                   const SizedBox(height: 16),
 
-                  // Visits and Chats quick stats
+                  // Quick stat cards
                   Row(
                     children: [
-                      Expanded(child: _StatCard(icon: Icons.remove_red_eye, title: 'Profile Visits', value: data.profileVisits.toString())),
+                      Expanded(
+                          child: _StatCard(
+                              icon: Icons.remove_red_eye,
+                              title: 'Profile Visits',
+                              value: data.profileVisits.toString(),
+                              isDarkMode: isDarkMode)),
                       const SizedBox(width: 12),
-                      Expanded(child: _StatCard(icon: Icons.chat, title: 'Total Chats', value: data.totalChats.toString())),
+                      Expanded(
+                          child: _StatCard(
+                              icon: Icons.chat,
+                              title: 'Total Chats',
+                              value: data.totalChats.toString(),
+                              isDarkMode: isDarkMode)),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _StatCard(icon: Icons.mark_chat_unread, title: 'Unread Messages', value: data.unreadMessages.toString()),
+                  _StatCard(
+                      icon: Icons.mark_chat_unread,
+                      title: 'Unread Messages',
+                      value: data.unreadMessages.toString(),
+                      isDarkMode: isDarkMode),
 
                   const SizedBox(height: 16),
-                  // Requests breakdown
-                  const Text('Exchange Requests', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('Exchange Requests',
+                      style: TextStyle(
+                          color: AppColors.textPrimary(isDarkMode),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Expanded(child: _MiniStat(color: Colors.blueAccent, title: 'Active Sent', value: data.requestsSent)),
+                      Expanded(
+                          child: _MiniStat(
+                              color: Colors.blueAccent,
+                              title: 'Active Sent',
+                              value: data.requestsSent,
+                              isDarkMode: isDarkMode)),
                       const SizedBox(width: 8),
-                      Expanded(child: _MiniStat(color: Colors.orangeAccent, title: 'Pending', value: data.requestsPending)),
+                      Expanded(
+                          child: _MiniStat(
+                              color: Colors.orangeAccent,
+                              title: 'Pending',
+                              value: data.requestsPending,
+                              isDarkMode: isDarkMode)),
                       const SizedBox(width: 8),
-                      Expanded(child: _MiniStat(color: Colors.greenAccent, title: 'Accepted', value: data.requestsAccepted)),
+                      Expanded(
+                          child: _MiniStat(
+                              color: Colors.greenAccent,
+                              title: 'Accepted',
+                              value: data.requestsAccepted,
+                              isDarkMode: isDarkMode)),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Expanded(child: _MiniStat(color: Colors.redAccent, title: 'Rejected', value: data.requestsRejected)),
+                      Expanded(
+                          child: _MiniStat(
+                              color: Colors.redAccent,
+                              title: 'Rejected',
+                              value: data.requestsRejected,
+                              isDarkMode: isDarkMode)),
                       const SizedBox(width: 8),
-                      Expanded(child: _MiniStat(color: Colors.tealAccent, title: 'Completed', value: data.requestsCompleted)),
+                      Expanded(
+                          child: _MiniStat(
+                              color: Colors.tealAccent,
+                              title: 'Completed',
+                              value: data.requestsCompleted,
+                              isDarkMode: isDarkMode)),
                     ],
                   ),
 
                   const SizedBox(height: 16),
-                  // Simple bar chart for statuses
                   _RequestsBarChart(
                     pending: data.requestsPending,
                     accepted: data.requestsAccepted,
                     rejected: data.requestsRejected,
                     completed: data.requestsCompleted,
+                    isDarkMode: isDarkMode,
                   ),
 
                   const SizedBox(height: 16),
-                  // Level summary
-                  _LevelSummary(levelLabel: data.levelLabel, levelProgress: data.levelProgress, nextTargetLabel: data.nextTargetLabel),
+                  _LevelSummary(
+                    levelLabel: data.levelLabel,
+                    levelProgress: data.levelProgress,
+                    nextTargetLabel: data.nextTargetLabel,
+                    isDarkMode: isDarkMode,
+                  ),
 
                   const SizedBox(height: 16),
-                  // Levels Info
-                  _LevelsInfoList(),
+                  _LevelsInfoList(isDarkMode: isDarkMode),
                 ],
               ),
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-  const _StatCard({required this.icon, required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white10,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Icon(icon, color: Colors.white, size: 28),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(color: Colors.white70)),
-                const SizedBox(height: 4),
-                Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
