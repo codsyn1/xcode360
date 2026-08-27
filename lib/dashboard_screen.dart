@@ -1311,7 +1311,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                   final cardColor = isProAccount ? AppColors.card(isDarkMode) : AppColors.card(isDarkMode).withOpacity(0.8);
                                   final iconGradientColors = isProAccount 
                                     ? AppColors.cardGradient(isDarkMode)
-                                    : [const Color(0xFF1A1A1A), const Color(0xFF0D0D0D)];
+                                    : AppColors.iconContainerGradient(isDarkMode);
                                   final titleColor = isProAccount ? AppColors.textPrimary(isDarkMode) : AppColors.textPrimary(isDarkMode).withOpacity(0.5);
                                   final subtitleColor = isProAccount 
                                     ? AppColors.textSecondary(isDarkMode)
@@ -2122,50 +2122,196 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             ),
           ],
         ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildBottomNavItem(
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  label: 'Home',
+                  index: 0,
+                  currentIndex: _selectedIndex,
+                  isDarkMode: isDarkMode,
+                  onTap: () => _onItemTapped(0),
+                ),
+                _buildBottomNavItem(
+                  icon: Icons.card_membership_outlined,
+                  activeIcon: Icons.card_membership,
+                  label: 'Subscription',
+                  index: 1,
+                  currentIndex: _selectedIndex,
+                  isDarkMode: isDarkMode,
+                  onTap: () => _onItemTapped(1),
+                ),
+                _buildBottomNavChatItem(
+                  currentIndex: _selectedIndex,
+                  isDarkMode: isDarkMode,
+                  userId: widget.userId,
+                  onTap: () => _onItemTapped(2),
+                ),
+                _buildBottomNavItem(
+                  icon: Icons.groups_outlined,
+                  activeIcon: Icons.groups,
+                  label: 'Community',
+                  index: 3,
+                  currentIndex: _selectedIndex,
+                  isDarkMode: isDarkMode,
+                  onTap: () => _onItemTapped(3),
+                ),
+                _buildBottomNavProfileItem(
+                  currentIndex: _selectedIndex,
+                  isDarkMode: isDarkMode,
+                  userImageUrl: userImageUrl,
+                  onTap: () => _onItemTapped(4),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Crisp, single-render nav item — avoids BottomNavigationBar's double-render blur.
+  Widget _buildBottomNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+    required int currentIndex,
+    required bool isDarkMode,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentIndex == index;
+    final activeColor = isDarkMode ? Colors.white : Colors.black87;
+    final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
+    final color = isSelected ? activeColor : inactiveColor;
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Bottom navigation
-            Theme(
-              data: Theme.of(context).copyWith(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-              ),
-              child: BottomNavigationBar(
-                backgroundColor: Colors.transparent,
-                selectedItemColor: AppColors.textPrimary(isDarkMode),
-                unselectedItemColor: AppColors.textSecondary(isDarkMode),
-                type: BottomNavigationBarType.fixed,
-                currentIndex: _selectedIndex,
-                onTap: _onItemTapped,
-                elevation: 0,
-                selectedFontSize: 12,
-                unselectedFontSize: 12,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: buildNavItem(Icons.home, 0),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildNavItem(Icons.card_membership, 1),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildChatNavItem(),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildNavItem(Icons.groups, 3),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: buildProfileNavItem(),
-                    label: '',
-                  ),
-                ],
-              ),
+            Icon(isSelected ? activeIcon : icon, size: 24, color: color),
+            const SizedBox(height: 2),
+            Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
+            const SizedBox(height: 2),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 2,
+              width: isSelected ? 20 : 0,
+              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(1)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavChatItem({
+    required int currentIndex,
+    required bool isDarkMode,
+    required String userId,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentIndex == 2;
+    final activeColor = isDarkMode ? Colors.white : Colors.black87;
+    final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
+    final color = isSelected ? activeColor : inactiveColor;
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .collection('chats')
+              .snapshots(),
+          builder: (context, snapshot) {
+            final hasUnread = snapshot.hasData &&
+                snapshot.data!.docs.any((doc) {
+                  final data = doc.data() as Map<String, dynamic>?;
+                  return data?['hasUnread'] == true;
+                });
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(isSelected ? Icons.chat_bubble : Icons.chat_bubble_outline, size: 24, color: color),
+                    if (hasUnread)
+                      Positioned(
+                        right: -4,
+                        top: -2,
+                        child: Container(
+                          width: 9,
+                          height: 9,
+                          decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text('Chat', style: TextStyle(fontSize: 11, color: color, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
+                const SizedBox(height: 2),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: 2,
+                  width: isSelected ? 20 : 0,
+                  decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(1)),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavProfileItem({
+    required int currentIndex,
+    required bool isDarkMode,
+    required String? userImageUrl,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentIndex == 4;
+    final activeColor = isDarkMode ? Colors.white : Colors.black87;
+    final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
+    final color = isSelected ? activeColor : inactiveColor;
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            userImageUrl != null && userImageUrl.isNotEmpty
+                ? CircleAvatar(
+                    radius: 12,
+                    backgroundColor: isSelected
+                        ? (isDarkMode ? Colors.white24 : Colors.black12)
+                        : (isDarkMode ? Colors.white12 : Colors.black.withValues(alpha: 0.06)),
+                    backgroundImage: NetworkImage(userImageUrl),
+                  )
+                : Icon(isSelected ? Icons.person : Icons.person_outline, size: 24, color: color),
+            const SizedBox(height: 2),
+            Text('Profile', style: TextStyle(fontSize: 11, color: color, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
+            const SizedBox(height: 2),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 2,
+              width: isSelected ? 20 : 0,
+              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(1)),
             ),
           ],
         ),

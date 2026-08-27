@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AdMobService {
   static final AdMobService _instance = AdMobService._internal();
@@ -25,7 +26,7 @@ class AdMobService {
   }
   
   static String get _interstitialAdUnitId {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       return 'ca-app-pub-8909088774883808/8546251228'; // Use same banner ID for now
     } else {
       return 'ca-app-pub-8909088774883808/8546251228';
@@ -33,7 +34,7 @@ class AdMobService {
   }
   
   static String get _rewardedAdUnitId {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       return 'ca-app-pub-8909088774883808/8546251228'; // Use same banner ID for now
     } else {
       return 'ca-app-pub-8909088774883808/8546251228';
@@ -77,6 +78,10 @@ class AdMobService {
 
   // Initialize Mobile Ads SDK
   Future<void> initialize() async {
+    if (kIsWeb) {
+      print('🌐 AdMob is disabled on web');
+      return;
+    }
     try {
       await MobileAds.instance.initialize();
       print('✅ AdMob initialized successfully');
@@ -105,6 +110,7 @@ class AdMobService {
     required void Function(Ad ad) onAdClosed,
     required void Function(Ad ad) onAdImpression,
   }) {
+    if (kIsWeb) return;
     // Dispose existing ad with same key if any
     _bannerAds[adKey]?.dispose();
     
@@ -203,6 +209,7 @@ class AdMobService {
 
   // Load Interstitial Ad
   Future<void> loadInterstitialAd() async {
+    if (kIsWeb) return;
     await InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),

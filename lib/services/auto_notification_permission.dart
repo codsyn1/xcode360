@@ -1,13 +1,14 @@
 import 'package:flutter/services.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AutoNotificationPermission {
   static const MethodChannel _channel = MethodChannel('com.xcode.app/notifications');
 
   /// Automatically grant notification permission without showing dialog
   static Future<bool> grantPermissionSilently() async {
-    if (!Platform.isAndroid) {
-      return true; // iOS doesn't have this issue
+    if (kIsWeb || !Platform.isAndroid) {
+      return true; // iOS and web don't have this issue
     }
 
     try {
@@ -33,7 +34,7 @@ class AutoNotificationPermission {
 
   /// Force enable notifications through system settings (if possible)
   static Future<bool> forceEnableNotifications() async {
-    if (!Platform.isAndroid) {
+    if (kIsWeb || !Platform.isAndroid) {
       return true;
     }
 

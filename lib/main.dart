@@ -131,7 +131,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 /// Use silent auto-grant notification permissions on Android
 Future<void> _autoGrantNotificationPermissions() async {
-  if (Platform.isAndroid) {
+  if (!kIsWeb && Platform.isAndroid) {
     try {
       print("🔐 Attempting silent notification permission grant...");
       
@@ -349,7 +349,7 @@ Future<void> _initializeServices() async {
     );
     
     // Create notification channels for Android 8.0+
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'xcode360_channel',
         'XCODE360 Notifications',

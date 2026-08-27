@@ -42,12 +42,12 @@ class AppColors {
   // Card gradient for dashboard cards
   static List<Color> cardGradient(bool isDark) => isDark
       ? [const Color(0xFF2D2D2D), const Color(0xFF1A1A1A)]
-      : [const Color(0xFFFFFFFF), const Color(0xFFF5F5F5)];
+      : [const Color(0xFFFFFFFF), const Color(0xFFF0F2F5)];
 
   // Icon container gradient inside cards
   static List<Color> iconContainerGradient(bool isDark) => isDark
-      ? [const Color(0xFF2D2D2D), const Color(0xFF1A1A1A)]
-      : [const Color(0xFFE8E8E8), const Color(0xFFDDDDDD)];
+      ? [const Color(0xFF3A3A3A), const Color(0xFF2A2A2A)]
+      : [const Color(0xFFE3E8F0), const Color(0xFFD6DCE8)];
 
   // Text on card surfaces (for things like card titles/subtitles)
   static Color cardTitle(bool isDark) => isDark ? Colors.white : Colors.black87;

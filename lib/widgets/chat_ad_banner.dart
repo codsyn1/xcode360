@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/admob_service.dart';
 import 'professional_ad_placeholder.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ChatAdBanner extends StatefulWidget {
   const ChatAdBanner({super.key});
@@ -20,6 +21,7 @@ class _ChatAdBannerState extends State<ChatAdBanner> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (kIsWeb) return;
     if (!_initialized) {
       _initialized = true;
       _initializeAd();
@@ -91,6 +93,9 @@ class _ChatAdBannerState extends State<ChatAdBanner> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return const ProfessionalAdPlaceholder();
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
