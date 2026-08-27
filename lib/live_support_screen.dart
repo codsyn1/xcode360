@@ -85,6 +85,7 @@ class _SupportCards extends StatelessWidget {
         ),
         itemCount: cards.length,
         itemBuilder: (context, index) {
+          final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
           final card = cards[index];
           return _AnimatedCard(
             onTap: () => onCardTap(card['title']),
@@ -95,6 +96,7 @@ class _SupportCards extends StatelessWidget {
             subtitle: card['subtitle'],
             titleFont: titleFont,
             subtitleFont: subtitleFont,
+            isDarkMode: isDarkMode,
           );
         },
       ),
@@ -111,6 +113,7 @@ class _AnimatedCard extends StatefulWidget {
   final String subtitle;
   final double titleFont;
   final double subtitleFont;
+  final bool isDarkMode;
   const _AnimatedCard({
     required this.onTap,
     required this.cardRadius,
@@ -120,6 +123,7 @@ class _AnimatedCard extends StatefulWidget {
     required this.subtitle,
     required this.titleFont,
     required this.subtitleFont,
+    required this.isDarkMode,
   });
 
   @override
@@ -153,16 +157,25 @@ class _AnimatedCardState extends State<_AnimatedCard> {
         duration: const Duration(milliseconds: 120),
         child: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF353535), Color(0xFF232323)],
-            ),
+            gradient: widget.isDarkMode
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF353535), Color(0xFF232323)],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Colors.white, const Color(0xFFF5F5F5)],
+                  ),
             borderRadius: BorderRadius.circular(widget.cardRadius),
-            border: Border.all(color: Colors.white12, width: 1.2),
+            border: Border.all(
+              color: widget.isDarkMode ? Colors.white12 : const Color(0xFFE0E0E0),
+              width: 1.2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.22),
+                color: Colors.black.withOpacity(widget.isDarkMode ? 0.22 : 0.08),
                 blurRadius: 18,
                 offset: const Offset(0, 8),
               ),
@@ -176,28 +189,28 @@ class _AnimatedCardState extends State<_AnimatedCard> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.13),
+                    color: widget.isDarkMode
+                        ? Colors.white.withOpacity(0.13)
+                        : const Color(0xFF1976D2).withOpacity(0.12),
                     borderRadius: BorderRadius.circular(widget.cardRadius * 0.6),
                   ),
                   padding: EdgeInsets.all(widget.cardRadius * 0.38),
-                  child: Icon(widget.icon, color: Colors.white, size: widget.iconSize),
+                  child: Icon(
+                    widget.icon,
+                    color: widget.isDarkMode ? Colors.white : const Color(0xFF1976D2),
+                    size: widget.iconSize,
+                  ),
                 ),
                 const SizedBox(height: 18),
                 Flexible(
                   child: Text(
                     widget.title,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: widget.isDarkMode ? Colors.white : Colors.black87,
                       fontWeight: FontWeight.bold,
                       fontSize: widget.titleFont,
                       height: 1.1,
                       overflow: TextOverflow.ellipsis,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 6,
-                        ),
-                      ],
                     ),
                     maxLines: 2,
                   ),
@@ -207,7 +220,7 @@ class _AnimatedCardState extends State<_AnimatedCard> {
                   child: Text(
                     widget.subtitle,
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: widget.isDarkMode ? Colors.white70 : Colors.black54,
                       fontSize: widget.subtitleFont,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -218,12 +231,18 @@ class _AnimatedCardState extends State<_AnimatedCard> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF3A3A3A),
+                    decoration: BoxDecoration(
+                      color: widget.isDarkMode
+                          ? const Color(0xFF3A3A3A)
+                          : const Color(0xFF1976D2).withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(8),
-                    child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: widget.isDarkMode ? Colors.white : const Color(0xFF1976D2),
+                      size: 20,
+                    ),
                   ),
                 ),
               ],

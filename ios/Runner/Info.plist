@@ -47,5 +47,16 @@
 	<true/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8909088774883808~3409706124</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera to upload profile and cover photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to upload profile and cover photos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires access to the microphone for video features if needed.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

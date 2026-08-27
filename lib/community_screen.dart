@@ -109,8 +109,8 @@ class _CommunityCard extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.textPrimary(context.watch<ThemeCubit>().state == ThemeMode.dark),
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),

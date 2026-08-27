@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../app_colors.dart';
+import '../../../../theme_cubit.dart';
 import 'payment_cubit.dart';
 import 'payment_state.dart';
 
@@ -9,6 +11,8 @@ class PaymentDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+
     const bankInfo = {
       'Bank Name': 'NBP : National Bank of Pakistan',
       'Account Name': 'Hostings Ware SMC Private Limited',
@@ -17,16 +21,24 @@ class PaymentDetailsScreen extends StatelessWidget {
       'Country': 'Pakistan',
     };
 
-    final TextEditingController refCtrl = TextEditingController();
-
     return BlocProvider(
       create: (_) => PaymentCubit()..init(userId),
       child: Scaffold(
-        backgroundColor: const Color(0xFF232323),
+        backgroundColor: AppColors.background(isDarkMode),
         appBar: AppBar(
-          title: const Text('Upgrade to Pro'),
+          title: Text(
+            'Upgrade to Pro',
+            style: TextStyle(
+              color: AppColors.textPrimary(isDarkMode),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.textPrimary(isDarkMode)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textPrimary(isDarkMode),
           elevation: 0,
         ),
         body: BlocConsumer<PaymentCubit, PaymentState>(
@@ -49,8 +61,12 @@ class PaymentDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Card(
-                    color: Colors.white.withOpacity(0.06),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: AppColors.card(isDarkMode),
+                    elevation: isDarkMode ? 0 : 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: AppColors.border(isDarkMode)),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -63,7 +79,7 @@ class PaymentDetailsScreen extends StatelessWidget {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Expanded(child: Text(e.key, style: const TextStyle(color: Colors.white70))),
+                                    Expanded(child: Text(e.key, style: TextStyle(color: AppColors.textSecondary(isDarkMode)))),
                                     Expanded(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
@@ -71,7 +87,7 @@ class PaymentDetailsScreen extends StatelessWidget {
                                           Flexible(
                                             child: SelectableText(
                                               e.value,
-                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                              style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontWeight: FontWeight.w600),
                                               textAlign: TextAlign.right,
                                             ),
                                           ),
@@ -79,7 +95,7 @@ class PaymentDetailsScreen extends StatelessWidget {
                                           IconButton(
                                             tooltip: 'Copy',
                                             onPressed: () => context.read<PaymentCubit>().copyToClipboard(e.value),
-                                            icon: const Icon(Icons.copy, color: Colors.white70, size: 18),
+                                            icon: Icon(Icons.copy, color: AppColors.textSecondary(isDarkMode), size: 18),
                                           ),
                                         ],
                                       ),
@@ -95,8 +111,12 @@ class PaymentDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   Card(
-                    color: Colors.white.withOpacity(0.06),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: AppColors.card(isDarkMode),
+                    elevation: isDarkMode ? 0 : 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: AppColors.border(isDarkMode)),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -104,8 +124,14 @@ class PaymentDetailsScreen extends StatelessWidget {
                         children: [
                           const Text('Select Plan', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
                           const SizedBox(height: 8),
-                          _TierTile(title: 'Monthly', value: 'monthly', price: state.pricesUSD['monthly'] ?? 0.0, group: state.selectedTier,
-                              onChanged: (v) => context.read<PaymentCubit>().selectTier(v)),
+                          _TierTile(
+                            title: 'Monthly',
+                            value: 'monthly',
+                            price: state.pricesUSD['monthly'] ?? 0.0,
+                            group: state.selectedTier,
+                            onChanged: (v) => context.read<PaymentCubit>().selectTier(v),
+                            isDarkMode: isDarkMode,
+                          ),
                         ],
                       ),
                     ),
@@ -114,15 +140,21 @@ class PaymentDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   Card(
-                    color: Colors.white.withOpacity(0.06),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
+                    color: AppColors.card(isDarkMode),
+                    elevation: isDarkMode ? 0 : 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: AppColors.border(isDarkMode)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('After sending payment, please share the payment screenshot on WhatsApp so our team can activate your Pro account. Thank you.',
-                              style: TextStyle(color: Colors.white70)),
+                          Text(
+                            'After sending payment, please share the payment screenshot on WhatsApp so our team can activate your Pro account. Thank you.',
+                            style: TextStyle(color: AppColors.textSecondary(isDarkMode)),
+                          ),
                         ],
                       ),
                     ),
@@ -162,21 +194,30 @@ class _TierTile extends StatelessWidget {
   final String group;
   final double price;
   final ValueChanged<String> onChanged;
-  const _TierTile({required this.title, required this.value, required this.group, required this.price, required this.onChanged});
+  final bool isDarkMode;
+  const _TierTile({
+    required this.title,
+    required this.value,
+    required this.group,
+    required this.price,
+    required this.onChanged,
+    required this.isDarkMode,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final selected = group == value;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Radio<String>(
         value: value,
         groupValue: group,
+        activeColor: Colors.amber,
         onChanged: (v) => v != null ? onChanged(v) : null,
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: AppColors.textPrimary(isDarkMode),
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),

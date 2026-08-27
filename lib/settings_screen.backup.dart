@@ -438,7 +438,7 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final Widget child;
   final WidgetBuilder? footerBuilder;
-  const _SectionCard({required this.title, required this.child});
+  const _SectionCard({required this.title, required this.child, this.footerBuilder});
 
   @override
   Widget build(BuildContext context) {

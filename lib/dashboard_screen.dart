@@ -487,6 +487,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
     Widget buildNavItem(IconData icon, int index) {
       final isSelected = _selectedIndex == index;
+      final activeColor = isDarkMode ? Colors.white : Colors.black87;
+      final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -494,14 +496,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           Icon(
             icon,
             size: 24,
-            color: isSelected ? Colors.white : Colors.white54,
+            color: isSelected ? activeColor : inactiveColor,
           ),
           const SizedBox(height: 2),
           Text(
             getLabelForIndex(index),
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? Colors.white : Colors.white54,
+              color: isSelected ? activeColor : inactiveColor,
             ),
           ),
           const SizedBox(height: 4),
@@ -509,7 +511,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             height: 2,
             width: 20,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white : Colors.transparent,
+              color: isSelected ? activeColor : Colors.transparent,
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -534,6 +536,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             builder: (context, unreadSnapshot) {
               final hasUnread = unreadSnapshot.data == true;
               final isSelected = _selectedIndex == 2;
+              final activeColor = isDarkMode ? Colors.white : Colors.black87;
+              final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -543,7 +547,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       Icon(
                         Icons.chat_bubble_outline,
                         size: 24,
-                        color: isSelected ? Colors.white : Colors.white54,
+                        color: isSelected ? activeColor : inactiveColor,
                       ),
                       if (hasUnread)
                         Positioned(
@@ -565,7 +569,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     'Chat',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isSelected ? Colors.white : Colors.white54,
+                      color: isSelected ? activeColor : inactiveColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -573,7 +577,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     height: 2,
                     width: 20,
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.white : Colors.transparent,
+                      color: isSelected ? activeColor : Colors.transparent,
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -587,6 +591,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
     Widget buildProfileNavItem() {
       final isSelected = _selectedIndex == 4;
+      final activeColor = isDarkMode ? Colors.white : Colors.black87;
+      final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -594,20 +600,25 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           userImageUrl != null && userImageUrl!.isNotEmpty
               ? CircleAvatar(
                   radius: 12,
-                  backgroundColor: isSelected ? Colors.white : Colors.white24,
+                  backgroundColor: isSelected
+                      ? (isDarkMode ? Colors.white : Colors.black87)
+                      : (isDarkMode ? Colors.white24 : Colors.black12),
                   backgroundImage: NetworkImage(userImageUrl!),
                 )
               : CircleAvatar(
                   radius: 12,
-                  backgroundColor: isSelected ? Colors.white : Colors.white24,
-                  child: const Icon(Icons.person, color: Colors.white24, size: 16),
+                  backgroundColor: isSelected
+                      ? (isDarkMode ? Colors.white : Colors.black87)
+                      : (isDarkMode ? Colors.white24 : Colors.black12),
+                  child: Icon(Icons.person,
+                      color: isDarkMode ? Colors.white24 : Colors.black38, size: 16),
                 ),
           const SizedBox(height: 2),
           Text(
             'Profile',
             style: TextStyle(
               fontSize: 12,
-              color: isSelected ? Colors.white : Colors.white54,
+              color: isSelected ? activeColor : inactiveColor,
             ),
           ),
           const SizedBox(height: 4),
@@ -615,7 +626,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             height: 2,
             width: 20,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white : Colors.transparent,
+              color: isSelected ? activeColor : Colors.transparent,
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -715,18 +726,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               onTap: onTapLevel,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF2D2D2D),
-                                      Color(0xFF1A1A1A),
-                                    ],
+                                  gradient: LinearGradient(
+                                    colors: AppColors.cardGradient(isDarkMode),
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   borderRadius: BorderRadius.circular(cardRadius),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.4),
+                                      color: AppColors.shadow(isDarkMode).withOpacity(0.4),
                                       blurRadius: isWide ? 20 : 15,
                                       offset: Offset(0, isWide ? 12 : 8),
                                     ),
@@ -753,7 +761,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                         width: isWide ? 80 : 50,
                                         height: isWide ? 80 : 50,
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.08),
+                                          color: AppColors.cardOverlay(isDarkMode).withOpacity(0.06),
                                           shape: BoxShape.circle,
                                         ),
                                       ),
@@ -769,7 +777,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               color: accentColor.withOpacity(0.85),
                                               borderRadius: BorderRadius.circular(isWide ? 20 : 16),
                                               border: Border.all(
-                                                color: Colors.white.withOpacity(0.2),
+                                                color: AppColors.cardSubtitle(isDarkMode),
                                                 width: 1,
                                               ),
                                             ),
@@ -783,7 +791,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                           Text(
                                             levelTitle,
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: AppColors.textPrimary(isDarkMode),
                                               fontWeight: FontWeight.bold,
                                               fontSize: titleFont,
                                               letterSpacing: 0.5,
@@ -793,7 +801,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                           Text(
                                             levelSubtitle,
                                             style: TextStyle(
-                                              color: Colors.white.withOpacity(0.9),
+                                              color: AppColors.textSecondary(isDarkMode),
                                               fontSize: subtitleFont,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -807,7 +815,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                   vertical: isWide ? 4 : 3,
                                                 ),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.white.withOpacity(0.2),
+                                                  color: AppColors.cardOverlay(isDarkMode),
                                                   borderRadius: BorderRadius.circular(isWide ? 12 : 10),
                                                 ),
                                                 child: Row(
@@ -815,14 +823,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                   children: [
                                                     Icon(
                                                       Icons.trending_up,
-                                                      color: Colors.white,
+                                                      color: AppColors.textPrimary(isDarkMode),
                                                       size: isWide ? 14 : 12,
                                                     ),
                                                     SizedBox(width: isWide ? 6 : 4),
                                                     Text(
                                                       'Progress',
                                                       style: TextStyle(
-                                                        color: Colors.white,
+                                                        color: AppColors.cardTitle(isDarkMode),
                                                         fontSize: isWide ? 12 : 10,
                                                         fontWeight: FontWeight.w600,
                                                       ),
@@ -833,17 +841,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               const Spacer(),
                                               Container(
                                                 decoration: BoxDecoration(
-                                                  color: Colors.white.withOpacity(0.2),
+                                                  color: AppColors.cardOverlay(isDarkMode),
                                                   shape: BoxShape.circle,
                                                   border: Border.all(
-                                                    color: Colors.white.withOpacity(0.3),
+                                                    color: AppColors.textPrimary(isDarkMode).withOpacity(0.3),
                                                     width: 1,
                                                   ),
                                                 ),
                                                 padding: EdgeInsets.all(isWide ? 10 : 8),
                                                 child: Icon(
                                                   Icons.arrow_forward,
-                                                  color: Colors.white,
+                                                  color: AppColors.textPrimary(isDarkMode),
                                                   size: arrowIcon * 0.8,
                                                 ),
                                               ),
@@ -872,18 +880,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF2D2D2D),
-                                  Color(0xFF1A1A1A),
-                                ],
+                              gradient: LinearGradient(
+                                colors: AppColors.cardGradient(isDarkMode),
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(cardRadius),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
+                                  color: AppColors.shadow(isDarkMode).withOpacity(0.4),
                                   blurRadius: isWide ? 20 : 15,
                                   offset: Offset(0, isWide ? 12 : 8),
                                 ),
@@ -910,7 +915,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     width: isWide ? 80 : 50,
                                     height: isWide ? 80 : 50,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.08),
+                                      color: AppColors.cardOverlay(isDarkMode).withOpacity(0.06),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -923,16 +928,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Container(
                                         padding: EdgeInsets.all(isWide ? 16 : 12),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.15),
+                                          color: AppColors.cardOverlay(isDarkMode).withOpacity(0.3),
                                           borderRadius: BorderRadius.circular(isWide ? 20 : 16),
                                           border: Border.all(
-                                            color: Colors.white.withOpacity(0.2),
+                                            color: AppColors.cardSubtitle(isDarkMode),
                                             width: 1,
                                           ),
                                         ),
                                         child: Icon(
                                           Icons.people,
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           size: iconSize * 0.9,
                                         ),
                                       ),
@@ -940,7 +945,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         'Users',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           fontWeight: FontWeight.bold,
                                           fontSize: titleFont,
                                           letterSpacing: 0.5,
@@ -950,7 +955,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         'Find and connect with users',
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
+                                          color: AppColors.textSecondary(isDarkMode),
                                           fontSize: subtitleFont,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -964,7 +969,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               vertical: isWide ? 4 : 3,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
+                                              color: AppColors.cardOverlay(isDarkMode),
                                               borderRadius: BorderRadius.circular(isWide ? 12 : 10),
                                             ),
                                             child: Row(
@@ -972,14 +977,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               children: [
                                                 Icon(
                                                   Icons.people,
-                                                  color: Colors.white,
+                                                  color: AppColors.textPrimary(isDarkMode),
                                                   size: isWide ? 14 : 12,
                                                 ),
                                                 SizedBox(width: isWide ? 6 : 4),
                                                 Text(
                                                   'Active',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: AppColors.textPrimary(isDarkMode),
                                                     fontSize: isWide ? 12 : 10,
                                                     fontWeight: FontWeight.w600,
                                                   ),
@@ -990,17 +995,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                           const Spacer(),
                                           Container(
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
+                                              color: AppColors.cardOverlay(isDarkMode),
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
+                                                color: AppColors.textPrimary(isDarkMode).withOpacity(0.3),
                                                 width: 1,
                                               ),
                                             ),
                                             padding: EdgeInsets.all(isWide ? 10 : 8),
                                             child: Icon(
                                               Icons.arrow_forward,
-                                              color: Colors.white,
+                                              color: AppColors.textPrimary(isDarkMode),
                                               size: arrowIcon * 0.8,
                                             ),
                                           ),
@@ -1027,18 +1032,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF2D2D2D),
-                                  Color(0xFF1A1A1A),
-                                ],
+                              gradient: LinearGradient(
+                                colors: AppColors.cardGradient(isDarkMode),
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(cardRadius),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
+                                  color: AppColors.shadow(isDarkMode).withOpacity(0.4),
                                   blurRadius: isWide ? 20 : 15,
                                   offset: Offset(0, isWide ? 12 : 8),
                                 ),
@@ -1065,7 +1067,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     width: isWide ? 80 : 50,
                                     height: isWide ? 80 : 50,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.08),
+                                      color: AppColors.cardOverlay(isDarkMode).withOpacity(0.06),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -1078,16 +1080,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Container(
                                         padding: EdgeInsets.all(isWide ? 16 : 12),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.15),
+                                          color: AppColors.cardOverlay(isDarkMode).withOpacity(0.3),
                                           borderRadius: BorderRadius.circular(isWide ? 20 : 16),
                                           border: Border.all(
-                                            color: Colors.white.withOpacity(0.2),
+                                            color: AppColors.cardSubtitle(isDarkMode),
                                             width: 1,
                                           ),
                                         ),
                                         child: Icon(
                                           Icons.diversity_3,
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           size: iconSize * 0.9,
                                         ),
                                       ),
@@ -1095,7 +1097,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         'Communities',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           fontWeight: FontWeight.bold,
                                           fontSize: titleFont,
                                           letterSpacing: 0.5,
@@ -1105,7 +1107,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         'Connect & collaborate',
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
+                                          color: AppColors.textSecondary(isDarkMode),
                                           fontSize: subtitleFont,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -1119,7 +1121,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               vertical: isWide ? 4 : 3,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
+                                              color: AppColors.cardOverlay(isDarkMode),
                                               borderRadius: BorderRadius.circular(isWide ? 12 : 10),
                                             ),
                                             child: Row(
@@ -1127,14 +1129,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                               children: [
                                                 Icon(
                                                   Icons.people,
-                                                  color: Colors.white,
+                                                  color: AppColors.textPrimary(isDarkMode),
                                                   size: isWide ? 14 : 12,
                                                 ),
                                                 SizedBox(width: isWide ? 6 : 4),
                                                 Text(
                                                   'Active',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: AppColors.textPrimary(isDarkMode),
                                                     fontSize: isWide ? 12 : 10,
                                                     fontWeight: FontWeight.w600,
                                                   ),
@@ -1145,17 +1147,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                           const Spacer(),
                                           Container(
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
+                                              color: AppColors.cardOverlay(isDarkMode),
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
+                                                color: AppColors.textPrimary(isDarkMode).withOpacity(0.3),
                                                 width: 1,
                                               ),
                                             ),
                                             padding: EdgeInsets.all(isWide ? 10 : 8),
                                             child: Icon(
                                               Icons.arrow_forward,
-                                              color: Colors.white,
+                                              color: AppColors.textPrimary(isDarkMode),
                                               size: arrowIcon * 0.8,
                                             ),
                                           ),
@@ -1306,20 +1308,20 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                   final isProAccount = plan.toLowerCase() == 'pro';
                                   
                                   // Dim colors for free accounts, full colors for pro accounts
-                                  final cardColor = isProAccount ? const Color(0xFF1E1E1E) : const Color(0xFF1A1A1A);
+                                  final cardColor = isProAccount ? AppColors.card(isDarkMode) : AppColors.card(isDarkMode).withOpacity(0.8);
                                   final iconGradientColors = isProAccount 
-                                    ? [const Color(0xFF2D2D2D), const Color(0xFF1A1A1A)]
+                                    ? AppColors.cardGradient(isDarkMode)
                                     : [const Color(0xFF1A1A1A), const Color(0xFF0D0D0D)];
-                                  final titleColor = isProAccount ? Colors.white : Colors.white.withOpacity(0.5);
+                                  final titleColor = isProAccount ? AppColors.textPrimary(isDarkMode) : AppColors.textPrimary(isDarkMode).withOpacity(0.5);
                                   final subtitleColor = isProAccount 
-                                    ? Colors.white.withOpacity(0.7) 
-                                    : Colors.white.withOpacity(0.3);
+                                    ? AppColors.textSecondary(isDarkMode)
+                                    : AppColors.textSecondary(isDarkMode).withOpacity(0.3);
                                   final arrowColor = isProAccount 
-                                    ? Colors.white.withOpacity(0.1) 
-                                    : Colors.white.withOpacity(0.05);
+                                    ? AppColors.textPrimary(isDarkMode).withOpacity(0.1) 
+                                    : AppColors.textPrimary(isDarkMode).withOpacity(0.05);
                                   final arrowIconColor = isProAccount 
-                                    ? Colors.white 
-                                    : Colors.white.withOpacity(0.4);
+                                    ? AppColors.textPrimary(isDarkMode) 
+                                    : AppColors.textPrimary(isDarkMode).withOpacity(0.4);
                                   
                                   return Container(
                                     margin: const EdgeInsets.only(right: 6, left: 8, bottom: 12),
@@ -1329,13 +1331,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       borderRadius: BorderRadius.circular(borderRadius),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(isProAccount ? 0.3 : 0.15),
+                                          color: AppColors.shadow(isDarkMode).withOpacity(isProAccount ? 0.3 : 0.15),
                                           blurRadius: isProAccount ? 12 : 8,
                                           offset: const Offset(0, 6),
                                         ),
                                       ],
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(isProAccount ? 0.1 : 0.05),
+                                        color: AppColors.textPrimary(isDarkMode).withOpacity(isProAccount ? 0.1 : 0.05),
                                         width: 1,
                                       ),
                                     ),
@@ -1360,7 +1362,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                 ),
                                                 child: Icon(
                                                   Icons.insights,
-                                                  color: isProAccount ? Colors.white : Colors.white.withOpacity(0.4),
+                                                  color: isProAccount ? AppColors.textPrimary(isDarkMode) : AppColors.textPrimary(isDarkMode).withOpacity(0.4),
                                                   size: iconSize,
                                                 ),
                                               ),
@@ -1490,17 +1492,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                 margin: const EdgeInsets.only(left: 6, right: 8, bottom: 12),
                                 height: cardHeight,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
+                                  color: AppColors.card(isDarkMode),
                                   borderRadius: BorderRadius.circular(borderRadius),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
+                                      color: AppColors.shadow(isDarkMode).withOpacity(0.3),
                                       blurRadius: 12,
                                       offset: const Offset(0, 6),
                                     ),
                                   ],
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: AppColors.textPrimary(isDarkMode).withOpacity(0.1),
                                     width: 1,
                                   ),
                                 ),
@@ -1516,8 +1518,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                             width: iconSize * 2,
                                             height: iconSize * 2,
                                             decoration: BoxDecoration(
-                                              gradient: const LinearGradient(
-                                                colors: [Color(0xFF2D2D2D), Color(0xFF1A1A1A)],
+                                              gradient: LinearGradient(
+                                                colors: AppColors.cardGradient(isDarkMode),
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                               ),
@@ -1525,7 +1527,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                             ),
                                             child: Icon(
                                               Icons.swap_horizontal_circle,
-                                              color: Colors.white,
+                                              color: AppColors.textPrimary(isDarkMode),
                                               size: iconSize,
                                             ),
                                           ),
@@ -1537,7 +1539,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         'Exchange Projects',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           fontSize: titleFontSize,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -1549,7 +1551,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                       Text(
                                         isSmallMobile ? 'Swap & collaborate' : 'Swap and collaborate',
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.7),
+                                          color: AppColors.textSecondary(isDarkMode),
                                           fontSize: subtitleFontSize,
                                         ),
                                         maxLines: 1,
@@ -1561,12 +1563,12 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                         width: arrowSize * 2.5,
                                         height: arrowSize * 2.5,
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: AppColors.textPrimary(isDarkMode).withOpacity(0.1),
                                           borderRadius: BorderRadius.circular(arrowSize * 0.75),
                                         ),
                                         child: Icon(
                                           Icons.arrow_forward_ios,
-                                          color: Colors.white,
+                                          color: AppColors.textPrimary(isDarkMode),
                                           size: arrowSize,
                                         ),
                                       ),
@@ -1756,7 +1758,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                                         return Container(
                                                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                                           decoration: BoxDecoration(
-                                                            color: Colors.white.withOpacity(0.18),
+                                                            color: AppColors.cardTitle(isDarkMode).withOpacity(0.18),
                                                             borderRadius: BorderRadius.circular(12),
                                                           ),
                                                           child: Row(
@@ -1871,7 +1873,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       ),
       drawer: Drawer(
         child: Container(
-          color: const Color(0xFF232323), // light black
+          color: AppColors.drawer(isDarkMode),
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -1886,7 +1888,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         children: [
                           CircleAvatar(
                             radius: 28,
-                            backgroundColor: Colors.white24,
+                            backgroundColor: AppColors.cardOverlay(isDarkMode),
                             backgroundImage: userImageUrl != null && userImageUrl!.isNotEmpty
                                 ? NetworkImage(userImageUrl!)
                                 : null,
@@ -1902,8 +1904,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               children: [
                                 Text(
                                   userName ?? 'User',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary(isDarkMode),
                                     fontSize: 16,
                                   ),
                                 ),
@@ -1912,8 +1914,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     padding: const EdgeInsets.only(top: 2.0),
                                     child: Text(
                                       userJobTitle!,
-                                      style: const TextStyle(
-                                        color: Colors.white70,
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary(isDarkMode),
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -1922,8 +1924,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                 const SizedBox(height: 8),
                                 Text(
                                   userPlan == 'Pro' ? 'Pro Member' : 'Free Member',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary(isDarkMode),
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -1936,14 +1938,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               ),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.home, color: Colors.white),
-                title: const Text('Home', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.home, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Home', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   setState(() => _selectedIndex = 0);
                   Navigator.pop(context);
                 },
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               Tooltip(
                 message: (userPlan?.toLowerCase() == 'pro')
@@ -1952,10 +1954,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 child: Opacity(
                   opacity: (userPlan?.toLowerCase() == 'pro') ? 1.0 : 0.55,
                   child: ListTile(
-                    leading: const Icon(Icons.analytics, color: Colors.white),
+                    leading: Icon(Icons.analytics, color: AppColors.textPrimary(isDarkMode)),
                     title: Row(
                       children: [
-                        const Text('Profile Analytics', style: TextStyle(color: Colors.white)),
+                        Text('Profile Analytics', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                         if ((userPlan?.toLowerCase() ?? 'free') != 'pro') ...[
                           const SizedBox(width: 6),
                           const Icon(Icons.lock, color: Colors.white54, size: 16),
@@ -1979,11 +1981,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ),
                 ),
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.settings, color: Colors.white),
-                title: const Text('Settings', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.settings, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Settings', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.of(context).push(
@@ -1991,41 +1993,41 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   );
                 },
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.person, color: Colors.white),
-                title: const Text('Profile', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.person, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Profile', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   setState(() => _selectedIndex = 4);
                   Navigator.pop(context);
                 },
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.card_membership, color: Colors.white),
-                title: const Text('Subscription', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.card_membership, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Subscription', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   setState(() => _selectedIndex = 1);
                   Navigator.pop(context);
                 },
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.groups, color: Colors.white),
-                title: const Text('Communities', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.groups, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Communities', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   setState(() => _selectedIndex = 3);
                   Navigator.pop(context);
                 },
               ),
               if (_isAdmin) ...[
-                const Divider(color: Colors.white24, height: 1),
+                Divider(color: AppColors.divider(isDarkMode), height: 1),
                 ListTile(
-                  leading: const Icon(Icons.admin_panel_settings, color: Colors.white),
-                  title: const Text('Admin • Payments', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.admin_panel_settings, color: AppColors.textPrimary(isDarkMode)),
+                  title: Text('Admin • Payments', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -2034,8 +2036,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.support_agent, color: Colors.white),
-                  title: const Text('Admin • Support', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.support_agent, color: AppColors.textPrimary(isDarkMode)),
+                  title: Text('Admin • Support', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -2045,8 +2047,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 ),
 
                 ListTile(
-                  leading: const Icon(Icons.slideshow, color: Colors.white),
-                  title: const Text('Admin • Slider Images', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.slideshow, color: AppColors.textPrimary(isDarkMode)),
+                  title: Text('Admin • Slider Images', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -2055,8 +2057,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.image, color: Colors.white),
-                  title: const Text('Admin • Popup Image', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.image, color: AppColors.textPrimary(isDarkMode)),
+                  title: Text('Admin • Popup Image', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(
@@ -2065,22 +2067,22 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   },
                 ),
               ],
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.swap_horiz, color: Colors.white),
-                title: const Text('Exchange Projects', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.swap_horiz, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Exchange Projects', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => ExchangeProjectsScreen(currentUserId: widget.userId)),
                   );
                 },
               ),
-              if (!_isAdmin) const Divider(color: Colors.white24, height: 1),
+              if (!_isAdmin) Divider(color: AppColors.divider(isDarkMode), height: 1),
               if (!_isAdmin)
               ListTile(
-                leading: const Icon(Icons.support_agent, color: Colors.white),
-                title: const Text('Live Support', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.support_agent, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Live Support', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () async {
                   Navigator.pop(context);
                   final prefs = await SharedPreferences.getInstance();
@@ -2090,10 +2092,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   );
                 },
               ),
-              const Divider(color: Colors.white24, height: 1),
+              Divider(color: AppColors.divider(isDarkMode), height: 1),
               ListTile(
-                leading: const Icon(Icons.logout, color: Colors.white),
-                title: const Text('Logout', style: TextStyle(color: Colors.white)),
+                leading: Icon(Icons.logout, color: AppColors.textPrimary(isDarkMode)),
+                title: Text('Logout', style: TextStyle(color: AppColors.textPrimary(isDarkMode))),
                 onTap: () async {
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isLoggedIn', false);
@@ -2111,7 +2113,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       body: pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF232323),
+          color: AppColors.bottomNav(isDarkMode),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -2131,8 +2133,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               ),
               child: BottomNavigationBar(
                 backgroundColor: Colors.transparent,
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white54,
+                selectedItemColor: AppColors.textPrimary(isDarkMode),
+                unselectedItemColor: AppColors.textSecondary(isDarkMode),
                 type: BottomNavigationBarType.fixed,
                 currentIndex: _selectedIndex,
                 onTap: _onItemTapped,
