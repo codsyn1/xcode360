@@ -9,7 +9,10 @@ import 'features/subscription/presentation/payment/payment_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   final String userId;
-  const SubscriptionScreen({super.key, required this.userId});
+  /// Set to true when pushed via Navigator so a back button appears.
+  /// Leave false (default) when rendered as a bottom-nav tab.
+  final bool showBackButton;
+  const SubscriptionScreen({super.key, required this.userId, this.showBackButton = false});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -22,6 +25,27 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return BlocProvider(
       create: (_) => SubscriptionCubit()..init(widget.userId),
       child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: widget.showBackButton
+            ? AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: AppColors.textPrimary(isDarkMode),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                title: Text(
+                  'Subscription',
+                  style: TextStyle(
+                    color: AppColors.textPrimary(isDarkMode),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            : null,
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -295,7 +319,7 @@ class _FeaturesTable extends StatelessWidget {
                           child: feature['name'] == 'Project Exchanges'
                               ? Text(
                                   feature['free'].toString(),
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: AppColors.textPrimary(isDarkMode), fontWeight: FontWeight.bold),
                                 )
                               : Icon(
                                   feature['free'] == true ? Icons.check_circle : Icons.cancel,

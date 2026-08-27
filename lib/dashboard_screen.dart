@@ -1234,7 +1234,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                           Navigator.of(context).pop();
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (_) => SubscriptionScreen(userId: widget.userId),
+                                              builder: (_) => SubscriptionScreen(userId: widget.userId, showBackButton: true),
                                             ),
                                           );
                                         },

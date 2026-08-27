@@ -483,7 +483,7 @@ class _ChatProjectExchangeScreenState extends State<ChatProjectExchangeScreen> w
                                           print('=== UPGRADE PRESSED ===');
                                           Navigator.of(ctx2).pop();
                                           Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (_) => SubscriptionScreen(userId: widget.currentUserId)),
+                                            MaterialPageRoute(builder: (_) => SubscriptionScreen(userId: widget.currentUserId, showBackButton: true)),
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
