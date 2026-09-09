@@ -131,7 +131,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 /// Use silent auto-grant notification permissions on Android
 Future<void> _autoGrantNotificationPermissions() async {
-  if (!kIsWeb && Platform.isAndroid) {
+  if (kIsWeb) {
+    return; // skip platform-specific permission logic on web
+  }
+  if (Platform.isAndroid) {
     try {
       print("🔐 Attempting silent notification permission grant...");
       
