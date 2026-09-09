@@ -282,6 +282,7 @@ class _WebHomePageState extends State<WebHomePage> {
   Widget _buildFeatureCard(IconData icon, String title, String description) {
     return WebCard(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             icon,
@@ -299,13 +300,15 @@ class _WebHomePageState extends State<WebHomePage> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
+          Flexible(
+            child: Text(
+              description,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),

@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'features/splash/presentation/bloc/splash_cubit.dart';
 import 'features/splash/presentation/bloc/splash_state.dart';
 import 'dashboard_screen.dart';
-import 'web_dashboard_screen.dart';
 import 'web_homepage.dart';
 import 'new_idea_screen.dart';
 import 'chat_project_exchange_screen.dart';
@@ -63,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               print("🔥 === SPLASH SCREEN: NAVIGATING TO CHAT FROM NOTIFICATION ===");
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => kIsWeb 
-                    ? const WebDashboardScreen()
+                    ? DashboardScreen(userId: currentUserId)
                     : ChatProjectExchangeScreen(
                         currentUserId: currentUserId,
                         profileUserId: fromUserId,
@@ -76,9 +75,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           }
           
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => kIsWeb 
-                ? const WebDashboardScreen()
-                : DashboardScreen(userId: state.userId)),
+            MaterialPageRoute(builder: (_) => DashboardScreen(userId: state.userId)),
           );
         } else if (state is SplashGuest) {
           Navigator.of(context).pushReplacement(

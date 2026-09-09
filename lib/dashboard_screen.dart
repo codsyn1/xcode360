@@ -636,6 +636,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final isWide = screenWidth > 700;
+    final isDesktop = screenWidth > 900;
     final cardHeight = isWide ? 260.0 : screenHeight * 0.28;
     final cardWidth = isWide ? 420.0 : screenWidth * 0.88;
     final cardRadius = isWide ? 32.0 : 22.0;
@@ -660,10 +661,16 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             },
           ),
           SingleChildScrollView(
-            child: Column(
-              children: [
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 32.0 : 0),
+                  child: Column(
+                    children: [
+                if (isDesktop) const SizedBox(height: 24),
                 SizedBox(
-                  height: isWide ? 220 : 160,
+                  height: isDesktop ? 280 : (isWide ? 220 : 160),
                   child: PageView(
                     controller: _pageController,
                     children: _sliderImages.map((imgUrl) =>
@@ -683,16 +690,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 ),
                 SizedBox(height: isWide ? 32 : 24),
                 // Communities & Users Carousel
-                SizedBox(
-                  height: isWide ? 270 : 210,
-                  child: PageView(
-                    controller: _carouselPageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _carouselCurrentPage = index;
-                      });
-                    },
-                    children: [
+                Builder(builder: (_) {
+                  final carouselCards = <Widget>[
                       // Level Card
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
@@ -1171,12 +1170,35 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: isWide ? 16 : 12),
+                  ];
+                  if (isDesktop) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: SizedBox(
+                        height: 320,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: carouselCards.map((c) => Expanded(child: c)).toList(),
+                        ),
+                      ),
+                    );
+                  }
+                  return SizedBox(
+                    height: isWide ? 270 : 210,
+                    child: PageView(
+                      controller: _carouselPageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _carouselCurrentPage = index;
+                        });
+                      },
+                      children: carouselCards,
+                    ),
+                  );
+                }),
+                if (!isDesktop) SizedBox(height: isWide ? 16 : 12),
                 // Carousel Dot Indicators
-                Row(
+                if (!isDesktop) Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(3, (index) {
                     return Container(
@@ -1195,8 +1217,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                 SizedBox(height: isWide ? 44 : 32),
                 // Second Row - Profile Analytics and Exchange Projects
                 Container(
-                  constraints: const BoxConstraints(
-                    maxWidth: 600, // Maximum width for better layout
+                  constraints: BoxConstraints(
+                    maxWidth: isDesktop ? double.infinity : 600,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1584,20 +1606,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ),
                 ),
                 SizedBox(height: isWide ? 44 : 32),
-                Column(
-                  children: [
-                    SizedBox(
-                      height: cardHeight,
-                      child: PageView.builder(
-                        controller: PageController(viewportFraction: isWide ? 0.55 : 0.92),
-                        itemCount: 7,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentCardPage = index;
-                          });
-                        },
-                        itemBuilder: (context, index) {
-                          final cardData = [
+                Builder(builder: (_) {
+                  final allCategoryData = [
                             {
                               'image': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80',
                               'title': 'Mobile Apps\nDevelopment',
@@ -1663,7 +1673,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               'title': 'App & Web',
                               'icon': Icons.web,
                             },
-                          ][index];
+                  ];
+                  Widget buildCategoryCard(int index) {
+                    final cardData = allCategoryData[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(
@@ -1790,27 +1802,62 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               ),
                             ),
                           );
-                        },
+                  }
+
+                  if (isDesktop) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 1.3,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                        ),
+                        itemCount: 7,
+                        itemBuilder: (context, index) => buildCategoryCard(index),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(7, (index) {
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: isWide ? 8 : 4, vertical: isWide ? 8 : 4),
-                          width: _currentCardPage == index ? (isWide ? 28 : 18) : (isWide ? 12 : 8),
-                          height: isWide ? 12 : 8,
-                          decoration: BoxDecoration(
-                            color: _currentCardPage == index ? Colors.white : Colors.white38,
-                            borderRadius: BorderRadius.circular(isWide ? 8 : 6),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-                SizedBox(height: isWide ? 32 : 24),
+                    );
+                  }
+                  return Column(
+                    children: [
+                      SizedBox(
+                        height: cardHeight,
+                        child: PageView.builder(
+                          controller: PageController(viewportFraction: isWide ? 0.55 : 0.92),
+                          itemCount: 7,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentCardPage = index;
+                            });
+                          },
+                          itemBuilder: (context, index) => buildCategoryCard(index),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(7, (index) {
+                          return Container(
+                            margin: EdgeInsets.symmetric(horizontal: isWide ? 8 : 4, vertical: isWide ? 8 : 4),
+                            width: _currentCardPage == index ? (isWide ? 28 : 18) : (isWide ? 12 : 8),
+                            height: isWide ? 12 : 8,
+                            decoration: BoxDecoration(
+                              color: _currentCardPage == index ? Colors.white : Colors.white38,
+                              borderRadius: BorderRadius.circular(isWide ? 8 : 6),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  );
+                }),
+                SizedBox(height: isDesktop ? 64 : (isWide ? 32 : 24)),
               ],
+            ),
+            ),
+            ),
             ),
           ),
         ],
@@ -1824,7 +1871,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     ];
     return Scaffold(
       backgroundColor: AppColors.background(isDarkMode),
-      appBar: _selectedIndex == 4 ? null : AppBar(
+      appBar: (isDesktop || _selectedIndex == 4) ? null : AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: isDarkMode ? Colors.white : Colors.black,
@@ -1871,7 +1918,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           ),
         ],
       ),
-      drawer: Drawer(
+      drawer: isDesktop ? null : Drawer(
         child: Container(
           color: AppColors.drawer(isDarkMode),
           child: ListView(
@@ -2111,7 +2158,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         ),
       ),
       body: pages[_selectedIndex],
-      bottomNavigationBar: Container(
+      bottomNavigationBar: isDesktop ? null : Container(
         decoration: BoxDecoration(
           color: AppColors.bottomNav(isDarkMode),
           boxShadow: [

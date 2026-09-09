@@ -33,6 +33,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 900;
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
       body: Stack(
@@ -50,34 +52,43 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
             },
           ),
           SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.verified_user_outlined, size: 90, color: isDarkMode ? Colors.white70 : Colors.black54),
-                        const SizedBox(height: 24),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Text(
+            child: isDesktop
+                // ── Desktop: centered card ──
+                ? Center(
+                    child: Container(
+                      width: 460,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 48),
+                      decoration: BoxDecoration(
+                        color: (isDarkMode ? const Color(0xFF2A2A2A) : Colors.white).withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.25),
+                            blurRadius: 32,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: (isDarkMode ? Colors.white : Colors.black).withOpacity(0.08),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.verified_user_outlined, size: 90, color: isDarkMode ? Colors.white70 : Colors.black54),
+                          const SizedBox(height: 24),
+                          Text(
                             "Get Started With XCode360!",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 26,
                               fontWeight: FontWeight.bold,
                               color: isDarkMode ? Colors.white : Colors.black,
                               letterSpacing: 1.2,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 18),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Text(
+                          const SizedBox(height: 18),
+                          Text(
                             'Login or sign up to start exchanging projects and collaborating with the XCode360 community!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -85,73 +96,171 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> with SingleTicker
                               color: isDarkMode ? Colors.white70 : Colors.black54,
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 40),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE0E0E0),
+                                    foregroundColor: Colors.black87,
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                    );
+                                  },
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.login, size: 20, color: Colors.black87),
+                                      SizedBox(width: 8),
+                                      Text('LOGIN', style: TextStyle(color: Colors.black87)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE0E0E0),
+                                    foregroundColor: Colors.black87,
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                                    );
+                                  },
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.person_add_alt_1, size: 20, color: Colors.black87),
+                                      SizedBox(width: 8),
+                                      Text('SIGNUP', style: TextStyle(color: Colors.black87)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-                  child: Row(
+                  )
+                // ── Mobile: original layout unchanged ──
+                : Column(
                     children: [
                       Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE0E0E0),
-                            foregroundColor: Colors.black87,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const LoginScreen()),
-                            );
-                          },
-                          child: const Row(
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Icon(Icons.login, size: 20, color: Colors.black87),
-                              SizedBox(width: 8),
-                              Text('LOGIN', style: TextStyle(color: Colors.black87)),
+                              Icon(Icons.verified_user_outlined, size: 90, color: isDarkMode ? Colors.white70 : Colors.black54),
+                              const SizedBox(height: 24),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Text(
+                                  "Get Started With XCode360!",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDarkMode ? Colors.white : Colors.black,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Text(
+                                  'Login or sign up to start exchanging projects and collaborating with the XCode360 community!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: isDarkMode ? Colors.white70 : Colors.black54,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE0E0E0),
-                            foregroundColor: Colors.black87,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE0E0E0),
+                                  foregroundColor: Colors.black87,
+                                  padding: const EdgeInsets.symmetric(vertical: 18),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                  );
+                                },
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.login, size: 20, color: Colors.black87),
+                                    SizedBox(width: 8),
+                                    Text('LOGIN', style: TextStyle(color: Colors.black87)),
+                                  ],
+                                ),
+                              ),
                             ),
-                            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const SignUpScreen()),
-                            );
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person_add_alt_1, size: 20, color: Colors.black87),
-                              SizedBox(width: 8),
-                              Text('SIGNUP', style: TextStyle(color: Colors.black87)),
-                            ],
-                          ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE0E0E0),
+                                  foregroundColor: Colors.black87,
+                                  padding: const EdgeInsets.symmetric(vertical: 18),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                                  );
+                                },
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.person_add_alt_1, size: 20, color: Colors.black87),
+                                    SizedBox(width: 8),
+                                    Text('SIGNUP', style: TextStyle(color: Colors.black87)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
