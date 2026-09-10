@@ -20,6 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController _customSkillController = TextEditingController();
   final List<String> _customSkills = [];
   final Set<String> _removedCustomSkills = <String>{};
+  bool _obscureNewPassword = true;
 
   @override
   void dispose() {
@@ -463,10 +464,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       initialValue: '',
                                       onChanged: (v) => context.read<SettingsCubit>().setNewPassword(v),
                                       style: const TextStyle(color: Colors.white),
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         labelText: 'New Password',
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _obscureNewPassword ? Icons.visibility : Icons.visibility_off,
+                                            color: Colors.white70,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _obscureNewPassword = !_obscureNewPassword;
+                                            });
+                                          },
+                                        ),
                                       ),
-                                      obscureText: true,
+                                      obscureText: _obscureNewPassword,
                                       validator: (v) {
                                         if (v == null || v.isEmpty) return null; // optional
                                         if (v.length < 6) return 'Password must be at least 6 characters';

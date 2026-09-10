@@ -16,6 +16,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   late AnimationController _bgAnimationController;
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -29,22 +33,20 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   void dispose() {
     _bgAnimationController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 900;
 
     // The form content — shared between desktop and mobile
     Widget formContent = Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           ),
           const SizedBox(height: 32),
           TextFormField(
-            controller: usernameController,
+            controller: _usernameController,
             style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
             decoration: InputDecoration(
               labelText: 'Username',
@@ -72,14 +74,25 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           ),
           const SizedBox(height: 18),
           TextFormField(
-            controller: passwordController,
+            controller: _passwordController,
             style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : Colors.black54),
               border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
             ),
-            obscureText: true,
+            obscureText: _obscurePassword,
             validator: (value) => value == null || value.isEmpty ? 'Enter your password' : null,
           ),
           const SizedBox(height: 8),
@@ -111,10 +124,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               onPressed: () async {
-                if (formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate()) {
                   // Firestore login logic
-                  final username = usernameController.text.trim();
-                  final password = passwordController.text.trim();
+                  final username = _usernameController.text.trim();
+                  final password = _passwordController.text.trim();
                   try {
                     final query = await FirebaseFirestore.instance
                         .collection('users')
