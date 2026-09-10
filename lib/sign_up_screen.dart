@@ -42,6 +42,8 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
   final List<String> _customSkills = [];
   bool _showSummaryError = false;
   bool _submitted = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   // Add category and subcategory state
   String? _selectedCategory;
@@ -506,10 +508,21 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                         TextFormField(
                           controller: _passwordController,
                           style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.white70,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
                           ),
-                          obscureText: true,
+                          obscureText: _obscurePassword,
                           validator: (value) {
                             if (!_submitted) return null;
                             if (value == null || value.isEmpty) return 'Password is required';
@@ -522,10 +535,21 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                         TextFormField(
                           controller: _confirmPasswordController,
                           style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Confirm Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.white70,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                });
+                              },
+                            ),
                           ),
-                          obscureText: true,
+                          obscureText: _obscureConfirmPassword,
                           validator: (value) {
                             if (!_submitted) return null;
                             if (value == null || value.isEmpty) return 'Confirm your password';
