@@ -452,6 +452,129 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     }
   }
 
+  Widget _buildHeroBannerFallback(bool isDarkMode, double cardRadius, bool isDesktop) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: isDesktop ? 0 : 8, vertical: 8),
+      height: isDesktop ? 220 : 160,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(cardRadius),
+        gradient: LinearGradient(
+          colors: isDarkMode
+              ? [const Color(0xFF1E2638), const Color(0xFF131722)]
+              : [const Color(0xFFEDE9FE), const Color(0xFFE2E8F0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.08),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(cardRadius),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              top: -20,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (isDarkMode ? Colors.white : const Color(0xFF7C3AED)).withValues(alpha: 0.04),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 60,
+              bottom: -40,
+              child: Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (isDarkMode ? Colors.white : const Color(0xFF3B82F6)).withValues(alpha: 0.03),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 32 : 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.12),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 14,
+                          color: isDarkMode ? Colors.amber : const Color(0xFF7C3AED),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'XCODE360 PLATFORM',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.8,
+                            color: isDarkMode ? Colors.white70 : Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: isDesktop ? 12 : 8),
+                  Text(
+                    'Exchange Projects & Collaborate',
+                    style: TextStyle(
+                      fontSize: isDesktop ? 26 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                      letterSpacing: -0.3,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Connect with verified developers and agencies worldwide to share opportunities and build together.',
+                    style: TextStyle(
+                      fontSize: isDesktop ? 14 : 12,
+                      color: isDarkMode ? Colors.white60 : const Color(0xFF64748B),
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
@@ -638,13 +761,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     final isWide = screenWidth > 700;
     final isDesktop = screenWidth > 900;
     final cardHeight = isWide ? 260.0 : screenHeight * 0.28;
-    final cardWidth = isWide ? 420.0 : screenWidth * 0.88;
-    final cardRadius = isWide ? 32.0 : 22.0;
-    final iconSize = isWide ? 64.0 : 48.0;
-    final titleFont = isWide ? 26.0 : 18.0;
-    final subtitleFont = isWide ? 18.0 : 13.0;
-    final priceFont = isWide ? 20.0 : 15.0;
-    final arrowIcon = isWide ? 28.0 : 20.0;
+    final cardRadius = isWide ? 20.0 : 16.0;
+    final iconSize = isWide ? 56.0 : 44.0;
+    final titleFont = isWide ? 22.0 : 17.0;
+    final subtitleFont = isWide ? 14.0 : 12.0;
+    final arrowIcon = isWide ? 24.0 : 18.0;
     final List<Widget> pages = [
       Stack(
         children: [
@@ -660,41 +781,54 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               );
             },
           ),
+
           SingleChildScrollView(
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 32.0 : 0),
+                  padding: isDesktop
+                      ? const EdgeInsets.symmetric(horizontal: 32, vertical: 24)
+                      : EdgeInsets.zero,
                   child: Column(
                     children: [
-                if (isDesktop) const SizedBox(height: 24),
-                SizedBox(
-                  height: isDesktop ? 280 : (isWide ? 220 : 160),
-                  child: PageView(
-                    controller: _pageController,
-                    children: _sliderImages.map((imgUrl) =>
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: isWide ? 24 : 8, vertical: isWide ? 18 : 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(cardRadius),
-                          child: Image.network(
-                            imgUrl,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                if (isDesktop) const SizedBox(height: 16),
+                if (_sliderImages.isEmpty)
+                  _buildHeroBannerFallback(isDarkMode, cardRadius, isDesktop)
+                else
+                  SizedBox(
+                    height: isDesktop ? 240 : (isWide ? 200 : 160),
+                    child: PageView(
+                      controller: _pageController,
+                      children: _sliderImages.map((imgUrl) =>
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: isDesktop ? 0 : (isWide ? 16 : 8), vertical: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(cardRadius),
+                            child: Image.network(
+                              imgUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return _buildHeroBannerFallback(isDarkMode, cardRadius, isDesktop);
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return _buildHeroBannerFallback(isDarkMode, cardRadius, isDesktop);
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ).toList(),
+                      ).toList(),
+                    ),
                   ),
-                ),
                 SizedBox(height: isWide ? 32 : 24),
                 // Communities & Users Carousel
                 Builder(builder: (_) {
                   final carouselCards = <Widget>[
                       // Level Card
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        padding: EdgeInsets.symmetric(horizontal: isDesktop ? 0 : (isWide ? 12 : 6)),
                         child: FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance.collection('users').doc(widget.userId).get(),
                           builder: (context, snapshot) {
@@ -868,7 +1002,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       ),
                       // Users Card
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        padding: EdgeInsets.symmetric(horizontal: isDesktop ? 0 : (isWide ? 12 : 6)),
                         child: GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(
@@ -1020,7 +1154,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       ),
                       // Communities Card
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: isWide ? 12 : 6),
+                        padding: EdgeInsets.symmetric(horizontal: isDesktop ? 0 : (isWide ? 12 : 6)),
                         child: GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(
@@ -1173,12 +1307,18 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   ];
                   if (isDesktop) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: SizedBox(
-                        height: 320,
+                        height: 250,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: carouselCards.map((c) => Expanded(child: c)).toList(),
+                          children: [
+                            Expanded(child: carouselCards[0]),
+                            const SizedBox(width: 16),
+                            Expanded(child: carouselCards[1]),
+                            const SizedBox(width: 16),
+                            Expanded(child: carouselCards[2]),
+                          ],
                         ),
                       ),
                     );
@@ -1346,11 +1486,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     : AppColors.textPrimary(isDarkMode).withOpacity(0.4);
                                   
                                   return Container(
-                                    margin: const EdgeInsets.only(right: 6, left: 8, bottom: 12),
-                                    height: cardHeight,
+                                    margin: isDesktop
+                                        ? EdgeInsets.zero
+                                        : const EdgeInsets.only(right: 6, left: 8, bottom: 12),
+                                    height: isDesktop ? 200 : cardHeight,
                                     decoration: BoxDecoration(
                                       color: cardColor,
-                                      borderRadius: BorderRadius.circular(borderRadius),
+                                      borderRadius: BorderRadius.circular(isDesktop ? cardRadius : borderRadius),
                                       boxShadow: [
                                         BoxShadow(
                                           color: AppColors.shadow(isDarkMode).withOpacity(isProAccount ? 0.3 : 0.15),
@@ -1459,6 +1601,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           ),
                         ),
                       ),
+                      if (isDesktop) const SizedBox(width: 16),
                       // Exchange Projects Card
                       Expanded(
                         child: GestureDetector(
@@ -1511,11 +1654,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                               }
                               
                               return Container(
-                                margin: const EdgeInsets.only(left: 6, right: 8, bottom: 12),
-                                height: cardHeight,
+                                margin: isDesktop
+                                    ? EdgeInsets.zero
+                                    : const EdgeInsets.only(left: 6, right: 8, bottom: 12),
+                                height: isDesktop ? 200 : cardHeight,
                                 decoration: BoxDecoration(
                                   color: AppColors.card(isDarkMode),
-                                  borderRadius: BorderRadius.circular(borderRadius),
+                                  borderRadius: BorderRadius.circular(isDesktop ? cardRadius : borderRadius),
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppColors.shadow(isDarkMode).withOpacity(0.3),
@@ -1688,116 +1833,108 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                 ),
                               );
                             },
-                            child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: isWide ? 24 : 12, vertical: isWide ? 18 : 12),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(cardRadius),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.network(
-                                    cardData['image'] as String,
-                                    fit: BoxFit.cover,
+                            child: Container(
+                              margin: isDesktop
+                                  ? EdgeInsets.zero
+                                  : EdgeInsets.symmetric(horizontal: isWide ? 24 : 12, vertical: isWide ? 18 : 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(cardRadius),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.12),
+                                    blurRadius: isWide ? 20 : 14,
+                                    offset: Offset(0, isWide ? 10 : 6),
                                   ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(cardRadius),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.black.withOpacity(0.85),
-                                          Colors.black.withOpacity(0.25),
-                                        ],
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.25),
-                                          blurRadius: isWide ? 24 : 16,
-                                          offset: Offset(0, isWide ? 12 : 8),
-                                        ),
-                                      ],
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(cardRadius),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Image.network(
+                                      cardData['image'] as String,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return Container(
+                                          color: isDarkMode ? const Color(0xFF1E2430) : const Color(0xFFE2E8F0),
+                                          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                        );
+                                      },
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: isDarkMode
+                                                  ? [const Color(0xFF242C3D), const Color(0xFF181E29)]
+                                                  : [const Color(0xFFE2E8F0), const Color(0xFFCBD5E1)],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              cardData['icon'] as IconData,
+                                              size: 44,
+                                              color: isDarkMode ? Colors.white30 : Colors.black26,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(isWide ? 32 : 22),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(cardRadius),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.black.withValues(alpha: 0.85),
+                                            Colors.black.withValues(alpha: 0.25),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.all(isDesktop ? 22 : (isWide ? 28 : 20)),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           // Icon above text
                                           Container(
-                                            padding: const EdgeInsets.all(12),
+                                            padding: const EdgeInsets.all(10),
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withOpacity(0.2),
+                                              color: Colors.white.withValues(alpha: 0.2),
                                               borderRadius: BorderRadius.circular(12),
                                             ),
                                             child: Icon(
                                               cardData['icon'] as IconData,
                                               color: Colors.white,
-                                              size: isWide ? 32 : 28,
+                                              size: isDesktop ? 24 : (isWide ? 30 : 24),
                                             ),
                                           ),
-                                          const SizedBox(height: 16),
+                                          const Spacer(),
                                           // Title text
-
                                           Text(
                                             cardData['title'] as String,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: isWide ? 36 : 30,
-                                          fontWeight: FontWeight.bold,
-                                          height: 1.1,
-                                          shadows: [
-                                            Shadow(
-                                              color: Colors.black.withOpacity(0.5),
-                                              blurRadius: isWide ? 10 : 6,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: isDesktop ? 22 : (isWide ? 28 : 22),
+                                              fontWeight: FontWeight.bold,
+                                              height: 1.15,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black.withValues(alpha: 0.5),
+                                                  blurRadius: isWide ? 10 : 6,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                          if ((cardData['title'] as String) == 'AI Services') ...[
-                                            const SizedBox(height: 10),
-                                            BlocProvider(
-                                              create: (_) => AiServicesCubit()..load(),
-                                              child: BlocBuilder<AiServicesCubit, AiServicesState>(
-                                                builder: (context, state) {
-                                                  if (state is AiServicesLoaded) {
-                                                    final cats = state.categories;
-                                                    return Wrap(
-                                                      spacing: 8,
-                                                      runSpacing: 8,
-                                                      children: cats.take(isWide ? 10 : 6).map((c) {
-                                                        return Container(
-                                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                                          decoration: BoxDecoration(
-                                                            color: AppColors.cardTitle(isDarkMode).withOpacity(0.18),
-                                                            borderRadius: BorderRadius.circular(12),
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            children: [
-                                                              Icon(c.icon, size: isWide ? 16 : 14, color: Colors.white),
-                                                              const SizedBox(width: 6),
-                                                              Text(
-                                                                c.title,
-                                                                style: TextStyle(color: Colors.white, fontSize: isWide ? 13 : 11),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      }).toList(),
-                                                    );
-                                                  }
-                                                  return const SizedBox.shrink();
-                                                },
-                                              ),
-                                            ),
-                                          ],
-
+                                          ),
                                         ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
                                 ),
                               ),
                             ),
@@ -1812,11 +1949,11 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
-                          childAspectRatio: 1.3,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
+                          childAspectRatio: 1.35,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
                         ),
-                        itemCount: 7,
+                        itemCount: allCategoryData.length,
                         itemBuilder: (context, index) => buildCategoryCard(index),
                       ),
                     );
@@ -2157,7 +2294,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           ),
         ),
       ),
-      body: pages[_selectedIndex],
+      body: isDesktop
+          ? Row(
+              children: [
+                _buildDesktopSidebar(isDarkMode),
+                Expanded(child: pages[_selectedIndex]),
+              ],
+            )
+          : pages[_selectedIndex],
       bottomNavigationBar: isDesktop ? null : Container(
         decoration: BoxDecoration(
           color: AppColors.bottomNav(isDarkMode),
@@ -2359,6 +2503,337 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
               height: 2,
               width: isSelected ? 20 : 0,
               decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(1)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopSidebar(bool isDarkMode) {
+    final activeColor = isDarkMode ? Colors.white : Colors.black87;
+    final inactiveColor = isDarkMode ? Colors.white54 : Colors.black38;
+    final sidebarBg = isDarkMode ? const Color(0xFF1A1A1A) : const Color(0xFFF5F5F5);
+    final activeBg = isDarkMode
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.06);
+
+    Widget navItem(IconData icon, IconData activeIcon, String label, int index, {Widget? badge}) {
+      final isActive = _selectedIndex == index;
+      final color = isActive ? activeColor : inactiveColor;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _onItemTapped(index),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: isActive ? activeBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 3.5,
+                    height: isActive ? 18 : 0,
+                    decoration: BoxDecoration(
+                      color: isActive ? (isDarkMode ? Colors.white : Colors.black87) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  SizedBox(width: isActive ? 10 : 13.5),
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(isActive ? activeIcon : icon, size: 22, color: color),
+                      if (badge != null) badge,
+                    ],
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 14,
+                        fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: 250,
+      decoration: BoxDecoration(
+        color: sidebarBg,
+        border: Border(
+          right: BorderSide(
+            color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.08),
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Logo
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'X360',
+                      style: TextStyle(
+                        color: isDarkMode ? Colors.black : Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'XCODE360',
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // User info
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: isDarkMode ? Colors.white12 : Colors.black12,
+                    backgroundImage: userImageUrl != null && userImageUrl!.isNotEmpty
+                        ? NetworkImage(userImageUrl!)
+                        : null,
+                    child: (userImageUrl == null || userImageUrl!.isEmpty)
+                        ? Icon(Icons.person, size: 20, color: isDarkMode ? Colors.white54 : Colors.black38)
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          userName ?? 'User',
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          userPlan == 'Pro' ? 'Pro Member' : 'Free',
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white38 : Colors.black38,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.06)),
+            const SizedBox(height: 8),
+            // Navigation items
+            navItem(Icons.home_outlined, Icons.home, 'Home', 0),
+            navItem(Icons.card_membership_outlined, Icons.card_membership, 'Subscription', 1),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(widget.userId)
+                  .collection('chats')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final hasUnread = snapshot.hasData &&
+                    snapshot.data!.docs.any((doc) {
+                      final data = doc.data() as Map<String, dynamic>?;
+                      return data?['hasUnread'] == true;
+                    });
+                return navItem(
+                  Icons.chat_bubble_outline,
+                  Icons.chat_bubble,
+                  'Chat',
+                  2,
+                  badge: hasUnread
+                      ? Positioned(
+                          right: -3,
+                          top: -3,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                          ),
+                        )
+                      : null,
+                );
+              },
+            ),
+            navItem(Icons.groups_outlined, Icons.groups, 'Community', 3),
+            navItem(Icons.person_outline, Icons.person, 'Profile', 4),
+            const SizedBox(height: 8),
+            Divider(height: 1, color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.06)),
+            const SizedBox(height: 8),
+            // Notifications
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.userId)
+                    .collection('exchanges')
+                    .where('status', whereIn: ['pending', 'accepted'])
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  final hasNotifications = snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ExchangeProjectsScreen(currentUserId: widget.userId),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Icon(Icons.notifications_outlined, size: 22, color: inactiveColor),
+                                if (hasNotifications)
+                                  Positioned(
+                                    right: -3,
+                                    top: -3,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(width: 14),
+                            Text(
+                              'Notifications',
+                              style: TextStyle(
+                                color: inactiveColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const Spacer(),
+            // Bottom items
+            Divider(height: 1, color: (isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.06)),
+            // Settings
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings_outlined, size: 22, color: inactiveColor),
+                        const SizedBox(width: 14),
+                        Text(
+                          'Settings',
+                          style: TextStyle(
+                            color: inactiveColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Logout
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 2, 12, 16),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('isLoggedIn', false);
+                    await prefs.remove('userId');
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                      (route) => false,
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, size: 22, color: inactiveColor),
+                        const SizedBox(width: 14),
+                        Text(
+                          'Logout',
+                          style: TextStyle(
+                            color: inactiveColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

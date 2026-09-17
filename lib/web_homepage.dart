@@ -54,92 +54,141 @@ class _WebHomePageState extends State<WebHomePage> {
   }
 
   Widget _buildHeader() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final showFullNav = screenWidth >= 1024;
+    final showCompactNav = screenWidth >= 800 && screenWidth < 1024;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: _isScrolled ? Colors.white.withOpacity(0.95) : Colors.transparent,
+        color: _isScrolled ? Colors.white.withValues(alpha: 0.95) : Colors.white,
         boxShadow: _isScrolled
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
               ]
-            : null,
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
       ),
       child: SafeArea(
-        child: Row(
-          children: [
-            // Logo
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF23272A),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Row(
+                children: [
+                  // Logo
+                  InkWell(
+                    onTap: () {
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'X360',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF23272A),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'X360',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Xcode360',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF23272A),
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Xcode360',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF23272A),
+
+                  const Spacer(),
+
+                  // Navigation links (responsive based on width)
+                  if (showFullNav)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildNavItem('How it Works', () {}),
+                        _buildNavItem('Features', () {}),
+                        _buildNavItem('Pricing', () {}),
+                        _buildNavItem('About', () {}),
+                      ],
+                    )
+                  else if (showCompactNav)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildNavItem('Features', () {}),
+                        _buildNavItem('Pricing', () {}),
+                      ],
+                    ),
+
+                  if (showFullNav || showCompactNav) const SizedBox(width: 20),
+
+                  // CTA Buttons
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () => _navigateToLogin(),
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFF23272A),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                        ),
+                        child: const Text('Log In'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () => _navigateToSignup(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF23272A),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                        ),
+                        child: const Text('Sign Up'),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            
-            const Spacer(),
-            
-            // Navigation
-            if (MediaQuery.of(context).size.width > 768) ...[
-              Row(
-                children: [
-                  _buildNavItem('How it Works', () {}),
-                  _buildNavItem('Features', () {}),
-                  _buildNavItem('Pricing', () {}),
-                  _buildNavItem('About', () {}),
                 ],
               ),
-            ],
-            
-            const SizedBox(width: 24),
-            
-            // CTA Buttons
-            Row(
-              children: [
-                WebButton(
-                  text: 'Log In',
-                  onPressed: () => _navigateToLogin(),
-                  backgroundColor: Colors.transparent,
-                  textColor: const Color(0xFF23272A),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                ),
-                const SizedBox(width: 12),
-                WebButton(
-                  text: 'Sign Up',
-                  onPressed: () => _navigateToSignup(),
-                  backgroundColor: const Color(0xFF23272A),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                ),
-              ],
             ),
-          ],
+          ),
         ),
       ),
     );
