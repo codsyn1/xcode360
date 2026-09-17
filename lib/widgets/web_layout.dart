@@ -128,8 +128,8 @@ class ResponsiveGrid extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     
     int calculateCrossAxisCount() {
-      if (screenWidth >= 1200) return 4;
-      if (screenWidth >= 900) return 3;
+      if (screenWidth >= 1200) return crossAxisCount;
+      if (screenWidth >= 900) return crossAxisCount.clamp(1, 3);
       if (screenWidth >= 600) return 2;
       return 1;
     }
