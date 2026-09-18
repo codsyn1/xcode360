@@ -201,6 +201,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     final bubbleMarginV = isLarge ? 24.0 : isSmall ? 8.0 : 16.0;
     final inputPadding = isLarge ? 18.0 : isSmall ? 8.0 : 12.0;
     final emojiGridCount = isLarge ? 10 : isSmall ? 6 : 8;
+    final isDesktop = screenWidth > 900;
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
@@ -219,7 +220,10 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: isDesktop ? 900 : double.infinity),
+            child: Column(
           children: [
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
@@ -477,6 +481,8 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
               ),
             ),
           ],
+        ),
+          ),
         ),
       ),
     );

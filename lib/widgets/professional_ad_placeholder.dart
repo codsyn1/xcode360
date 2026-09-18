@@ -77,7 +77,6 @@ class _ProfessionalAdPlaceholderState extends State<ProfessionalAdPlaceholder>
             child: Container(
               constraints: BoxConstraints(
                 minHeight: adHeight,
-                maxHeight: adHeight,
               ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(

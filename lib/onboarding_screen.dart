@@ -74,84 +74,175 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 900;
+
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF232323) : const Color(0xFFF2F2F7),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              color: const Color(0xFF232323),
-            ),
-            AnimatedBuilder(
-              animation: _dotsAnimationController,
-              builder: (context, child) {
-                return Stack(
-                  children: [
-                    _ParallaxLinesBackground(progress: _dotsAnimationController.value),
-                    _DottedBackground(offset: _dotsAnimationController.value),
-                  ],
-                );
-              },
-            ),
-            Column(
-              children: [
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: _pages.length,
-                    onPageChanged: (i) => setState(() => _currentPage = i),
-                    itemBuilder: (context, i) {
-                      final page = _pages[i];
-                      return _OnboardingPageContent(
-                        title: page.title,
-                        subtitle: page.subtitle,
-                        icon: page.icon,
-                      );
-                    },
-                  ),
-                ),
-                // Dots indicator
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(_pages.length, (i) => _buildDot(i)),
-                  ),
-                ),
-                // Next/Get Started button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: _currentPage == _pages.length - 1
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1976D2),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: _goToLoginSignup,
-                            child: const Text('Get Started'),
-                          )
-                        : ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF1976D2),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: _nextPage,
-                            child: const Text('Next'),
+      backgroundColor: const Color(0xFF232323),
+      body: Stack(
+        children: [
+          // Animated background — same on all sizes
+          Container(color: const Color(0xFF232323)),
+          AnimatedBuilder(
+            animation: _dotsAnimationController,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  _ParallaxLinesBackground(progress: _dotsAnimationController.value),
+                  _DottedBackground(offset: _dotsAnimationController.value),
+                ],
+              );
+            },
+          ),
+          SafeArea(
+            child: isDesktop
+                // ── Desktop: centered card (matches LoginSignupScreen) ──
+                ? Center(
+                    child: Container(
+                      width: 500,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 48),
+                      decoration: BoxDecoration(
+                        color: (isDarkMode ? const Color(0xFF2A2A2A) : const Color(0xFF2A2A2A))
+                            .withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.35),
+                            blurRadius: 40,
+                            offset: const Offset(0, 12),
                           ),
+                        ],
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.08),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Slides inside the card
+                          SizedBox(
+                            height: 320,
+                            child: PageView.builder(
+                              controller: _pageController,
+                              itemCount: _pages.length,
+                              onPageChanged: (i) => setState(() => _currentPage = i),
+                              itemBuilder: (context, i) {
+                                final page = _pages[i];
+                                return _OnboardingPageContent(
+                                  title: page.title,
+                                  subtitle: page.subtitle,
+                                  icon: page.icon,
+                                  forceWhiteText: true, // card is always dark on desktop
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Dot indicators
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(_pages.length, (i) => _buildDot(i)),
+                          ),
+                          const SizedBox(height: 28),
+                          // Next / Get Started button — full width within the card
+                          SizedBox(
+                            width: double.infinity,
+                            child: _currentPage == _pages.length - 1
+                                ? ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1976D2),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16)),
+                                      textStyle: const TextStyle(
+                                          fontSize: 18, fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: _goToLoginSignup,
+                                    child: const Text('Get Started'),
+                                  )
+                                : ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: const Color(0xFF1976D2),
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16)),
+                                      textStyle: const TextStyle(
+                                          fontSize: 18, fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: _nextPage,
+                                    child: const Text('Next'),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                // ── Mobile: original full-width layout (unchanged) ──
+                : Column(
+                    children: [
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: _pages.length,
+                          onPageChanged: (i) => setState(() => _currentPage = i),
+                          itemBuilder: (context, i) {
+                            final page = _pages[i];
+                            return _OnboardingPageContent(
+                              title: page.title,
+                              subtitle: page.subtitle,
+                              icon: page.icon,
+                            );
+                          },
+                        ),
+                      ),
+                      // Dots indicator
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(_pages.length, (i) => _buildDot(i)),
+                        ),
+                      ),
+                      // Next/Get Started button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: _currentPage == _pages.length - 1
+                              ? ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF1976D2),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16)),
+                                    textStyle: const TextStyle(
+                                        fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: _goToLoginSignup,
+                                  child: const Text('Get Started'),
+                                )
+                              : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: const Color(0xFF1976D2),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16)),
+                                    textStyle: const TextStyle(
+                                        fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  onPressed: _nextPage,
+                                  child: const Text('Next'),
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -174,11 +265,20 @@ class _OnboardingPageContent extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-  const _OnboardingPageContent({required this.title, required this.subtitle, required this.icon});
+  /// When true, text is always white — used inside the always-dark desktop card.
+  final bool forceWhiteText;
+  const _OnboardingPageContent({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    this.forceWhiteText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = context.watch<ThemeCubit>().state == ThemeMode.dark;
+    final titleColor = (forceWhiteText || isDarkMode) ? Colors.white : Colors.black;
+    final subtitleColor = (forceWhiteText || isDarkMode) ? Colors.white70 : Colors.black54;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -194,7 +294,7 @@ class _OnboardingPageContent extends StatelessWidget {
               style: TextStyle(
                 fontSize: title == 'Break Time? Join the Fun Chats!' ? 22 : 28,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: titleColor,
                 letterSpacing: 0.5,
               ),
               textAlign: TextAlign.center,
@@ -204,7 +304,7 @@ class _OnboardingPageContent extends StatelessWidget {
               subtitle,
               style: TextStyle(
                 fontSize: 18,
-                color: isDarkMode ? Colors.white70 : Colors.black54,
+                color: subtitleColor,
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
