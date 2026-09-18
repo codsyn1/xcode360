@@ -148,15 +148,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ],
                 ),
-                body: state.loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Form(
-                          key: formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
+                body: Builder(builder: (context) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final isDesktop = screenWidth > 900;
+                  return state.loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: isDesktop ? 860 : double.infinity),
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.all(isDesktop ? 32 : 16),
+                              child: Form(
+                                key: formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
   _SectionCard(
     title: 'Appearance',
     isDarkMode: isDarkMode,
@@ -538,12 +544,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                       ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
+                    ),
+                  );
+                }),  // closes body: Builder(...)
+              );    // closes return Scaffold(...);
+            },      // closes BlocBuilder builder: (context, state) {
+          ),        // closes BlocBuilder(...)
+        ),          // closes BlocListener(...)
+      ),            // closes BlocProvider(...)
+    );              // closes return Theme(...)
   }
 }
 
