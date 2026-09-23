@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'login_screen.dart';
 import 'login_signup_screen.dart';
 import 'web_dashboard_screen.dart';
@@ -169,27 +171,25 @@ class _WebHomePageState extends State<WebHomePage> {
                     ),
                   if (showNav) const SizedBox(width: 24),
                   // Auth buttons
-                  TextButton(
+                  _hoverButton(
+                    label: 'Log In',
                     onPressed: _navigateToLogin,
-                    style: TextButton.styleFrom(
-                      foregroundColor: _brandDark,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                    child: const Text('Log In'),
+                    backgroundColor: Colors.transparent,
+                    hoverColor: Colors.grey.shade100,
+                    foregroundColor: _brandDark,
+                    borderColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
+                  _hoverButton(
+                    label: 'Sign Up Free',
                     onPressed: _navigateToSignup,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _brandAccent,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                    child: const Text('Sign Up Free'),
+                    backgroundColor: _brandAccent,
+                    hoverColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    borderColor: Colors.transparent,
+                    borderRadius: 10,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   ),
                 ],
               ),
@@ -201,15 +201,54 @@ class _WebHomePageState extends State<WebHomePage> {
   }
 
   Widget _navLink(String label, VoidCallback onTap) {
+    if (!kIsWeb) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(6),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+            child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: _brandDark)),
+          ),
+        ),
+      );
+    }
+    bool hovered = false;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-          child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: _brandDark)),
-        ),
+      child: StatefulBuilder(
+        builder: (context, setLocalState) {
+          return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setLocalState(() => hovered = true),
+            onExit: (_) => setLocalState(() => hovered = false),
+            child: GestureDetector(
+              onTap: onTap,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: hovered ? _brandAccent : Colors.transparent,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 180),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: hovered ? _brandAccent : _brandDark,
+                  ),
+                  child: Text(label),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -258,57 +297,8 @@ class _WebHomePageState extends State<WebHomePage> {
       ],
     );
 
-    // PLACEHOLDER: Hero visual (swap with real illustration)
-    final heroVisual = Container(
-      height: isDesktop ? 420 : 240,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFEC4899)],
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Decorative floating elements
-          Positioned(
-            top: 40,
-            left: 30,
-            child: _floatingIcon(Icons.code, 56),
-          ),
-          Positioned(
-            top: 80,
-            right: 50,
-            child: _floatingIcon(Icons.handshake_outlined, 48),
-          ),
-          Positioned(
-            bottom: 60,
-            left: 60,
-            child: _floatingIcon(Icons.groups, 44),
-          ),
-          Positioned(
-            bottom: 40,
-            right: 30,
-            child: _floatingIcon(Icons.rocket_launch, 52),
-          ),
-          // Center label
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                '// PLACEHOLDER: Hero Image',
-                style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    // Hero visual — auto-shuffling collage of professional workspace shots
+    final heroVisual = _HeroCollage(isDesktop: isDesktop);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: isDesktop ? 60 : 40),
@@ -326,18 +316,6 @@ class _WebHomePageState extends State<WebHomePage> {
               : Column(children: [textContent, const SizedBox(height: 40), heroVisual]),
         ),
       ),
-    );
-  }
-
-  Widget _floatingIcon(IconData icon, double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(size * 0.3),
-      ),
-      child: Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: size * 0.5),
     );
   }
 
@@ -422,16 +400,17 @@ class _WebHomePageState extends State<WebHomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(6),
-                child: ElevatedButton(
+                child: _hoverButton(
+                  label: 'Get Started',
                   onPressed: _navigateToSignup,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _brandAccent,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: const Text('Get Started', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                  backgroundColor: _brandAccent,
+                  hoverColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  borderColor: Colors.transparent,
+                  borderRadius: 10,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -503,14 +482,57 @@ class _WebHomePageState extends State<WebHomePage> {
   // 4. CATEGORY GRID
   // ════════════════════════════════════════════════════════════════════════════
   Widget _buildCategoryGrid() {
+    // Exact same categories, images and icons used in the mobile app dashboard
     final categories = [
-      _CategoryItem(Icons.phone_iphone, 'Mobile Apps Development', '1,200+ projects'),
-      _CategoryItem(Icons.language, 'Web Development', '2,400+ projects'),
-      _CategoryItem(Icons.brush, 'Web Designing', '980+ projects'),
-      _CategoryItem(Icons.palette, 'Graphics Designing', '750+ projects'),
-      _CategoryItem(Icons.campaign, 'Digital Marketing', '620+ projects'),
-      _CategoryItem(Icons.business_center, 'Management', '340+ projects'),
-      _CategoryItem(Icons.trending_up, 'Business', '510+ projects'),
+      _CategoryItem(
+        Icons.phone_iphone,
+        'Mobile Apps\nDevelopment',
+        '1,200+ projects',
+        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF2563EB), Color(0xFF1E3A8A)],
+      ),
+      _CategoryItem(
+        Icons.code,
+        'Web\nDevelopment',
+        '2,400+ projects',
+        'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF4F46E5), Color(0xFF312E81)],
+      ),
+      _CategoryItem(
+        Icons.design_services,
+        'Web\nDesigning',
+        '980+ projects',
+        'https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF0EA5E9), Color(0xFF0C4A6E)],
+      ),
+      _CategoryItem(
+        Icons.brush,
+        'Graphics\nDesigning',
+        '750+ projects',
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF7C3AED), Color(0xFF4C1D95)],
+      ),
+      _CategoryItem(
+        Icons.trending_up,
+        'Digital\nMarketing',
+        '620+ projects',
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF0D9488), Color(0xFF134E4A)],
+      ),
+      _CategoryItem(
+        Icons.people,
+        'Management',
+        '340+ projects',
+        'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF3B82F6), Color(0xFF1E40AF)],
+      ),
+      _CategoryItem(
+        Icons.business,
+        'Business',
+        '510+ projects',
+        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80',
+        const [Color(0xFF1D4ED8), Color(0xFF172554)],
+      ),
     ];
 
     final sw = MediaQuery.of(context).size.width;
@@ -543,7 +565,7 @@ class _WebHomePageState extends State<WebHomePage> {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: 1.4,
+                  childAspectRatio: 1.35,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),
@@ -558,52 +580,111 @@ class _WebHomePageState extends State<WebHomePage> {
   }
 
   Widget _buildCategoryCard(_CategoryItem cat) {
+    bool hovered = false;
     return StatefulBuilder(builder: (context, setLocalState) {
-      bool hovered = false;
       return MouseRegion(
-        onEnter: (_) => setLocalState(() => hovered = true),
-        onExit: (_) => setLocalState(() => hovered = false),
+        cursor: kIsWeb ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        onEnter: kIsWeb ? (_) => setLocalState(() => hovered = true) : null,
+        onExit: kIsWeb ? (_) => setLocalState(() => hovered = false) : null,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, hovered ? -4 : 0, 0),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: hovered ? _brandAccent.withValues(alpha: 0.4) : _cardBorder),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: hovered ? _brandAccent : Colors.transparent,
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: hovered ? _brandAccent.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.03),
-                blurRadius: hovered ? 16 : 8,
-                offset: const Offset(0, 4),
+                color: hovered ? _brandAccent.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.12),
+                blurRadius: hovered ? 20 : 14,
+                spreadRadius: hovered ? 2 : 0,
+                offset: Offset(0, hovered ? 6 : 4),
               ),
             ],
           ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: _brandAccentLight,
-                  borderRadius: BorderRadius.circular(12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Base gradient — always visible (modern blue look, works
+                // even offline / if the photo fails to load).
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: cat.gradient,
+                    ),
+                  ),
                 ),
-                child: Icon(cat.icon, color: _brandAccent, size: 24),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                cat.title,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _brandDark),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                cat.subtitle,
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-              ),
-            ],
+                // Real photo layered on top — shows when it loads, otherwise
+                // the gradient below stays visible (no broken/empty card).
+                Image.network(
+                  cat.imageUrl,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox.shrink();
+                  },
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
+                ),
+                // Readability overlay so the title/subtitle stay legible
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.15),
+                        Colors.black.withValues(alpha: 0.55),
+                      ],
+                    ),
+                  ),
+                ),
+                // Content: icon badge + title + subtitle
+                Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Icon badge — same as mobile app
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(cat.icon, color: Colors.white, size: 24),
+                      ),
+                      const Spacer(),
+                      // Title
+                      Text(
+                        cat.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                          shadows: [
+                            Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 8),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        cat.subtitle,
+                        style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.7)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -715,56 +796,75 @@ class _WebHomePageState extends State<WebHomePage> {
   }
 
   Widget _buildStepCard(_StepItem step) {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // PLACEHOLDER: step illustration area
-          Container(
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                colors: [_brandAccent.withValues(alpha: 0.08), _brandAccent.withValues(alpha: 0.04)],
+    bool hovered = false;
+    return StatefulBuilder(builder: (context, setLocalState) {
+      return MouseRegion(
+        cursor: kIsWeb ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        onEnter: kIsWeb ? (_) => setLocalState(() => hovered = true) : null,
+        onExit: kIsWeb ? (_) => setLocalState(() => hovered = false) : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, hovered ? -5 : 0, 0),
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: hovered ? _brandAccent : _cardBorder,
+              width: hovered ? 2 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: hovered ? _brandAccent.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.03),
+                blurRadius: hovered ? 20 : 10,
+                spreadRadius: hovered ? 2 : 0,
+                offset: Offset(0, hovered ? 6 : 4),
               ),
-            ),
-            child: Center(child: Icon(step.icon, size: 40, color: _brandAccent.withValues(alpha: 0.6))),
+            ],
           ),
-          const SizedBox(height: 20),
-          // Step number
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: _brandAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Text(step.number, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // PLACEHOLDER: step illustration area
+              Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    colors: [_brandAccent.withValues(alpha: 0.08), _brandAccent.withValues(alpha: 0.04)],
+                  ),
+                ),
+                child: Center(child: Icon(step.icon, size: 40, color: _brandAccent.withValues(alpha: 0.6))),
+              ),
+              const SizedBox(height: 20),
+              // Step number
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _brandAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(step.number, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                step.title,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _brandDark),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                step.description,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.5),
+              ),
+            ],
           ),
-          const SizedBox(height: 14),
-          Text(
-            step.title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _brandDark),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            step.description,
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.5),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -844,58 +944,77 @@ class _WebHomePageState extends State<WebHomePage> {
   }
 
   Widget _buildTestimonialCard(_TestimonialItem t) {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Stars
-          Row(
-            children: List.generate(5, (_) => const Icon(Icons.star_rounded, color: Color(0xFFFBBF24), size: 18)),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: Text(
-              '"${t.quote}"',
-              style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.6, fontStyle: FontStyle.italic),
+    bool hovered = false;
+    return StatefulBuilder(builder: (context, setLocalState) {
+      return MouseRegion(
+        cursor: kIsWeb ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        onEnter: kIsWeb ? (_) => setLocalState(() => hovered = true) : null,
+        onExit: kIsWeb ? (_) => setLocalState(() => hovered = false) : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, hovered ? -4 : 0, 0),
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: hovered ? _brandAccent : _cardBorder,
+              width: hovered ? 2 : 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: hovered ? _brandAccent.withValues(alpha: 0.22) : Colors.black.withValues(alpha: 0.04),
+                blurRadius: hovered ? 20 : 12,
+                spreadRadius: hovered ? 2 : 0,
+                offset: Offset(0, hovered ? 6 : 4),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: t.avatarColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(t.initials, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+              // Stars
+              Row(
+                children: List.generate(5, (_) => const Icon(Icons.star_rounded, color: Color(0xFFFBBF24), size: 18)),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Text(
+                  '"${t.quote}"',
+                  style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.6, fontStyle: FontStyle.italic),
                 ),
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 16),
+              Row(
                 children: [
-                  Text(t.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _brandDark)),
-                  Text(t.title, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                  // Avatar
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: t.avatarColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(t.initials, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _brandDark)),
+                      Text(t.title, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -932,17 +1051,17 @@ class _WebHomePageState extends State<WebHomePage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
+                _hoverButton(
+                  label: 'Get Started Free',
                   onPressed: _navigateToSignup,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _brandAccent,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
-                  child: const Text('Get Started Free'),
+                  backgroundColor: _brandAccent,
+                  hoverColor: const Color(0xFF2563EB),
+                  foregroundColor: Colors.white,
+                  borderColor: Colors.transparent,
+                  borderRadius: 12,
+                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 18),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
                 ),
               ],
             ),
@@ -1078,116 +1197,131 @@ class _WebHomePageState extends State<WebHomePage> {
     required bool isPopular,
     required Color accentColor,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isPopular ? _brandAccent : _cardBorder, width: isPopular ? 2 : 1),
-        boxShadow: [
-          BoxShadow(
-            color: isPopular ? _brandAccent.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Popular badge
-          if (isPopular)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _brandAccent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text('Most Popular', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+    bool hovered = false;
+    return StatefulBuilder(builder: (context, setLocalState) {
+      return MouseRegion(
+        cursor: kIsWeb ? SystemMouseCursors.click : SystemMouseCursors.basic,
+        onEnter: kIsWeb ? (_) => setLocalState(() => hovered = true) : null,
+        onExit: kIsWeb ? (_) => setLocalState(() => hovered = false) : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, hovered ? -6 : 0, 0),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: hovered ? _brandAccent : (isPopular ? _brandAccent : _cardBorder),
+              width: hovered ? 2 : (isPopular ? 2 : 1),
             ),
-          if (isPopular) const SizedBox(height: 16),
-
-          // Title
-          Text(title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: accentColor)),
-          const SizedBox(height: 8),
-
-          // Price
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(price, style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: _brandDark, height: 1)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(period, style: TextStyle(fontSize: 16, color: Colors.grey.shade500)),
+            boxShadow: [
+              BoxShadow(
+                color: hovered
+                    ? _brandAccent.withValues(alpha: 0.25)
+                    : (isPopular ? _brandAccent.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04)),
+                blurRadius: hovered ? 24 : 20,
+                spreadRadius: hovered ? 3 : 0,
+                offset: Offset(0, hovered ? 8 : 8),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(subtitle, style: TextStyle(fontSize: 14, color: Colors.grey.shade500)),
-          const SizedBox(height: 24),
-
-          // CTA button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _navigateToSignup,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                foregroundColor: buttonTextColor,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: buttonBorderColor),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Popular badge
+              if (isPopular)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _brandAccent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text('Most Popular', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
                 ),
-                textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              if (isPopular) const SizedBox(height: 16),
+
+              // Title
+              Text(title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: accentColor)),
+              const SizedBox(height: 8),
+
+              // Price
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(price, style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: _brandDark, height: 1)),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(period, style: TextStyle(fontSize: 16, color: Colors.grey.shade500)),
+                  ),
+                ],
               ),
-              child: Text(buttonLabel),
-            ),
-          ),
-          const SizedBox(height: 28),
+              const SizedBox(height: 8),
+              Text(subtitle, style: TextStyle(fontSize: 14, color: Colors.grey.shade500)),
+              const SizedBox(height: 24),
 
-          // Divider
-          Divider(color: Colors.grey.shade200),
-          const SizedBox(height: 20),
-
-          // Features list
-          ...features.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 22,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: f.included ? const Color(0xFFD1FAE5) : const Color(0xFFFEE2E2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        f.included ? Icons.check : Icons.close,
-                        size: 14,
-                        color: f.included ? const Color(0xFF059669) : const Color(0xFFDC2626),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        f.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: f.included ? _brandDark : Colors.grey.shade400,
-                          fontWeight: FontWeight.w500,
-                          decoration: f.included ? null : TextDecoration.lineThrough,
-                          decorationColor: Colors.grey.shade300,
-                        ),
-                      ),
-                    ),
-                  ],
+              // CTA button
+              SizedBox(
+                width: double.infinity,
+                child: _hoverButton(
+                  label: buttonLabel,
+                  onPressed: _navigateToSignup,
+                  backgroundColor: buttonColor,
+                  hoverColor: isPopular ? const Color(0xFF2563EB) : Colors.grey.shade50,
+                  foregroundColor: buttonTextColor,
+                  borderColor: buttonBorderColor,
+                  borderRadius: 12,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  expand: true,
                 ),
-              )),
-        ],
-      ),
-    );
+              ),
+              const SizedBox(height: 28),
+
+              // Divider
+              Divider(color: Colors.grey.shade200),
+              const SizedBox(height: 20),
+
+              // Features list
+              ...features.map((f) => Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: f.included ? const Color(0xFFD1FAE5) : const Color(0xFFFEE2E2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            f.included ? Icons.check : Icons.close,
+                            size: 14,
+                            color: f.included ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            f.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: f.included ? _brandDark : Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                              decoration: f.included ? null : TextDecoration.lineThrough,
+                              decorationColor: Colors.grey.shade300,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   // ════════════════════════════════════════════════════════════════════════════
@@ -1394,6 +1528,92 @@ class _WebHomePageState extends State<WebHomePage> {
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const WebDashboardScreen()));
     }
   }
+
+  // ── Reusable hover button (web-only hover effect) ─────────────────────────
+  Widget _hoverButton({
+    required String label,
+    required VoidCallback onPressed,
+    required Color backgroundColor,
+    required Color hoverColor,
+    required Color foregroundColor,
+    required Color borderColor,
+    double borderRadius = 10,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    double fontSize = 14,
+    FontWeight fontWeight = FontWeight.w600,
+    bool expand = false,
+  }) {
+    if (!kIsWeb) {
+      // Mobile fallback — plain button, no hover
+      return SizedBox(
+        width: expand ? double.infinity : null,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: backgroundColor,
+            foregroundColor: foregroundColor,
+            elevation: 0,
+            padding: padding,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+              side: borderColor == Colors.transparent
+                  ? BorderSide.none
+                  : BorderSide(color: borderColor),
+            ),
+            textStyle: TextStyle(fontWeight: fontWeight, fontSize: fontSize),
+          ),
+          child: Text(label),
+        ),
+      );
+    }
+
+    bool hovered = false;
+    return StatefulBuilder(builder: (context, setLocalState) {
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setLocalState(() => hovered = true),
+        onExit: (_) => setLocalState(() => hovered = false),
+        child: GestureDetector(
+          onTap: onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            width: expand ? double.infinity : null,
+            padding: padding,
+            decoration: BoxDecoration(
+              color: hovered ? hoverColor : backgroundColor,
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: borderColor == Colors.transparent
+                  ? null
+                  : Border.all(color: borderColor),
+              boxShadow: hovered
+                  ? [
+                      BoxShadow(
+                        color: (backgroundColor == Colors.transparent
+                                ? Colors.black
+                                : backgroundColor)
+                            .withValues(alpha: 0.18),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: foregroundColor,
+                  fontWeight: fontWeight,
+                  fontSize: fontSize,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1409,7 +1629,9 @@ class _CategoryItem {
   final IconData icon;
   final String title;
   final String subtitle;
-  const _CategoryItem(this.icon, this.title, this.subtitle);
+  final String imageUrl;
+  final List<Color> gradient;
+  const _CategoryItem(this.icon, this.title, this.subtitle, this.imageUrl, this.gradient);
 }
 
 class _StepItem {
@@ -1439,4 +1661,247 @@ class _FooterSection {
   final String title;
   final List<String> items;
   const _FooterSection(this.title, this.items);
+}
+
+/// Auto-shuffling hero collage: three image slots that crossfade between a
+/// pool of professional workspace photos, with a subtle Ken Burns zoom —
+/// giving the hero a lively, "video-like" feel.
+class _HeroCollage extends StatefulWidget {
+  final bool isDesktop;
+  const _HeroCollage({required this.isDesktop});
+
+  @override
+  State<_HeroCollage> createState() => _HeroCollageState();
+}
+
+class _HeroCollageState extends State<_HeroCollage>
+    with SingleTickerProviderStateMixin {
+  static const _brandDark = Color(0xFF23272A);
+
+  // Verified professional office / team / workspace photos.
+  static const List<String> _pool = [
+    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80',
+  ];
+
+  // Pool index currently shown in each of the 3 slots.
+  final List<int> _slot = [0, 1, 2];
+  int _nextCursor = 3; // next pool image to bring in
+  int _slotToChange = 0; // which slot updates next (round-robin)
+  bool _precached = false;
+  Timer? _timer;
+
+  late final AnimationController _zoom = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 7),
+  )..repeat(reverse: true);
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(
+      const Duration(milliseconds: 2600),
+      (_) => _advance(),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_precached) {
+      _precached = true;
+      // Preload the whole pool so crossfades are instant (no flash).
+      for (final url in _pool) {
+        precacheImage(NetworkImage(url), context);
+      }
+    }
+  }
+
+  void _advance() {
+    if (!mounted) return;
+    // Pick the next pool image that isn't already on screen.
+    int guard = 0;
+    while (_slot.contains(_nextCursor % _pool.length) && guard < _pool.length) {
+      _nextCursor++;
+      guard++;
+    }
+    setState(() {
+      _slot[_slotToChange] = _nextCursor % _pool.length;
+      _nextCursor++;
+      _slotToChange = (_slotToChange + 1) % 3;
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _zoom.dispose();
+    super.dispose();
+  }
+
+  Widget _slotImage(int slot) {
+    final url = _pool[_slot[slot]];
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 900),
+        transitionBuilder: (child, anim) =>
+            FadeTransition(opacity: anim, child: child),
+        child: _kenBurns(url),
+      ),
+    );
+  }
+
+  Widget _kenBurns(String url) {
+    return AnimatedBuilder(
+      key: ValueKey(url),
+      animation: _zoom,
+      builder: (context, child) => Transform.scale(
+        scale: 1.0 + 0.07 * _zoom.value,
+        child: child,
+      ),
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        gaplessPlayback: true,
+        loadingBuilder: (context, child, progress) =>
+            progress == null ? child : Container(color: const Color(0xFFDBE3F0)),
+        errorBuilder: (context, error, stackTrace) => Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF3B82F6), Color(0xFF6366F1)],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.isDesktop ? 440 : 260,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Big main shot
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: _slotImage(0),
+                ),
+              ),
+              // Two stacked shots
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    Expanded(child: _slotImage(1)),
+                    const SizedBox(height: 12),
+                    Expanded(child: _slotImage(2)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          // Floating "live" badge for a polished, professional feel
+          Positioned(
+            left: 14,
+            bottom: 14,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  _PulseDot(),
+                  SizedBox(width: 8),
+                  Text(
+                    'Live project exchange',
+                    style: TextStyle(
+                        color: _brandDark, fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small pulsing green dot used on the hero "Live project exchange" badge.
+class _PulseDot extends StatefulWidget {
+  const _PulseDot();
+
+  @override
+  State<_PulseDot> createState() => _PulseDotState();
+}
+
+class _PulseDotState extends State<_PulseDot> with SingleTickerProviderStateMixin {
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
+        ..repeat(reverse: true);
+
+  static const _green = Color(0xFF22C55E);
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 12,
+      height: 12,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          FadeTransition(
+            opacity: Tween<double>(begin: 0.5, end: 0.0).animate(_c),
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.6, end: 1.7).animate(_c),
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(color: _green, shape: BoxShape.circle),
+              ),
+            ),
+          ),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(color: _green, shape: BoxShape.circle),
+          ),
+        ],
+      ),
+    );
+  }
 }
